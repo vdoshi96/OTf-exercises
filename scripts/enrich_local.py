@@ -3,6 +3,8 @@
 
 No API key needed. Processes descriptions to extract exercise information
 using pattern matching and fitness domain knowledge.
+
+Supports both TikTok and Instagram video entries (uses 'source' field).
 """
 
 import json
@@ -11,6 +13,7 @@ import re
 import sys
 
 RAW_FILE = os.path.join(os.path.dirname(__file__), "..", "raw_videos.json")
+RAW_IG_FILE = os.path.join(os.path.dirname(__file__), "..", "raw_instagram_videos.json")
 OUTPUT_FILE = os.path.join(os.path.dirname(__file__), "..", "enriched_videos.json")
 
 EXERCISE_KEYWORDS = {
@@ -65,6 +68,7 @@ EXERCISE_KEYWORDS = {
     "fly": {"muscle_groups": ["chest"], "category": "upper_body", "movement_type": "isolation"},
     "chest fly": {"muscle_groups": ["chest"], "category": "upper_body", "movement_type": "isolation"},
     "upright row": {"muscle_groups": ["shoulders", "traps"], "category": "upper_body", "movement_type": "compound"},
+    "scaption": {"muscle_groups": ["shoulders"], "category": "upper_body", "movement_type": "isolation"},
 
     "plank": {"muscle_groups": ["core", "shoulders"], "category": "core", "movement_type": "isolation"},
     "hollow hold": {"muscle_groups": ["core", "abs"], "category": "core", "movement_type": "isolation"},
@@ -83,6 +87,7 @@ EXERCISE_KEYWORDS = {
     "bird dog": {"muscle_groups": ["core", "lower back"], "category": "core", "movement_type": "isolation"},
     "mountain climber": {"muscle_groups": ["core", "shoulders", "quads"], "category": "core", "movement_type": "compound"},
     "side plank": {"muscle_groups": ["obliques", "core"], "category": "core", "movement_type": "isolation"},
+    "pull through": {"muscle_groups": ["core", "glutes"], "category": "core", "movement_type": "compound"},
 
     "burpee": {"muscle_groups": ["full body"], "category": "full_body", "movement_type": "compound"},
     "clean": {"muscle_groups": ["full body"], "category": "full_body", "movement_type": "compound"},
@@ -105,6 +110,7 @@ EXERCISE_KEYWORDS = {
     "hip flexor stretch": {"muscle_groups": ["hip flexors"], "category": "mobility", "movement_type": "stretch"},
     "mobility": {"muscle_groups": ["flexibility"], "category": "mobility", "movement_type": "stretch"},
     "foam roll": {"muscle_groups": ["flexibility"], "category": "mobility", "movement_type": "stretch"},
+    "t-spine": {"muscle_groups": ["thoracic spine", "upper back"], "category": "mobility", "movement_type": "stretch"},
 }
 
 EQUIPMENT_KEYWORDS = {
@@ -142,7 +148,7 @@ NON_EXERCISE_PATTERNS = [
     r"(?i)^(5|3|10)\s+(things|reasons|ways)\b",
     r"(?i)weight\s+rack\s+organization",
     r"(?i)3\s+types?\s+of\s+learners?",
-    r"(?i)coaching\s+tip!?$",
+    r"(?i)coaching\s+tip!?\s*$",
     r"(?i)just\s+tryin",
     r"(?i)we\s+all\s+mess\s+up",
     r"(?i)my\s+one\s+day\s+off",
@@ -180,9 +186,27 @@ def is_exercise_demo(desc: str) -> bool:
     return exercise_signals >= 2
 
 
-def extract_exercise_name(desc: str) -> str | None:
-    desc_lower = desc.lower()
+def get_first_line(desc: str) -> str:
+    """Extract the first meaningful line from a description, stripping hashtags."""
+    text = re.split(r'#', desc, maxsplit=1)[0].strip()
+    line = re.split(r'[.!?\n]', text, maxsplit=1)[0].strip()
+    line = re.sub(r'\s+', ' ', line)
+    return line
 
+
+def has_exercise_keyword(text: str) -> bool:
+    """Check if text contains at least one exercise keyword."""
+    text_lower = text.lower()
+    return any(kw in text_lower for kw in EXERCISE_KEYWORDS)
+
+
+def extract_exercise_name(desc: str) -> str | None:
+    first_line = get_first_line(desc)
+
+    if 3 <= len(first_line) <= 80 and has_exercise_keyword(first_line):
+        return first_line
+
+    desc_lower = desc.lower()
     best_match = None
     best_len = 0
     for keyword in sorted(EXERCISE_KEYWORDS.keys(), key=len, reverse=True):
@@ -191,13 +215,23 @@ def extract_exercise_name(desc: str) -> str | None:
             best_len = len(keyword)
 
     if best_match:
+        if 3 <= len(first_line) <= 80:
+            return first_line
         return best_match.title()
 
-    first_line = desc.split(".")[0].split(":")[0].split("!")[0].strip()
-    if len(first_line) < 60:
+    if 3 <= len(first_line) <= 60:
         return first_line
 
     return None
+
+
+def classify_exercise(desc: str) -> dict:
+    """Get category/muscle/movement classification from keyword match."""
+    desc_lower = desc.lower()
+    for keyword in sorted(EXERCISE_KEYWORDS.keys(), key=len, reverse=True):
+        if keyword in desc_lower:
+            return EXERCISE_KEYWORDS[keyword]
+    return {"muscle_groups": [], "category": "other", "movement_type": "other"}
 
 
 def extract_equipment(desc: str) -> list[str]:
@@ -240,34 +274,6 @@ def extract_coaching_cues(desc: str) -> list[str]:
     return cues[:5]
 
 
-NAME_NORMALIZATIONS = {
-    "push up": "Push-Up",
-    "pushup": "Push-Up",
-    "push-up": "Push-Up",
-    "sit up": "Sit-Up",
-    "sit-up": "Sit-Up",
-    "step up": "Step-Up",
-    "step-up": "Step-Up",
-    "rdl": "Romanian Deadlift",
-    "romanian deadlift": "Romanian Deadlift",
-    "coaching tip": None,
-    "run": "Treadmill Run",
-    "tread": "Treadmill Run",
-    "treadmill": "Treadmill Run",
-    "rower": "Rowing",
-    "rowing": "Rowing",
-    "bike": "Bike / Strider",
-    "strider": "Bike / Strider",
-}
-
-
-def normalize_name(name: str) -> str | None:
-    key = name.lower().strip()
-    if key in NAME_NORMALIZATIONS:
-        return NAME_NORMALIZATIONS[key]
-    return name
-
-
 def enrich_video(video: dict) -> dict:
     desc = video.get("description", "")
 
@@ -280,18 +286,7 @@ def enrich_video(video: dict) -> dict:
         video["enrichment"] = {"is_exercise_demo": False}
         return video
 
-    exercise_name = normalize_name(exercise_name)
-    if exercise_name is None:
-        video["enrichment"] = {"is_exercise_demo": False}
-        return video
-
-    desc_lower = desc.lower()
-    info = {"muscle_groups": [], "category": "other", "movement_type": "other"}
-    for keyword in sorted(EXERCISE_KEYWORDS.keys(), key=len, reverse=True):
-        if keyword in desc_lower:
-            info = EXERCISE_KEYWORDS[keyword]
-            break
-
+    info = classify_exercise(desc)
     equipment = extract_equipment(desc)
     coaching_cues = extract_coaching_cues(desc)
 
@@ -307,10 +302,34 @@ def enrich_video(video: dict) -> dict:
     return video
 
 
+def load_combined_raw() -> list[dict]:
+    """Load TikTok + Instagram raw data, adding source field."""
+    videos = []
+
+    if os.path.exists(RAW_FILE):
+        with open(RAW_FILE) as f:
+            tiktok = json.load(f)
+        for v in tiktok:
+            v.setdefault("source", "tiktok")
+            videos.append(v)
+        print(f"  Loaded {len(tiktok)} TikTok videos")
+
+    if os.path.exists(RAW_IG_FILE):
+        with open(RAW_IG_FILE) as f:
+            instagram = json.load(f)
+        for v in instagram:
+            v.setdefault("source", "instagram")
+            videos.append(v)
+        print(f"  Loaded {len(instagram)} Instagram videos")
+
+    if not videos:
+        print("No raw video files found!")
+    return videos
+
+
 def main():
-    raw_file = sys.argv[1] if len(sys.argv) > 1 else RAW_FILE
-    with open(raw_file) as f:
-        videos = json.load(f)
+    print("Loading raw video data...")
+    videos = load_combined_raw()
 
     enriched = [enrich_video(v) for v in videos]
 
@@ -318,7 +337,7 @@ def main():
         json.dump(enriched, f, indent=2)
 
     demo_count = sum(1 for v in enriched if v.get("enrichment", {}).get("is_exercise_demo"))
-    print(f"Enriched {len(enriched)} videos ({demo_count} exercise demos) -> {OUTPUT_FILE}")
+    print(f"\nEnriched {len(enriched)} videos ({demo_count} exercise demos) -> {OUTPUT_FILE}")
 
     demos = [v for v in enriched if v.get("enrichment", {}).get("is_exercise_demo")]
     print(f"\nExercise breakdown by category:")
@@ -328,6 +347,9 @@ def main():
         cats[cat] = cats.get(cat, 0) + 1
     for cat, count in sorted(cats.items(), key=lambda x: -x[1]):
         print(f"  {cat}: {count}")
+
+    names = set(d["enrichment"]["exercise_name"] for d in demos)
+    print(f"\nUnique exercise names: {len(names)}")
 
 
 if __name__ == "__main__":

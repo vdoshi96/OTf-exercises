@@ -3,21 +3,20 @@
 import { useCallback, useMemo, useState } from "react";
 import Fuse, { type IFuseOptions } from "fuse.js";
 import exercises from "@/data/exercises.json";
-import type { Exercise } from "@/lib/types";
+import type { GroupedExercise } from "@/lib/types";
 import { getFilterOptions, filterExercises } from "@/lib/search";
 import SearchBar from "@/components/SearchBar";
 import FilterPanel from "@/components/FilterPanel";
 import ExerciseGrid from "@/components/ExerciseGrid";
 
-const allExercises = exercises as Exercise[];
+const allExercises = exercises as GroupedExercise[];
 
-const fuseOptions: IFuseOptions<Exercise> = {
+const fuseOptions: IFuseOptions<GroupedExercise> = {
   keys: [
     { name: "exercise_name", weight: 2 },
     { name: "muscle_groups", weight: 1.5 },
     { name: "equipment", weight: 1 },
     { name: "coaching_cues", weight: 0.5 },
-    { name: "description", weight: 0.3 },
   ],
   threshold: 0.3,
 };
@@ -25,7 +24,9 @@ const fuseOptions: IFuseOptions<Exercise> = {
 export default function Home() {
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const [activeMuscleGroup, setActiveMuscleGroup] = useState<string | null>(null);
+  const [activeMuscleGroup, setActiveMuscleGroup] = useState<string | null>(
+    null
+  );
   const [activeEquipment, setActiveEquipment] = useState<string | null>(null);
 
   const fuse = useMemo(() => new Fuse(allExercises, fuseOptions), []);
@@ -34,6 +35,11 @@ export default function Home() {
   const handleSearch = useCallback((q: string) => {
     setQuery(q);
   }, []);
+
+  const totalVideos = useMemo(
+    () => allExercises.reduce((sum, ex) => sum + ex.videos.length, 0),
+    []
+  );
 
   const results = useMemo(() => {
     let filtered = query.trim()
@@ -56,7 +62,8 @@ export default function Home() {
           Browse Exercises
         </h2>
         <p className="text-zinc-500">
-          OrangeTheory exercises demonstrated by Coach Rudy on TikTok
+          {allExercises.length} exercises across {totalVideos} videos from Coach
+          Rudy
         </p>
       </div>
 

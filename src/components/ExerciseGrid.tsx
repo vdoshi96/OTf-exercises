@@ -1,8 +1,8 @@
-import type { Exercise } from "@/lib/types";
+import type { GroupedExercise } from "@/lib/types";
 import ExerciseCard from "./ExerciseCard";
 
 interface ExerciseGridProps {
-  exercises: Exercise[];
+  exercises: GroupedExercise[];
 }
 
 export default function ExerciseGrid({ exercises }: ExerciseGridProps) {

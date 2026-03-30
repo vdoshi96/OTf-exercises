@@ -1,12 +1,14 @@
-export interface Exercise {
+export interface Video {
   id: string;
   url: string;
+  source: "tiktok" | "instagram";
   thumbnail: string;
-  upload_date: string;
   description: string;
+}
+
+export interface GroupedExercise {
+  id: string;
   exercise_name: string;
-  muscle_groups: string[];
-  equipment: string[];
   category:
     | "upper_body"
     | "lower_body"
@@ -15,6 +17,8 @@ export interface Exercise {
     | "cardio"
     | "mobility"
     | "other";
+  muscle_groups: string[];
+  equipment: string[];
   movement_type:
     | "compound"
     | "isolation"
@@ -22,6 +26,7 @@ export interface Exercise {
     | "stretch"
     | "other";
   coaching_cues: string[];
+  videos: Video[];
 }
 
 export const CATEGORY_LABELS: Record<string, string> = {

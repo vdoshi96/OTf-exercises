@@ -25,6 +25,7 @@ def merge_and_filter(enriched_file: str) -> list[dict]:
         exercises.append({
             "id": video.get("id"),
             "url": video.get("url"),
+            "source": video.get("source", "tiktok"),
             "thumbnail": video.get("thumbnail", ""),
             "upload_date": video.get("upload_date", ""),
             "description": video.get("description", ""),

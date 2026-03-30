@@ -1,32 +1,33 @@
 import Fuse, { type IFuseOptions } from "fuse.js";
-import type { Exercise } from "./types";
+import type { GroupedExercise } from "./types";
 
-const fuseOptions: IFuseOptions<Exercise> = {
+const fuseOptions: IFuseOptions<GroupedExercise> = {
   keys: [
     { name: "exercise_name", weight: 2 },
     { name: "muscle_groups", weight: 1.5 },
     { name: "equipment", weight: 1 },
     { name: "coaching_cues", weight: 0.5 },
-    { name: "description", weight: 0.3 },
   ],
   threshold: 0.3,
   includeScore: true,
 };
 
-export function createSearchIndex(exercises: Exercise[]): Fuse<Exercise> {
+export function createSearchIndex(
+  exercises: GroupedExercise[]
+): Fuse<GroupedExercise> {
   return new Fuse(exercises, fuseOptions);
 }
 
 export function searchExercises(
-  fuse: Fuse<Exercise>,
-  exercises: Exercise[],
+  fuse: Fuse<GroupedExercise>,
+  exercises: GroupedExercise[],
   query: string
-): Exercise[] {
+): GroupedExercise[] {
   if (!query.trim()) return exercises;
   return fuse.search(query).map((r) => r.item);
 }
 
-export function getFilterOptions(exercises: Exercise[]) {
+export function getFilterOptions(exercises: GroupedExercise[]) {
   const categories = new Set<string>();
   const muscleGroups = new Set<string>();
   const equipment = new Set<string>();
@@ -45,13 +46,13 @@ export function getFilterOptions(exercises: Exercise[]) {
 }
 
 export function filterExercises(
-  exercises: Exercise[],
+  exercises: GroupedExercise[],
   filters: {
     category?: string | null;
     muscleGroup?: string | null;
     equipment?: string | null;
   }
-): Exercise[] {
+): GroupedExercise[] {
   return exercises.filter((ex) => {
     if (filters.category && ex.category !== filters.category) return false;
     if (
