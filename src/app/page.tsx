@@ -64,8 +64,15 @@ export default function Home() {
           Browse Exercises
         </h2>
         <p className="text-zinc-500">
-          {allExercises.length} exercises across {totalVideos} videos from Coach
-          Rudy
+          {allExercises.length} exercises across {totalVideos} videos from{" "}
+          <a
+            href="https://www.instagram.com/coachingotf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-orange-400/80 hover:text-orange-400"
+          >
+            @coachingotf
+          </a>
         </p>
       </div>
 
