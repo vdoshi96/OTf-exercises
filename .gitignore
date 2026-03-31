@@ -53,3 +53,9 @@ next-env.d.ts
 .playwright-data/
 /ig_shortcodes.txt
 /raw_instagram_videos_progress.json
+
+# Personal notes / drafts
+chatwithclaude.md
+add-instagram-plan.md
+reddit post.md
+*.Rhistory
