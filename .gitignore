@@ -49,3 +49,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+.chrome-profile-copy/
+.playwright-data/
+/ig_shortcodes.txt
+/raw_instagram_videos_progress.json

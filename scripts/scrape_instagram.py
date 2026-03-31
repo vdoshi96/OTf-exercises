@@ -1,31 +1,76 @@
 #!/usr/bin/env python3
 """Scrape Instagram reels/video metadata from @coachingotf using instaloader.
 
-Outputs raw_instagram_videos.json with the same shape as raw_videos.json
-but with source="instagram".
+Uses timeout-protected strategies to avoid getting stuck in Instagram's
+429 rate-limit retry loops. Falls back to discovering the profile via
+known post shortcodes when the profile API is blocked.
+
+Outputs raw_instagram_videos.json with source="instagram".
 
 Usage:
-  python3 scripts/scrape_instagram.py                    # prompts for login
-  python3 scripts/scrape_instagram.py --user YOUR_USER   # login as specific user
+  python3 scripts/scrape_instagram.py --user YOUR_IG_USERNAME
+
+  # Non-interactive (password via env var):
+  IG_PASSWORD=xxx python3 scripts/scrape_instagram.py --user YOUR_IG_USERNAME
 """
 
 import argparse
 import json
 import os
+import signal
 import sys
+import time
 
 try:
     import instaloader
+    from instaloader.exceptions import (
+        ProfileNotExistsException,
+        QueryReturnedNotFoundException,
+    )
 except ImportError:
     print("Install instaloader: pip3 install instaloader --break-system-packages")
     sys.exit(1)
 
 PROFILE = "coachingotf"
-OUTPUT_FILE = os.path.join(os.path.dirname(__file__), "..", "raw_instagram_videos.json")
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+OUTPUT_FILE = os.path.join(SCRIPT_DIR, "..", "raw_instagram_videos.json")
+
+KNOWN_SHORTCODES = [
+    "DF5s0iAOhWJ",
+    "DVceVlwjTqj",
+    "C8GN60NtC-q",
+    "C6Ox4ZfCmQH",
+]
+
+STRATEGY_TIMEOUT = 30
 
 
-def scrape_profile(username: str | None = None) -> list[dict]:
-    L = instaloader.Instaloader(
+class StrategyTimeout(Exception):
+    pass
+
+
+def _alarm_handler(signum, frame):
+    raise StrategyTimeout()
+
+
+def run_with_timeout(fn, *args, timeout=STRATEGY_TIMEOUT):
+    """Run fn(*args) with a SIGALRM timeout to escape instaloader's retry loops."""
+    prev = signal.signal(signal.SIGALRM, _alarm_handler)
+    signal.alarm(timeout)
+    try:
+        result = fn(*args)
+        signal.alarm(0)
+        return result
+    except StrategyTimeout:
+        print("  Timed out (rate-limited, moving on)")
+        return None
+    finally:
+        signal.alarm(0)
+        signal.signal(signal.SIGALRM, prev)
+
+
+def create_loader() -> instaloader.Instaloader:
+    return instaloader.Instaloader(
         download_pictures=False,
         download_videos=False,
         download_video_thumbnails=False,
@@ -33,69 +78,172 @@ def scrape_profile(username: str | None = None) -> list[dict]:
         download_comments=False,
         save_metadata=False,
         compress_json=False,
+        max_connection_attempts=1,
     )
 
-    if username:
+
+def login(L: instaloader.Instaloader, username: str, force_fresh: bool = False) -> None:
+    if not force_fresh:
         try:
             L.load_session_from_file(username)
             print(f"Loaded saved session for {username}")
+            return
         except FileNotFoundError:
-            print(f"No saved session found. Logging in as {username}...")
-            L.interactive_login(username)
-            L.save_session_to_file()
-            print("Session saved for future runs.")
+            pass
+
+    password = os.environ.get("IG_PASSWORD")
+    if password:
+        print(f"Logging in as {username} (via IG_PASSWORD)...")
+        L.login(username, password)
     else:
-        print("WARNING: Running without login. Instagram may block requests.")
-        print("For reliable scraping, use: python3 scrape_instagram.py --user YOUR_USERNAME")
+        print(f"Logging in as {username} (interactive)...")
+        L.interactive_login(username)
+    L.save_session_to_file()
+    print("Session saved.")
 
-    print(f"Loading profile: {PROFILE}")
+
+# --------------- Profile resolution strategies ---------------
+
+def _from_username(L: instaloader.Instaloader) -> instaloader.Profile | None:
     profile = instaloader.Profile.from_username(L.context, PROFILE)
-    print(f"Profile loaded: {profile.full_name} ({profile.mediacount} posts)")
+    print(f"  OK — {profile.full_name} ({profile.mediacount} posts)")
+    return profile
 
-    videos = []
+
+def _from_shortcode(L: instaloader.Instaloader) -> instaloader.Profile | None:
+    for sc in KNOWN_SHORTCODES:
+        try:
+            print(f"  Loading post {sc}...")
+            post = instaloader.Post.from_shortcode(L.context, sc)
+            owner = post.owner_username
+            if owner and owner.lower() == PROFILE.lower():
+                profile = post.owner_profile
+                print(f"  OK — @{profile.username} via post {sc}")
+                return profile
+            print(f"  Post belongs to @{owner}, not @{PROFILE}")
+        except QueryReturnedNotFoundException:
+            print(f"  Post {sc} not found")
+        except StrategyTimeout:
+            raise
+        except Exception as e:
+            print(f"  Error on {sc}: {e}")
+        time.sleep(2)
+    return None
+
+
+def resolve_profile(L: instaloader.Instaloader) -> instaloader.Profile | None:
+    strategies = [
+        ("Profile.from_username", _from_username),
+        ("Known post -> owner_profile", _from_shortcode),
+    ]
+
+    for name, fn in strategies:
+        print(f"\n[Strategy] {name}")
+        profile = run_with_timeout(fn, L, timeout=STRATEGY_TIMEOUT)
+        if profile:
+            return profile
+
+    return None
+
+
+# --------------- Post scanning ---------------
+
+def scrape_videos(profile: instaloader.Profile) -> list[dict]:
+    videos: list[dict] = []
     count = 0
-    for post in profile.get_posts():
-        count += 1
-        if count % 25 == 0:
-            print(f"  Processed {count} posts ({len(videos)} videos)...")
+    errors = 0
 
-        if not post.is_video:
-            continue
+    print(f"\nScanning posts from @{profile.username}...")
+    try:
+        for post in profile.get_posts():
+            count += 1
+            if count % 10 == 0:
+                print(f"  {count} posts scanned ({len(videos)} videos)...")
+                time.sleep(1)
 
-        caption = post.caption or ""
-        shortcode = post.shortcode
+            if not post.is_video:
+                continue
 
-        url = f"https://www.instagram.com/reel/{shortcode}/"
-        if post.typename == "GraphSidecar":
-            url = f"https://www.instagram.com/p/{shortcode}/"
+            caption = post.caption or ""
+            shortcode = post.shortcode
 
-        videos.append({
-            "id": f"ig_{shortcode}",
-            "url": url,
-            "description": caption,
-            "thumbnail": str(post.url) if post.url else "",
-            "duration": post.video_duration or 0,
-            "timestamp": int(post.date_utc.timestamp()) if post.date_utc else 0,
-            "upload_date": post.date_utc.strftime("%Y%m%d") if post.date_utc else "",
-            "source": "instagram",
-        })
+            url = f"https://www.instagram.com/reel/{shortcode}/"
+            if post.typename == "GraphSidecar":
+                url = f"https://www.instagram.com/p/{shortcode}/"
+
+            videos.append({
+                "id": f"ig_{shortcode}",
+                "url": url,
+                "description": caption,
+                "thumbnail": str(post.url) if post.url else "",
+                "duration": post.video_duration or 0,
+                "timestamp": int(post.date_utc.timestamp()) if post.date_utc else 0,
+                "upload_date": post.date_utc.strftime("%Y%m%d") if post.date_utc else "",
+                "source": "instagram",
+            })
+    except KeyboardInterrupt:
+        print(f"\n  Interrupted — keeping {len(videos)} videos collected so far")
+    except Exception as e:
+        errors += 1
+        print(f"\n  Error during scan: {e}")
+        if videos:
+            print(f"  Keeping {len(videos)} videos collected before error")
 
     print(f"\nTotal posts scanned: {count}")
     print(f"Videos/reels found: {len(videos)}")
     return videos
 
 
+# --------------- Main ---------------
+
 def main():
     parser = argparse.ArgumentParser(description="Scrape Instagram reels from @coachingotf")
-    parser.add_argument("--user", "-u", help="Instagram username for login")
+    parser.add_argument("--user", "-u", required=True, help="Your Instagram username")
     args = parser.parse_args()
 
-    videos = scrape_profile(args.user)
+    L = create_loader()
+    login(L, args.user)
+
+    profile = resolve_profile(L)
+
+    if not profile:
+        print("\n--- Retrying with fresh login ---")
+        L = create_loader()
+        login(L, args.user, force_fresh=True)
+        time.sleep(3)
+        profile = resolve_profile(L)
+
+    if not profile:
+        session_path = os.path.expanduser(f"~/.config/instaloader/session-{args.user}")
+        print("\n" + "=" * 60)
+        print("ERROR: Could not access @coachingotf's profile.")
+        print("=" * 60)
+        print()
+        print("Instagram is blocking automated access. Try:")
+        print()
+        print("1. Wait 15-30 minutes for rate limits to clear, then re-run.")
+        print()
+        print("2. Check your Instagram account has a birthday set (must be 18+):")
+        print("   Settings > Accounts Center > Personal details > Birthday")
+        print()
+        print("3. Delete session and re-login:")
+        print(f"   rm {session_path}")
+        print(f"   python3 scripts/scrape_instagram.py --user {args.user}")
+        print()
+        print("4. Visit https://www.instagram.com/coachingotf/ in your browser")
+        print("   to confirm you can see the profile while logged in.")
+        sys.exit(1)
+
+    videos = scrape_videos(profile)
+
+    if not videos:
+        print("No videos found.")
+        sys.exit(1)
 
     with open(OUTPUT_FILE, "w") as f:
         json.dump(videos, f, indent=2)
 
-    print(f"Saved {len(videos)} videos -> {OUTPUT_FILE}")
+    print(f"\nSaved {len(videos)} videos -> {OUTPUT_FILE}")
 
 
 if __name__ == "__main__":

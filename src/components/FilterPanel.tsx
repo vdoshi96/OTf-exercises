@@ -2,16 +2,24 @@
 
 import { CATEGORY_LABELS } from "@/lib/types";
 
+const PLATFORM_LABELS: Record<string, string> = {
+  tiktok: "TikTok",
+  instagram: "Instagram",
+};
+
 interface FilterPanelProps {
   categories: string[];
   muscleGroups: string[];
   equipment: string[];
+  platforms: string[];
   activeCategory: string | null;
   activeMuscleGroup: string | null;
   activeEquipment: string | null;
+  activePlatform: string | null;
   onCategoryChange: (category: string | null) => void;
   onMuscleGroupChange: (muscleGroup: string | null) => void;
   onEquipmentChange: (equipment: string | null) => void;
+  onPlatformChange: (platform: string | null) => void;
 }
 
 function Chip({
@@ -45,14 +53,17 @@ export default function FilterPanel({
   categories,
   muscleGroups,
   equipment,
+  platforms,
   activeCategory,
   activeMuscleGroup,
   activeEquipment,
+  activePlatform,
   onCategoryChange,
   onMuscleGroupChange,
   onEquipmentChange,
+  onPlatformChange,
 }: FilterPanelProps) {
-  const hasFilters = activeCategory || activeMuscleGroup || activeEquipment;
+  const hasFilters = activeCategory || activeMuscleGroup || activeEquipment || activePlatform;
 
   return (
     <div className="space-y-4">
@@ -66,6 +77,7 @@ export default function FilterPanel({
               onCategoryChange(null);
               onMuscleGroupChange(null);
               onEquipmentChange(null);
+              onPlatformChange(null);
             }}
             className="text-sm text-orange-400 hover:text-orange-300"
           >
@@ -127,6 +139,26 @@ export default function FilterPanel({
           ))}
         </div>
       </div>
+
+      {platforms.length > 1 && (
+        <div>
+          <p className="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-600">
+            Platform
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {platforms.map((p) => (
+              <Chip
+                key={p}
+                label={PLATFORM_LABELS[p] ?? formatLabel(p)}
+                active={activePlatform === p}
+                onClick={() =>
+                  onPlatformChange(activePlatform === p ? null : p)
+                }
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

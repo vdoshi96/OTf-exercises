@@ -28,6 +28,7 @@ export default function Home() {
     null
   );
   const [activeEquipment, setActiveEquipment] = useState<string | null>(null);
+  const [activePlatform, setActivePlatform] = useState<string | null>(null);
 
   const fuse = useMemo(() => new Fuse(allExercises, fuseOptions), []);
   const filterOptions = useMemo(() => getFilterOptions(allExercises), []);
@@ -50,10 +51,11 @@ export default function Home() {
       category: activeCategory,
       muscleGroup: activeMuscleGroup,
       equipment: activeEquipment,
+      platform: activePlatform,
     });
 
     return filtered;
-  }, [query, activeCategory, activeMuscleGroup, activeEquipment, fuse]);
+  }, [query, activeCategory, activeMuscleGroup, activeEquipment, activePlatform, fuse]);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
@@ -80,12 +82,15 @@ export default function Home() {
           categories={filterOptions.categories}
           muscleGroups={filterOptions.muscleGroups}
           equipment={filterOptions.equipment}
+          platforms={filterOptions.platforms}
           activeCategory={activeCategory}
           activeMuscleGroup={activeMuscleGroup}
           activeEquipment={activeEquipment}
+          activePlatform={activePlatform}
           onCategoryChange={setActiveCategory}
           onMuscleGroupChange={setActiveMuscleGroup}
           onEquipmentChange={setActiveEquipment}
+          onPlatformChange={setActivePlatform}
         />
       </div>
 
