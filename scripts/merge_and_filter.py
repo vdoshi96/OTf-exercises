@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Merge enriched video data and filter to exercise demos only.
 
-Outputs exercises.json ready for the frontend.
+Outputs exercises_flat.json ready for grouping.
 """
 
 import json
@@ -9,7 +9,7 @@ import os
 import sys
 
 ENRICHED_FILE = os.path.join(os.path.dirname(__file__), "..", "enriched_videos.json")
-OUTPUT_FILE = os.path.join(os.path.dirname(__file__), "..", "src", "data", "exercises.json")
+OUTPUT_FILE = os.path.join(os.path.dirname(__file__), "..", "src", "data", "exercises_flat.json")
 
 
 def merge_and_filter(enriched_file: str) -> list[dict]:
@@ -35,6 +35,7 @@ def merge_and_filter(enriched_file: str) -> list[dict]:
             "category": enrichment.get("category", "other"),
             "movement_type": enrichment.get("movement_type", "other"),
             "coaching_cues": enrichment.get("coaching_cues", []),
+            "creator": video.get("creator"),
         })
 
     exercises.sort(key=lambda x: x.get("exercise_name") or "")
