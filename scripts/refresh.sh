@@ -5,6 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 TIKTOK_USER="coachingotf"
 TIKTOK_URL="https://www.tiktok.com/@${TIKTOK_USER}"
+IG_PROFILES="${IG_PROFILES:-coachingotf}"
 
 cd "$PROJECT_DIR"
 
@@ -28,9 +29,9 @@ echo ""
 # Step 2: Scrape Instagram metadata with instaloader
 echo "[2/6] Downloading Instagram metadata..."
 if command -v python3 &>/dev/null && python3 -c "import instaloader" 2>/dev/null; then
-  python3 "$SCRIPT_DIR/scrape_instagram.py" --user "${IG_USERNAME:-}" || {
+  python3 "$SCRIPT_DIR/scrape_instagram.py" --user "${IG_USERNAME:-}" --profiles "$IG_PROFILES" || {
     echo "WARNING: Instagram scrape failed. Run manually with:"
-    echo "  python3 scripts/scrape_instagram.py --user YOUR_IG_USERNAME"
+    echo "  python3 scripts/scrape_instagram.py --user YOUR_IG_USERNAME --profiles $IG_PROFILES"
   }
 else
   echo "SKIPPED: instaloader not installed. Run: pip3 install instaloader --break-system-packages"
@@ -47,13 +48,13 @@ echo "[4/6] Enriching with local pattern matching..."
 python3 "$SCRIPT_DIR/enrich_local.py"
 echo ""
 
-# Step 5: Merge and filter into exercises
-echo "[5/6] Merging and filtering..."
+# Step 5: Merge and filter into fresh flat exercise data
+echo "[5/6] Merging and filtering into src/data/exercises_flat.json..."
 python3 "$SCRIPT_DIR/merge_and_filter.py"
 echo ""
 
 # Step 6: Group exercises by name
-echo "[6/6] Grouping exercises..."
+echo "[6/6] Grouping src/data/exercises_flat.json into src/data/exercises.json..."
 python3 "$SCRIPT_DIR/group_exercises.py"
 echo ""
 
