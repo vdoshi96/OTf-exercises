@@ -48,11 +48,11 @@ export const CATEGORY_LABELS: Record<string, string> = {
 };
 
 export const CATEGORY_COLORS: Record<string, string> = {
-  upper_body: "bg-blue-500/20 text-blue-400 border-blue-500/30",
-  lower_body: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
-  core: "bg-amber-500/20 text-amber-400 border-amber-500/30",
-  full_body: "bg-purple-500/20 text-purple-400 border-purple-500/30",
-  cardio: "bg-red-500/20 text-red-400 border-red-500/30",
-  mobility: "bg-teal-500/20 text-teal-400 border-teal-500/30",
-  other: "bg-zinc-500/20 text-zinc-400 border-zinc-500/30",
+  upper_body: "bg-orange-500/20 text-orange-100 border-orange-500/35",
+  lower_body: "bg-amber-500/20 text-amber-100 border-amber-500/35",
+  core: "bg-red-500/15 text-red-100 border-red-500/30",
+  full_body: "bg-orange-600/20 text-orange-100 border-orange-400/35",
+  cardio: "bg-rose-500/15 text-rose-100 border-rose-500/30",
+  mobility: "bg-stone-500/20 text-stone-100 border-stone-500/30",
+  other: "bg-zinc-500/20 text-zinc-100 border-zinc-500/30",
 };
