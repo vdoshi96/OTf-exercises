@@ -4,6 +4,7 @@ import {
   CATEGORY_LABELS,
   type GroupedExercise,
 } from "@/lib/types";
+import { getExerciseCreators } from "@/lib/search";
 
 interface ExerciseCardProps {
   exercise: GroupedExercise;
@@ -18,6 +19,11 @@ export default function ExerciseCard({ exercise }: ExerciseCardProps) {
   const firstVideo = exercise.videos[0];
   const videoCount = exercise.videos.length;
   const sources = new Set(exercise.videos.map((v) => v.source));
+  const creators = getExerciseCreators(exercise);
+  const creatorSummary =
+    creators.length === 1
+      ? creators[0].display_name
+      : `${creators.length} creators`;
 
   return (
     <Link
@@ -86,6 +92,12 @@ export default function ExerciseCard({ exercise }: ExerciseCardProps) {
         <h3 className="font-semibold text-zinc-100 group-hover:text-orange-400 transition">
           {exercise.exercise_name}
         </h3>
+
+        {creators.length > 0 && (
+          <p className="mt-1 text-xs font-medium text-zinc-500">
+            {creatorSummary}
+          </p>
+        )}
 
         <div className="mt-2 flex flex-wrap gap-1.5">
           {exercise.muscle_groups.slice(0, 3).map((mg) => (

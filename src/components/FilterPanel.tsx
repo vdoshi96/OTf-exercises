@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CATEGORY_LABELS } from "@/lib/types";
+import { CATEGORY_LABELS, type Creator } from "@/lib/types";
 
 const PLATFORM_LABELS: Record<string, string> = {
   tiktok: "TikTok",
@@ -13,14 +13,17 @@ interface FilterPanelProps {
   muscleGroups: string[];
   equipment: string[];
   platforms: string[];
+  creators: Creator[];
   activeCategory: string | null;
   activeMuscleGroup: string | null;
   activeEquipment: string | null;
   activePlatform: string | null;
+  activeCreator: string | null;
   onCategoryChange: (category: string | null) => void;
   onMuscleGroupChange: (muscleGroup: string | null) => void;
   onEquipmentChange: (equipment: string | null) => void;
   onPlatformChange: (platform: string | null) => void;
+  onCreatorChange: (creator: string | null) => void;
 }
 
 function Chip({
@@ -35,6 +38,7 @@ function Chip({
   return (
     <button
       onClick={onClick}
+      aria-pressed={active}
       className={`rounded-lg border px-3 py-1.5 text-sm font-medium transition ${
         active
           ? "border-orange-500/50 bg-orange-500/20 text-orange-400"
@@ -80,6 +84,7 @@ function FilterSection({
     <div>
       <button
         onClick={() => setOpen(!open)}
+        aria-expanded={open}
         className="flex w-full items-center justify-between py-1"
       >
         <div className="flex items-center gap-2">
@@ -104,61 +109,84 @@ export default function FilterPanel({
   muscleGroups,
   equipment,
   platforms,
+  creators,
   activeCategory,
   activeMuscleGroup,
   activeEquipment,
   activePlatform,
+  activeCreator,
   onCategoryChange,
   onMuscleGroupChange,
   onEquipmentChange,
   onPlatformChange,
+  onCreatorChange,
 }: FilterPanelProps) {
-  const hasFilters = activeCategory || activeMuscleGroup || activeEquipment || activePlatform;
+  const hasFilters =
+    activeCategory ||
+    activeMuscleGroup ||
+    activeEquipment ||
+    activePlatform ||
+    activeCreator;
   const [panelOpen, setPanelOpen] = useState(false);
 
   const activeFilterCount =
     (activeCategory ? 1 : 0) +
     (activeMuscleGroup ? 1 : 0) +
     (activeEquipment ? 1 : 0) +
-    (activePlatform ? 1 : 0);
+    (activePlatform ? 1 : 0) +
+    (activeCreator ? 1 : 0);
+
+  const clearFilters = () => {
+    onCategoryChange(null);
+    onMuscleGroupChange(null);
+    onEquipmentChange(null);
+    onPlatformChange(null);
+    onCreatorChange(null);
+  };
 
   return (
     <div className="rounded-xl border border-zinc-800/50 bg-zinc-900/30">
-      <button
-        onClick={() => setPanelOpen(!panelOpen)}
-        className="flex w-full items-center justify-between px-4 py-3"
-      >
-        <div className="flex items-center gap-3">
-          <svg className="h-4 w-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-          </svg>
-          <span className="text-sm font-semibold uppercase tracking-wider text-zinc-400">
-            Filters
-          </span>
-          {activeFilterCount > 0 && !panelOpen && (
-            <span className="rounded-full bg-orange-500/20 px-2 py-0.5 text-xs font-semibold text-orange-400">
-              {activeFilterCount}
-            </span>
-          )}
-        </div>
-        <div className="flex items-center gap-2">
-          {hasFilters && (
-            <span
-              onClick={(e) => {
-                e.stopPropagation();
-                onCategoryChange(null);
-                onMuscleGroupChange(null);
-                onEquipmentChange(null);
-                onPlatformChange(null);
-              }}
-              className="text-sm text-orange-400 hover:text-orange-300"
+      <div className="flex items-center justify-between gap-2 px-4 py-3">
+        <button
+          onClick={() => setPanelOpen(!panelOpen)}
+          aria-expanded={panelOpen}
+          className="flex min-w-0 flex-1 items-center justify-between"
+        >
+          <span className="flex items-center gap-3">
+            <svg
+              className="h-4 w-4 text-zinc-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
             >
-              Clear all
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+              />
+            </svg>
+            <span className="text-sm font-semibold uppercase tracking-wider text-zinc-400">
+              Filters
             </span>
-          )}
+            {activeFilterCount > 0 && !panelOpen && (
+              <span className="rounded-full bg-orange-500/20 px-2 py-0.5 text-xs font-semibold text-orange-400">
+                {activeFilterCount}
+              </span>
+            )}
+          </span>
           <ChevronIcon open={panelOpen} />
-        </div>
-      </button>
+        </button>
+        {hasFilters && (
+          <button
+            type="button"
+            onClick={clearFilters}
+            className="text-sm text-orange-400 hover:text-orange-300"
+          >
+            Clear all
+          </button>
+        )}
+      </div>
 
       {panelOpen && (
         <div className="space-y-3 border-t border-zinc-800/50 px-4 pb-4 pt-3">
@@ -207,6 +235,21 @@ export default function FilterPanel({
               ))}
             </FilterSection>
           )}
+
+          <FilterSection title="Creator" activeCount={activeCreator ? 1 : 0}>
+            {creators.map((creator) => (
+              <Chip
+                key={creator.id}
+                label={creator.display_name}
+                active={activeCreator === creator.id}
+                onClick={() =>
+                  onCreatorChange(
+                    activeCreator === creator.id ? null : creator.id
+                  )
+                }
+              />
+            ))}
+          </FilterSection>
         </div>
       )}
     </div>

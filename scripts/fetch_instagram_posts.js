@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable @typescript-eslint/no-require-imports -- This runnable Node script intentionally uses CommonJS because package.json is not type=module. */
 /**
  * Phase 2 only — visit each Instagram post to extract metadata.
  *

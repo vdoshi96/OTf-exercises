@@ -1,11 +1,13 @@
 import Fuse, { type IFuseOptions } from "fuse.js";
-import type { GroupedExercise } from "./types";
+import type { Creator, GroupedExercise } from "./types";
 
 const fuseOptions: IFuseOptions<GroupedExercise> = {
   keys: [
     { name: "exercise_name", weight: 2 },
     { name: "muscle_groups", weight: 1.5 },
     { name: "equipment", weight: 1 },
+    { name: "videos.creator.display_name", weight: 1 },
+    { name: "videos.creator.handle", weight: 1 },
     { name: "coaching_cues", weight: 0.5 },
   ],
   threshold: 0.3,
@@ -27,6 +29,32 @@ export function searchExercises(
   return fuse.search(query).map((r) => r.item);
 }
 
+export function getExerciseCreators(exercise: GroupedExercise): Creator[] {
+  const creators = new Map<string, Creator>();
+
+  for (const video of exercise.videos) {
+    creators.set(video.creator.id, video.creator);
+  }
+
+  return Array.from(creators.values()).sort((a, b) =>
+    a.display_name.localeCompare(b.display_name)
+  );
+}
+
+export function getCreatorOptions(exercises: GroupedExercise[]): Creator[] {
+  const creators = new Map<string, Creator>();
+
+  for (const ex of exercises) {
+    for (const creator of getExerciseCreators(ex)) {
+      creators.set(creator.id, creator);
+    }
+  }
+
+  return Array.from(creators.values()).sort((a, b) =>
+    a.display_name.localeCompare(b.display_name)
+  );
+}
+
 export function getFilterOptions(exercises: GroupedExercise[]) {
   const categories = new Set<string>();
   const muscleGroups = new Set<string>();
@@ -45,6 +73,7 @@ export function getFilterOptions(exercises: GroupedExercise[]) {
     muscleGroups: Array.from(muscleGroups).sort(),
     equipment: Array.from(equipment).sort(),
     platforms: Array.from(platforms).sort(),
+    creators: getCreatorOptions(exercises),
   };
 }
 
@@ -55,6 +84,7 @@ export function filterExercises(
     muscleGroup?: string | null;
     equipment?: string | null;
     platform?: string | null;
+    creator?: string | null;
   }
 ): GroupedExercise[] {
   return exercises.filter((ex) => {
@@ -69,6 +99,11 @@ export function filterExercises(
     if (
       filters.platform &&
       !ex.videos.some((v) => v.source === filters.platform)
+    )
+      return false;
+    if (
+      filters.creator &&
+      !ex.videos.some((v) => v.creator.id === filters.creator)
     )
       return false;
     return true;

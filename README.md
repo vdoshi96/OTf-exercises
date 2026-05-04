@@ -1,18 +1,18 @@
 # OTF Exercise Directory
 
-A searchable web directory of OrangeTheory Fitness exercises, sourced from [Coach Rudy's TikTok (@coachingotf)](https://www.tiktok.com/@coachingotf).
+A searchable, unofficial fan directory of OrangeTheory Fitness exercise demos from multiple creators and source platforms.
 
-Browse 592 exercise demonstrations across 61 unique exercises, filterable by muscle group, equipment, and category. Each exercise links to the original TikTok video embed.
+Browse 1,746 exercise demonstrations across 1,054 grouped exercises, filterable by muscle group, equipment, category, platform, and creator. Each exercise links to the original video embed.
 
-> **Disclaimer:** This is an unofficial fan directory. All video content belongs to Coach Rudy / @coachingotf on TikTok.
+> **Disclaimer:** This is an unofficial fan directory. All video content belongs to its original creators and source platforms.
 
 ## Tech Stack
 
 - **Framework:** Next.js 16 (App Router)
 - **Styling:** Tailwind CSS 4
 - **Search:** Fuse.js (client-side fuzzy search)
-- **Video Embeds:** TikTok oEmbed
-- **Data:** Static JSON bundled at build time (592 exercises)
+- **Video Embeds:** TikTok and Instagram embeds
+- **Data:** Static JSON bundled at build time (1,054 grouped exercises)
 
 ## Getting Started
 
@@ -25,10 +25,10 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Data Pipeline
 
-The exercise data is generated from TikTok metadata using these scripts:
+The exercise data is generated from social video metadata using these scripts:
 
 ```bash
-# 1. Scrape metadata from TikTok (requires yt-dlp)
+# 1. Scrape metadata from source platforms (requires yt-dlp where supported)
 yt-dlp --skip-download --write-info-json --output "metadata/%(id)s" "https://www.tiktok.com/@coachingotf"
 
 # 2. Parse into raw_videos.json
@@ -58,17 +58,18 @@ python3 scripts/merge_and_filter.py
 │   ├── app/
 │   │   ├── page.tsx            # Main directory with search + filters
 │   │   ├── exercise/[id]/
-│   │   │   └── page.tsx        # Exercise detail page + TikTok embed
+│   │   │   └── page.tsx        # Exercise detail page + video embeds
 │   │   ├── layout.tsx          # Root layout with header/footer
 │   │   └── globals.css
 │   ├── components/
 │   │   ├── SearchBar.tsx       # Debounced fuzzy search
-│   │   ├── FilterPanel.tsx     # Category/muscle/equipment filters
+│   │   ├── FilterPanel.tsx     # Category/muscle/equipment/creator filters
 │   │   ├── ExerciseCard.tsx    # Exercise card with tags
 │   │   ├── ExerciseGrid.tsx    # Responsive card grid
-│   │   └── TikTokEmbed.tsx     # TikTok video embed
+│   │   ├── TikTokEmbed.tsx     # TikTok video embed
+│   │   └── InstagramEmbed.tsx  # Instagram video embed
 │   ├── data/
-│   │   └── exercises.json      # 592 enriched exercises
+│   │   └── exercises.json      # 1,054 grouped exercises
 │   └── lib/
 │       ├── search.ts           # Fuse.js search logic
 │       └── types.ts            # TypeScript types + constants

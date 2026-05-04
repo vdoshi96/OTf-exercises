@@ -1,25 +1,19 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import Fuse, { type IFuseOptions } from "fuse.js";
 import exercises from "@/data/exercises.json";
 import type { GroupedExercise } from "@/lib/types";
-import { getFilterOptions, filterExercises } from "@/lib/search";
+import {
+  createSearchIndex,
+  getFilterOptions,
+  filterExercises,
+  searchExercises,
+} from "@/lib/search";
 import SearchBar from "@/components/SearchBar";
 import FilterPanel from "@/components/FilterPanel";
 import ExerciseGrid from "@/components/ExerciseGrid";
 
 const allExercises = exercises as GroupedExercise[];
-
-const fuseOptions: IFuseOptions<GroupedExercise> = {
-  keys: [
-    { name: "exercise_name", weight: 2 },
-    { name: "muscle_groups", weight: 1.5 },
-    { name: "equipment", weight: 1 },
-    { name: "coaching_cues", weight: 0.5 },
-  ],
-  threshold: 0.3,
-};
 
 export default function Home() {
   const [query, setQuery] = useState("");
@@ -29,8 +23,9 @@ export default function Home() {
   );
   const [activeEquipment, setActiveEquipment] = useState<string | null>(null);
   const [activePlatform, setActivePlatform] = useState<string | null>(null);
+  const [activeCreator, setActiveCreator] = useState<string | null>(null);
 
-  const fuse = useMemo(() => new Fuse(allExercises, fuseOptions), []);
+  const fuse = useMemo(() => createSearchIndex(allExercises), []);
   const filterOptions = useMemo(() => getFilterOptions(allExercises), []);
 
   const handleSearch = useCallback((q: string) => {
@@ -41,10 +36,11 @@ export default function Home() {
     () => allExercises.reduce((sum, ex) => sum + ex.videos.length, 0),
     []
   );
+  const totalCreators = filterOptions.creators.length;
 
   const results = useMemo(() => {
     let filtered = query.trim()
-      ? fuse.search(query).map((r) => r.item)
+      ? searchExercises(fuse, allExercises, query)
       : allExercises;
 
     filtered = filterExercises(filtered, {
@@ -52,10 +48,19 @@ export default function Home() {
       muscleGroup: activeMuscleGroup,
       equipment: activeEquipment,
       platform: activePlatform,
+      creator: activeCreator,
     });
 
     return filtered;
-  }, [query, activeCategory, activeMuscleGroup, activeEquipment, activePlatform, fuse]);
+  }, [
+    query,
+    activeCategory,
+    activeMuscleGroup,
+    activeEquipment,
+    activePlatform,
+    activeCreator,
+    fuse,
+  ]);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
@@ -65,14 +70,7 @@ export default function Home() {
         </h2>
         <p className="text-zinc-500">
           {allExercises.length} exercises across {totalVideos} videos from{" "}
-          <a
-            href="https://www.instagram.com/coachingotf"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-orange-400/80 hover:text-orange-400"
-          >
-            @coachingotf
-          </a>
+          {totalCreators} creator{totalCreators === 1 ? "" : "s"}
         </p>
       </div>
 
@@ -90,14 +88,17 @@ export default function Home() {
           muscleGroups={filterOptions.muscleGroups}
           equipment={filterOptions.equipment}
           platforms={filterOptions.platforms}
+          creators={filterOptions.creators}
           activeCategory={activeCategory}
           activeMuscleGroup={activeMuscleGroup}
           activeEquipment={activeEquipment}
           activePlatform={activePlatform}
+          activeCreator={activeCreator}
           onCategoryChange={setActiveCategory}
           onMuscleGroupChange={setActiveMuscleGroup}
           onEquipmentChange={setActiveEquipment}
           onPlatformChange={setActivePlatform}
+          onCreatorChange={setActiveCreator}
         />
       </div>
 

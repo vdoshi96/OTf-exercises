@@ -37,13 +37,27 @@ export default function VideoEmbed({ video, index, total }: VideoEmbedProps) {
     ?.split("#")[0]
     ?.split("\n")[0]
     ?.trim();
+  const creatorHandle = video.creator.handle.startsWith("@")
+    ? video.creator.handle
+    : `@${video.creator.handle}`;
 
   return (
     <div className="rounded-xl border border-zinc-800 bg-zinc-900/30 p-4">
-      <div className="mb-3 flex items-center justify-between">
-        <SourceBadge source={video.source} />
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <SourceBadge source={video.source} />
+          <a
+            href={video.creator.profile_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs font-medium text-zinc-400 hover:text-orange-400"
+          >
+            {video.creator.display_name}{" "}
+            <span className="text-zinc-600">{creatorHandle}</span>
+          </a>
+        </div>
         {total > 1 && (
-          <span className="text-xs text-zinc-600">
+          <span className="shrink-0 text-xs text-zinc-600">
             {index + 1} of {total}
           </span>
         )}
