@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import {
   CATEGORY_COLORS,
@@ -5,12 +8,15 @@ import {
   type GroupedExercise,
 } from "@/lib/types";
 import { getExerciseCreators } from "@/lib/search";
+import ExercisePlaceholder from "./ExercisePlaceholder";
 
 interface ExerciseCardProps {
   exercise: GroupedExercise;
 }
 
 export default function ExerciseCard({ exercise }: ExerciseCardProps) {
+  const [imgError, setImgError] = useState(false);
+
   const categoryColor =
     CATEGORY_COLORS[exercise.category] || CATEGORY_COLORS.other;
   const categoryLabel =
@@ -25,40 +31,23 @@ export default function ExerciseCard({ exercise }: ExerciseCardProps) {
       ? creators[0].display_name
       : `${creators.length} creators`;
 
+  const showPlaceholder = !firstVideo?.thumbnail || imgError;
+
   return (
     <Link
       href={`/exercise/${exercise.id}`}
       className="group flex flex-col rounded-xl border border-zinc-800 bg-zinc-900/50 transition hover:border-zinc-700 hover:bg-zinc-900"
     >
       <div className="relative aspect-[9/16] max-h-48 w-full overflow-hidden rounded-t-xl bg-zinc-800">
-        {firstVideo?.thumbnail ? (
+        {showPlaceholder ? (
+          <ExercisePlaceholder category={exercise.category} />
+        ) : (
           <img
             src={firstVideo.thumbnail}
             alt={exercise.exercise_name}
             className="h-full w-full object-cover transition group-hover:scale-105"
+            onError={() => setImgError(true)}
           />
-        ) : (
-          <div className="flex h-full items-center justify-center">
-            <svg
-              className="h-12 w-12 text-zinc-700"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
-              />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </div>
         )}
         <span
           className={`absolute left-2 top-2 rounded-md border px-2 py-0.5 text-xs font-semibold ${categoryColor}`}
