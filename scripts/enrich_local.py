@@ -170,6 +170,165 @@ EXERCISE_STRONG_SIGNALS = [
     r"(?i)(coaching|cue|form\s+check|breakdown)",
 ]
 
+IMPORT_PROMO_NON_DEMO_PATTERNS = [
+    r"(?i)\bpre[-\s]?book\b",
+    r"(?i)\bbook\s+(your\s+)?(class|classes|session|spot)\b",
+    r"(?i)\bspots?\s+(are\s+)?(available|open|left)\b",
+    r"(?i)\b(coaching|taking)\s+((the\s+)?\d{1,2}(:\d{2})?\s*(am|pm)|class(es)?)\b",
+    r"(?i)\bcome\s+see\s+(me|us)\b",
+    r"(?i)\bwho\s+(will|am)\s+i\s+see\b",
+    r"(?i)\b(classes|schedule)\s+(are\s+)?back\b",
+    r"(?i)\b(back\s+on|on)\s+schedule\b",
+    r"(?i)\b(playlist|theme\s+party|glow\s+party)\b",
+]
+
+IMPORT_EVENT_NON_DEMO_PATTERNS = [
+    r"(?i)\btransformation\s+challenge\b",
+    r"(?i)\bdri\s*tri\b",
+    r"(?i)\bcapture\s+the\s+flag\b",
+    r"(?i)\ball\s+out\s+with\s+aoki\b",
+    r"(?i)\borange\s+everest\b",
+    r"(?i)\bmarathon\s+month\b",
+    r"(?i)\bmayhem\b",
+    r"(?i)\btornado\b",
+    r"(?i)\b12\s+days\s+of\s+fitness\b",
+    r"(?i)\bmember\s+appreciation\b",
+    r"(?i)\bbenchmark\b.*\b(tomorrow|today|class|pre[-\s]?book)\b",
+    r"(?i)\b(tomorrow|today)\b.*\bbenchmark\b",
+]
+
+IMPORT_CONTEXTUAL_STUDIO_PROMO_PATTERNS = [
+    r"(?i)\bcatch\s+me\s+if\s+you\s+can\b",
+    r"(?i)\bclimbing\s+over\s+rowers\b.*\bbouncing\s+over\s+treadmills\b",
+    r"(?i)\binferno\b.*\btomorrow\b",
+    r"(?i)\btread\s*50\b.*\bdon'?t\s+miss\b",
+    r"(?i)\borange\s+lights\b",
+    r"(?i)\botf\s+(friends|crew|champaign)\b",
+    r"(?i)\bheart\s+rates?\s+(are\s+)?now\s+tracked\b",
+    r"(?i)\btechnology\s+and\s+backed\s+by\s+science\b",
+    r"(?i)\bday\s+1\s+tomorrow\b",
+    r"(?i)\btomorrow\b.*\b(who'?s\s+(ready|coming)|who\s+is\s+coming|who\s+will\s+i\s+be\s+seeing|don'?t\s+miss|book\s+into|join\s+me|coaching|crush)\b",
+    r"(?i)\b(who'?s\s+(ready|coming)|who\s+is\s+coming|who\s+will\s+i\s+be\s+seeing|don'?t\s+miss|book\s+into|join\s+me|coaching|crush)\b.*\btomorrow\b",
+    r"(?i)\b(cookie\s+exchange|templates?)\b.*\btomorrow\b",
+    r"(?i)\btomorrow\b.*\b(cookie\s+exchange|templates?)\b",
+    r"(?i)\bchipping\b.*\b(don'?t\s+miss|tomorrow)\b",
+    r"(?i)\b(don'?t\s+miss|tomorrow)\b.*\bchipping\b",
+    r"(?i)\bp\.?r\.?'?s\b.*\b(benchmark|proud\s+of\s+everyone)\b",
+    r"(?i)\bbenchmark\s+row\b.*\b(proud\s+of\s+everyone|showed\s+up|gave\s+it\s+their\s+all)\b",
+    r"(?i)\bdid\s+you\s+really\s+do\s+the\s+full\s+workout\b",
+    r"(?i)\bwe\s+are\s+ready\s+to\s+sail\s+into\s+another\s+week\b",
+    r"(?i)\bat\s+least\s+\d+\s+days?\s+per\s+week\b.*\bstudio\b",
+]
+
+IMPORT_LIFESTYLE_NON_DEMO_PATTERNS = [
+    r"(?i)\b(newborn|birth|labor|labour|postpartum)\b",
+    r"(?i)\b(baby\s+(is|was|arrived|here|announcement)|welcome\s+(baby|to\s+the\s+world))\b",
+    r"(?i)\b(wedding|proposal|honeymoon|vacation|travel recap|travel day|trip recap|event recap)\b",
+    r"(?i)\b(bjj|jiu[-\s]?jitsu)\b.*\b(tournament|date night)\b",
+    r"(?i)\b(date night|self[-\s]?defense)\b",
+    r"(?i)\b(kids'? business|muddy buddies|italian sodas?)\b",
+]
+
+IMPORT_CONTEXTUAL_LIFESTYLE_NON_DEMO_PATTERNS = [
+    r"(?i)\bpregnan(cy|t)\b",
+]
+
+IMPORT_SPORTS_SKILL_NON_DEMO_PATTERNS = [
+    r"(?i)\bday\s+\d+\s*/\s*30\s+of\s+making\s+you\s+a\s+college\s+basketball\s+player\b",
+    r"(?i)\b(form\s+shoot|shooting\s+gun|no\s+jump\s+threes|free\s+throws?|layup|college\s+basketball|basketball\s+advice|basketball\s+players?|basketball\s+recruiting)\b",
+    r"(?i)#(?:basketballdrills|collegebasketballdrills|basketballadvice|basketballplayers|collegebasketballdreams|roadtocollegebasketball)\b",
+]
+
+IMPORT_CONTEXTUAL_SPORTS_NON_DEMO_PATTERNS = [
+    r"(?i)\b(open\s*gym|hoops?|basketball\s+scene|basketball\s+content)\b",
+    r"(?i)\b(5|6)\s*am\s+runs\b.*\b(basketball|comp|hoops?|shot|layup)\b",
+    r"(?i)\b(pass|shot|layup|scoring)\b.*\b(basketball|runs|comp|hoops?)\b",
+    r"(?i)\bfollow\s+for\s+lifting\s+and\s+basketball\s+content\b",
+    r"(?i)#(?:basketball|opengym|hoops|basketballtraining|basketballmotivation)\b",
+]
+
+IMPORT_NUTRITION_PRODUCT_NON_DEMO_PATTERNS = [
+    r"(?i)\bprotein\s+powder\b",
+    r"(?i)\boatmeal\s+recipe\b",
+    r"(?i)\brolled\s+oats\b",
+    r"(?i)\b(recipe|calories|macros?|protein)\b.*\b(oatmeal|peanut\s+butter|blueberries|supplements?)\b",
+    r"(?i)\b(oatmeal|peanut\s+butter|blueberries|supplements?)\b.*\b(recipe|calories|macros?|protein)\b",
+    r"(?i)\bsponsor(s|ed)?\s+me\b",
+    r"(?i)\bpromote\s+a\s+lot\s+of\s+products\b",
+    r"(?i)\b(link|l[ıi]nk)\s+in\s+(my\s+)?(bio|b[ıi]o)\b",
+    r"(?i)\bcheck\s+it\s+out\b.*\b(supporting\s+me|link|l[ıi]nk)\b",
+    r"(?i)\bcalorie\s+deficit\b",
+    r"(?i)\bsingle\s+ingredient\s+foods\b",
+    r"(?i)\b(clean\s+up\s+your\s+diet|diet\s+consist|diet\s+help|nutrition\s+advice)\b",
+    r"(?i)#(?:diethelp|simplenutrition|simplehabits|nutrition)\b",
+]
+
+IMPORT_COACH_WORK_LIFE_NON_DEMO_PATTERNS = [
+    r"(?i)\bare\s+you\s+an\s+opener\b",
+    r"(?i)\b(opening|closing)\s+coaches\b",
+    r"(?i)\bclopens?\b",
+    r"(?i)\bsilent\s+studio\b",
+    r"(?i)\bclosed?\s+for\s+years\b",
+    r"(?i)\blots\s+of\s+prep\s+for\s+the\s+next\s+day\b",
+]
+
+IMPORT_OUTDOOR_LIFESTYLE_NON_DEMO_PATTERNS = [
+    r"(?i)\bwood\s*chopping\b",
+    r"(?i)\bwoodtherapy\b",
+    r"(?i)\bpracticing\s+for\s+the\s+end\s+of\s+the\s+world\b",
+    r"(?i)#(?:pnw|pnwlife|pnwwonderland|woodchopping|woodtherapy|couple|couplegoals|fitcouple)\b",
+]
+
+IMPORT_NEAR_EMPTY_NON_DEMO_PATTERNS = [
+    r"(?i)^helpful\??$",
+    r"(?i)^we\s+did\s+it!?$",
+    r"(?i)^today\s+was\s+a\s+big\s+day$",
+]
+
+IMPORT_INSTRUCTION_SIGNAL_PATTERNS = [
+    r"(?i)\bhow\s+to\s+(properly\s+)?(perform|do|fix|improve|regress|progress|set\s*up|row|run|squat|lunge|push|pull|press|hinge|lift|deadlift|brace|move)\b",
+    r"(?i)\b(form|form\s+check|technique|execution|breakdown)\b",
+    r"(?i)\b(row|rowing|run|running|squat|lunge|pushup|push-up|deadlift|trx|burpee|plank|press|hinge|exercise|movement)\s+set\s*up\b",
+    r"(?i)\bset\s*up\s+(your|the)\s+(rower|treadmill|trx|bench|stance|feet|hands|body|movement|exercise)\b",
+    r"(?i)\b(reps|\d+\s+sets|sets?\s+of\s+\d+|tempo|eccentric|concentric)\b",
+    r"(?i)\b(engage|squeeze|contract|activate|maintain|brace)\b",
+    r"(?i)\bdrive\s+(with|through|your|the)\s+(knees?|legs?|floor|heels?|feet|hips?)\b",
+    r"(?i)\bcontrol\s+(the|your|each|every)\s+(motion|rep|reps|weight|movement|body)\b",
+    r"(?i)\bhip\s+hinge\b",
+    r"(?i)\bkeep\s+(your|the)\s+(knee|knees|hips?|back|chest|shoulders?|elbows?|feet|hands|core|spine|torso|body|heels?)\b",
+    r"(?i)\bmake\s+sure\s+(your|the)\s+(knee|knees|hips?|back|chest|shoulders?|elbows?|feet|hands|core)\b",
+    r"(?i)\bdon'?t\s+(let|allow|swing|round|arch|drop|bend)\b",
+    r"(?i)\b(cue|cues|tips|tip\s+of\s+the\s+day|tutorial|mistakes?|avoid|try\s+this|drill|fix|improve)\b",
+    r"(?i)\bdo\s+not\s+(lift|let|allow|overstride|round|swing|arch|bend|drop)\b",
+    r"(?i)\bfeet\s+(wide|close)\b",
+    r"(?i)\bprotects?\s+your\s+lower\s+back\b",
+]
+
+IMPORT_HASHTAG_ONLY_DEMO_TERMS = re.compile(
+    r"(?i)\b(workout|fitness|exercise|form|formcheck|technique|exercisetechnique|coach|coaching|tips?)\b"
+)
+
+IMPORT_VISIBLE_GENERIC_FITNESS_TERMS = {
+    "bike",
+    "row",
+    "rower",
+    "rowing",
+    "run",
+    "strider",
+    "stretch",
+    "tread",
+    "treadmill",
+}
+
+IMPORT_VISIBLE_DEMO_TITLE_PATTERNS = [
+    r"(?i)\b(secret|truth|reason|mistakes?|tips?|tutorial|guide|how\s+to|form|technique|breakdown)\b.*\b({exercise})\b",
+    r"(?i)\b({exercise})\b.*\b(secret|truth|reason|mistakes?|tips?|tutorial|guide|form|technique|breakdown)\b",
+    r"(?i)\b(pain|hurts?|struggle|hard|hate|better|fix|avoid|regress|progress)\b.*\b({exercise})\b",
+    r"(?i)\b({exercise})\b.*\b(pain|hurts?|struggle|hard|hate|better|fix|avoid|regress|progress)\b",
+    r"(?i)\b({exercise})s?\s+(are|is|can|will|should|during|for)\b",
+    r"(?i)\b(should|can|will|during|for)\s+(your\s+)?\b({exercise})s?\b",
+]
+
 
 def is_exercise_demo(desc: str) -> bool:
     if not desc or len(desc.strip()) < 15:
@@ -191,6 +350,133 @@ def is_exercise_demo(desc: str) -> bool:
             exercise_signals += 2
 
     return exercise_signals >= 2
+
+
+def is_non_legacy_instagram_creator(video: dict) -> bool:
+    """Identify imported Instagram creators outside the legacy coachingotf path."""
+    creator = video.get("creator")
+    creator_id = creator.get("id") if isinstance(creator, dict) else None
+    return video.get("source") == "instagram" and bool(creator_id) and creator_id != "coachingotf"
+
+
+def has_import_instruction_signal(desc: str) -> bool:
+    """Detect captions that are likely giving exercise instruction, not only promoting an event."""
+    return any(re.search(pattern, desc) for pattern in IMPORT_INSTRUCTION_SIGNAL_PATTERNS)
+
+
+def get_visible_caption(desc: str) -> str:
+    """Return caption text before hashtags."""
+    return re.split(r'#', desc, maxsplit=1)[0].strip()
+
+
+def get_visible_first_line(desc: str) -> str:
+    """Return the first visible caption line with emoji/punctuation normalized."""
+    visible_caption = get_visible_caption(desc)
+    lines = [line.strip() for line in visible_caption.splitlines() if line.strip()]
+    if not lines:
+        return ""
+    first_line = re.sub(r"[^\w\s?'-]", " ", lines[0])
+    first_line = re.sub(r"\s+", " ", first_line)
+    return first_line.strip(" .!?\n\t")
+
+
+def has_import_visible_exercise_demo_signal(desc: str) -> bool:
+    """Require visible demo-like exercise language, not hashtag/generic fitness noise."""
+    visible_caption = get_visible_caption(desc)
+    if not visible_caption:
+        return False
+
+    first_line = get_visible_first_line(desc)
+    visible_lower = visible_caption.lower()
+
+    for keyword in sorted(EXERCISE_KEYWORDS, key=len, reverse=True):
+        if keyword in IMPORT_VISIBLE_GENERIC_FITNESS_TERMS:
+            continue
+        if keyword not in visible_lower:
+            continue
+
+        exercise = re.escape(keyword)
+        for pattern in IMPORT_VISIBLE_DEMO_TITLE_PATTERNS:
+            if re.search(pattern.format(exercise=exercise), first_line):
+                return True
+
+    if re.search(r"(?i)\b(row|rowing|rower|run|running|treadmill|tread|incline)\b", visible_caption):
+        return bool(re.search(
+            r"(?i)\b(tips?|tutorial|form|technique|strategy|cue|mistakes?|avoid|fix|improve|overstrid|sprinting|stroke|incline-focused)\b",
+            visible_caption,
+        ))
+
+    return False
+
+
+def normalize_near_empty_caption(desc: str) -> str:
+    """Strip hashtags, emoji/punctuation, and CTA filler from short caption checks."""
+    visible_caption = get_visible_caption(desc)
+    visible_caption = re.sub(r"(?i)\bfollow\s+for\s+more\b", " ", visible_caption)
+    visible_caption = re.sub(r"[^\w\s?]", " ", visible_caption)
+    visible_caption = re.sub(r"\s+", " ", visible_caption)
+    return visible_caption.strip(" .!?\n\t")
+
+
+def has_hashtag_only_demo_terms(desc: str) -> bool:
+    hashtags_text = " ".join(re.findall(r'#(\w+)', desc))
+    return bool(IMPORT_HASHTAG_ONLY_DEMO_TERMS.search(hashtags_text)) or has_exercise_keyword(hashtags_text)
+
+
+def is_import_quality_non_demo(video: dict) -> bool:
+    """Reject obvious non-demo imports for new Instagram creators without touching legacy/TikTok."""
+    if not is_non_legacy_instagram_creator(video):
+        return False
+
+    desc = video.get("description", "")
+    if not desc:
+        return False
+
+    if any(re.search(pattern, desc) for pattern in IMPORT_PROMO_NON_DEMO_PATTERNS):
+        return True
+
+    has_instruction = has_import_instruction_signal(desc)
+
+    if not has_instruction and any(re.search(pattern, desc) for pattern in IMPORT_EVENT_NON_DEMO_PATTERNS):
+        return True
+
+    if not has_instruction and any(re.search(pattern, desc) for pattern in IMPORT_CONTEXTUAL_STUDIO_PROMO_PATTERNS):
+        return True
+
+    if any(re.search(pattern, desc) for pattern in IMPORT_LIFESTYLE_NON_DEMO_PATTERNS):
+        return True
+
+    if any(re.search(pattern, desc) for pattern in IMPORT_SPORTS_SKILL_NON_DEMO_PATTERNS):
+        return True
+
+    if not has_instruction and any(re.search(pattern, desc) for pattern in IMPORT_CONTEXTUAL_SPORTS_NON_DEMO_PATTERNS):
+        return True
+
+    if any(re.search(pattern, desc) for pattern in IMPORT_NUTRITION_PRODUCT_NON_DEMO_PATTERNS):
+        return True
+
+    if any(re.search(pattern, desc) for pattern in IMPORT_COACH_WORK_LIFE_NON_DEMO_PATTERNS):
+        return True
+
+    if any(re.search(pattern, desc) for pattern in IMPORT_OUTDOOR_LIFESTYLE_NON_DEMO_PATTERNS):
+        return True
+
+    if not has_instruction and any(re.search(pattern, desc) for pattern in IMPORT_CONTEXTUAL_LIFESTYLE_NON_DEMO_PATTERNS):
+        return True
+
+    visible_caption = normalize_near_empty_caption(desc)
+    if (
+        len(visible_caption) <= 40
+        and not has_exercise_keyword(visible_caption)
+        and has_hashtag_only_demo_terms(desc)
+        and any(re.search(pattern, visible_caption) for pattern in IMPORT_NEAR_EMPTY_NON_DEMO_PATTERNS)
+    ):
+        return True
+
+    if not has_instruction and not has_import_visible_exercise_demo_signal(desc):
+        return True
+
+    return False
 
 
 def get_first_line(desc: str) -> str:
@@ -283,6 +569,10 @@ def extract_coaching_cues(desc: str) -> list[str]:
 
 def enrich_video(video: dict) -> dict:
     desc = video.get("description", "")
+
+    if is_import_quality_non_demo(video):
+        video["enrichment"] = {"is_exercise_demo": False}
+        return video
 
     if not is_exercise_demo(desc):
         video["enrichment"] = {"is_exercise_demo": False}

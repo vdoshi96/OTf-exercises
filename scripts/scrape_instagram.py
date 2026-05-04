@@ -16,11 +16,15 @@ Usage:
 """
 
 import argparse
+import datetime as dt
 import json
 import os
 import signal
 import sys
 import time
+import urllib.error
+import urllib.parse
+import urllib.request
 
 try:
     import instaloader
@@ -51,6 +55,10 @@ KNOWN_SHORTCODES = [
 ]
 
 STRATEGY_TIMEOUT = 30
+WEB_API_APP_ID = "936619743392459"
+WEB_API_PAGE_SIZE = 12
+WEB_API_MAX_PAGES = 25
+WEB_API_PAGE_DELAY_SECONDS = 1
 
 
 class StrategyTimeout(Exception):
@@ -90,6 +98,17 @@ def create_loader() -> instaloader.Instaloader:
     )
 
 
+def can_attempt_fresh_login(
+    env: dict[str, str] | os._Environ[str] = os.environ,
+    stdin_is_interactive: bool | None = None,
+) -> bool:
+    if env.get("IG_PASSWORD"):
+        return True
+    if stdin_is_interactive is None:
+        stdin_is_interactive = sys.stdin.isatty()
+    return stdin_is_interactive
+
+
 def login(L: instaloader.Instaloader, username: str, force_fresh: bool = False) -> None:
     if not force_fresh:
         try:
@@ -104,6 +123,11 @@ def login(L: instaloader.Instaloader, username: str, force_fresh: bool = False) 
         print(f"Logging in as {username} (via IG_PASSWORD)...")
         L.login(username, password)
     else:
+        if force_fresh and not can_attempt_fresh_login():
+            raise RuntimeError(
+                "Fresh login requires IG_PASSWORD or an interactive stdin; "
+                "skipping to avoid EOFError in non-interactive runs."
+            )
         print(f"Logging in as {username} (interactive)...")
         L.interactive_login(username)
     L.save_session_to_file()
@@ -157,6 +181,57 @@ def dedupe_videos_by_id(videos: list[dict]) -> tuple[list[dict], int]:
     return deduped, duplicate_count
 
 
+def _first_thumbnail_url(media: dict) -> str:
+    candidates = media.get("image_versions2", {}).get("candidates", [])
+    if not candidates:
+        return ""
+    return candidates[0].get("url", "") or ""
+
+
+def _caption_text(media: dict) -> str:
+    caption = media.get("caption") or {}
+    if isinstance(caption, dict):
+        return caption.get("text") or ""
+    return ""
+
+
+def creator_from_web_profile(profile_data: dict) -> dict:
+    username = (profile_data.get("username") or "").strip()
+    handle = username or (profile_data.get("handle") or "").strip()
+    display_name = (profile_data.get("full_name") or "").strip() or handle
+
+    return {
+        "id": handle.lower(),
+        "display_name": display_name,
+        "handle": handle,
+        "profile_url": f"https://www.instagram.com/{handle}/",
+    }
+
+
+def reel_media_to_raw_video(media: dict, creator: dict) -> dict | None:
+    code = media.get("code") or media.get("shortcode")
+    if not code:
+        return None
+
+    timestamp = int(media.get("taken_at") or 0)
+    upload_date = ""
+    if timestamp:
+        upload_date = dt.datetime.fromtimestamp(timestamp, tz=dt.UTC).strftime("%Y%m%d")
+
+    return {
+        "id": f"ig_{code}",
+        "url": f"https://www.instagram.com/reel/{code}/",
+        "description": _caption_text(media),
+        "thumbnail": _first_thumbnail_url(media),
+        "duration": media.get("video_duration") or 0,
+        "timestamp": timestamp,
+        "upload_date": upload_date,
+        "source": "instagram",
+        "creator": dict(creator),
+        "is_video": True,
+    }
+
+
 def _from_username(L: instaloader.Instaloader, handle: str) -> instaloader.Profile | None:
     profile = instaloader.Profile.from_username(L.context, handle)
     print(f"  OK — {profile.full_name} ({profile.mediacount} posts)")
@@ -191,11 +266,138 @@ def resolve_profile(L: instaloader.Instaloader, handle: str) -> instaloader.Prof
 
     for name, fn in strategies:
         print(f"\n[Strategy] {name}")
-        profile = run_with_timeout(fn, L, handle, timeout=STRATEGY_TIMEOUT)
+        try:
+            profile = run_with_timeout(fn, L, handle, timeout=STRATEGY_TIMEOUT)
+        except ProfileNotExistsException:
+            print(f"  Profile @{handle} not found via Instaloader")
+            profile = None
+        except Exception as e:
+            print(f"  Error resolving @{handle}: {e}")
+            profile = None
         if profile:
             return profile
 
     return None
+
+
+# --------------- Instagram web API fallback ---------------
+
+class InstagramWebAPI:
+    def __init__(self) -> None:
+        cookie_processor = urllib.request.HTTPCookieProcessor()
+        self.opener = urllib.request.build_opener(cookie_processor)
+        self.cookie_jar = cookie_processor.cookiejar
+
+    def _csrf_token(self) -> str:
+        for cookie in self.cookie_jar:
+            if cookie.name == "csrftoken":
+                return cookie.value
+        return ""
+
+    def _request_json(
+        self,
+        url: str,
+        *,
+        data: dict[str, str] | None = None,
+        referer: str = "https://www.instagram.com/",
+    ) -> dict:
+        encoded_data = None
+        headers = {
+            "User-Agent": "Mozilla/5.0",
+            "x-ig-app-id": WEB_API_APP_ID,
+            "Referer": referer,
+        }
+        if data is not None:
+            encoded_data = urllib.parse.urlencode(data).encode("utf-8")
+            headers["Content-Type"] = "application/x-www-form-urlencoded"
+            csrf = self._csrf_token()
+            if csrf:
+                headers["x-csrftoken"] = csrf
+
+        request = urllib.request.Request(url, data=encoded_data, headers=headers)
+        with self.opener.open(request, timeout=30) as response:
+            return json.loads(response.read().decode("utf-8"))
+
+    def profile_info(self, handle: str) -> dict:
+        query = urllib.parse.urlencode({"username": handle})
+        url = f"https://www.instagram.com/api/v1/users/web_profile_info/?{query}"
+        payload = self._request_json(url, referer=f"https://www.instagram.com/{handle}/")
+        user = payload.get("data", {}).get("user")
+        if not user:
+            raise ValueError(f"No web profile data returned for @{handle}")
+        return user
+
+    def clips_page(
+        self,
+        *,
+        target_user_id: str,
+        handle: str,
+        max_id: str | None = None,
+    ) -> dict:
+        data = {
+            "target_user_id": target_user_id,
+            "page_size": str(WEB_API_PAGE_SIZE),
+        }
+        if max_id:
+            data["max_id"] = max_id
+        return self._request_json(
+            "https://www.instagram.com/api/v1/clips/user/",
+            data=data,
+            referer=f"https://www.instagram.com/{handle}/reels/",
+        )
+
+
+def _extract_clip_media(item: dict) -> dict:
+    media = item.get("media")
+    if isinstance(media, dict):
+        return media
+    return item
+
+
+def scrape_videos_web_api(handle: str) -> list[dict]:
+    print(f"\n[Fallback] Instagram web API for @{handle}")
+    api = InstagramWebAPI()
+    profile_data = api.profile_info(handle)
+    creator = creator_from_web_profile(profile_data)
+    target_user_id = str(profile_data.get("id") or "")
+    if not target_user_id:
+        raise ValueError(f"No target user id returned for @{handle}")
+
+    videos: list[dict] = []
+    seen_ids = set()
+    max_id = None
+    page_count = 0
+    more_available = True
+
+    while more_available and page_count < WEB_API_MAX_PAGES:
+        page_count += 1
+        payload = api.clips_page(target_user_id=target_user_id, handle=creator["handle"], max_id=max_id)
+        items = payload.get("items") or []
+        print(f"  Web API page {page_count}: {len(items)} reels")
+
+        for item in items:
+            video = reel_media_to_raw_video(_extract_clip_media(item), creator)
+            if not video:
+                continue
+            video_id = video.get("id")
+            if video_id in seen_ids:
+                continue
+            seen_ids.add(video_id)
+            videos.append(video)
+
+        paging_info = payload.get("paging_info") or {}
+        more_available = bool(paging_info.get("more_available"))
+        max_id = paging_info.get("max_id")
+        if more_available and max_id:
+            time.sleep(WEB_API_PAGE_DELAY_SECONDS)
+        else:
+            more_available = False
+
+    if page_count >= WEB_API_MAX_PAGES and more_available:
+        print(f"  Reached web API page safety limit ({WEB_API_MAX_PAGES}) for @{handle}")
+
+    print(f"Videos/reels found via web API: {len(videos)}")
+    return videos
 
 
 # --------------- Post scanning ---------------
@@ -274,18 +476,20 @@ def main():
         profile = resolve_profile(L, handle)
 
         if not profile:
-            print("\n--- Retrying with fresh login ---")
-            L = create_loader()
-            login(L, args.user, force_fresh=True)
-            time.sleep(3)
-            profile = resolve_profile(L, handle)
+            print(f"\nCould not access @{handle}'s profile via Instaloader; trying Web API fallback.")
+            try:
+                profile_videos, duplicates = dedupe_videos_by_id(scrape_videos_web_api(handle))
+            except (urllib.error.URLError, urllib.error.HTTPError, ValueError, json.JSONDecodeError) as e:
+                failed_handles.append(handle)
+                print(f"\nERROR: Web API fallback failed for @{handle}: {e}")
+                continue
+            except Exception as e:
+                failed_handles.append(handle)
+                print(f"\nERROR: Unexpected web API fallback failure for @{handle}: {e}")
+                continue
+        else:
+            profile_videos, duplicates = dedupe_videos_by_id(scrape_videos(profile))
 
-        if not profile:
-            failed_handles.append(handle)
-            print(f"\nERROR: Could not access @{handle}'s profile.")
-            continue
-
-        profile_videos, duplicates = dedupe_videos_by_id(scrape_videos(profile))
         duplicate_count += duplicates
         for video in profile_videos:
             video_id = video.get("id")

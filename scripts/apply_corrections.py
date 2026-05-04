@@ -153,6 +153,16 @@ def is_true_non_demo(desc: str) -> bool:
     return False
 
 
+def is_legacy_coachingotf_instagram_record(video: dict) -> bool:
+    """Limit Instagram caption corrections to legacy Coach Rudy/coachingotf data."""
+    if video.get("source") != "instagram":
+        return False
+
+    creator = video.get("creator")
+    creator_id = creator.get("id") if isinstance(creator, dict) else None
+    return creator_id in (None, "", "coachingotf")
+
+
 def get_exercise_name(desc: str) -> str:
     """Extract exercise name from the first line of the caption."""
     text = re.split(r'[#\n]', desc, maxsplit=1)[0].strip()
@@ -171,7 +181,7 @@ def main():
 
     ig_non_demos = [
         v for v in data
-        if v.get("source") == "instagram"
+        if is_legacy_coachingotf_instagram_record(v)
         and not v.get("enrichment", {}).get("is_exercise_demo")
     ]
 
