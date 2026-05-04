@@ -16,6 +16,13 @@ RAW_FILE = os.path.join(os.path.dirname(__file__), "..", "raw_videos.json")
 RAW_IG_FILE = os.path.join(os.path.dirname(__file__), "..", "raw_instagram_videos.json")
 OUTPUT_FILE = os.path.join(os.path.dirname(__file__), "..", "enriched_videos.json")
 
+DEFAULT_CREATOR = {
+    "id": "coachingotf",
+    "display_name": "Coach Rudy",
+    "handle": "coachingotf",
+    "profile_url": "https://www.instagram.com/coachingotf/",
+}
+
 EXERCISE_KEYWORDS = {
     "squat": {"muscle_groups": ["quads", "glutes"], "category": "lower_body", "movement_type": "compound"},
     "goblet squat": {"muscle_groups": ["quads", "glutes", "core"], "category": "lower_body", "movement_type": "compound"},
@@ -302,6 +309,13 @@ def enrich_video(video: dict) -> dict:
     return video
 
 
+def ensure_creator(video: dict) -> dict:
+    """Preserve existing creator metadata and backfill legacy records."""
+    if not video.get("creator"):
+        video["creator"] = dict(DEFAULT_CREATOR)
+    return video
+
+
 def load_combined_raw() -> list[dict]:
     """Load TikTok + Instagram raw data, adding source field."""
     videos = []
@@ -311,6 +325,7 @@ def load_combined_raw() -> list[dict]:
             tiktok = json.load(f)
         for v in tiktok:
             v.setdefault("source", "tiktok")
+            ensure_creator(v)
             videos.append(v)
         print(f"  Loaded {len(tiktok)} TikTok videos")
 
@@ -319,6 +334,7 @@ def load_combined_raw() -> list[dict]:
             instagram = json.load(f)
         for v in instagram:
             v.setdefault("source", "instagram")
+            ensure_creator(v)
             videos.append(v)
         print(f"  Loaded {len(instagram)} Instagram videos")
 

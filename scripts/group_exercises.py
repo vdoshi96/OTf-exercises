@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Group flat exercise entries by exercise_name into a grouped format.
 
-Input: src/data/exercises.json (flat, from merge_and_filter.py)
+Input: src/data/exercises_flat.json (flat, from merge_and_filter.py)
 Output: src/data/exercises.json (grouped, with videos array)
 """
 
@@ -15,6 +15,13 @@ from difflib import SequenceMatcher
 PROJECT_DIR = os.path.join(os.path.dirname(__file__), "..")
 INPUT_FILE = os.path.join(PROJECT_DIR, "src", "data", "exercises_flat.json")
 OUTPUT_FILE = os.path.join(PROJECT_DIR, "src", "data", "exercises.json")
+
+DEFAULT_CREATOR = {
+    "id": "coachingotf",
+    "display_name": "Coach Rudy",
+    "handle": "coachingotf",
+    "profile_url": "https://www.instagram.com/coachingotf/",
+}
 
 
 def slugify(name: str) -> str:
@@ -116,13 +123,20 @@ def group_exercises(flat_exercises: list[dict]) -> list[dict]:
                     seen_cues.add(cue_key)
 
         videos = []
+        seen_video_ids = set()
         for e in entries:
+            video_id = e.get("id")
+            if video_id and video_id in seen_video_ids:
+                continue
+            if video_id:
+                seen_video_ids.add(video_id)
             videos.append({
-                "id": e["id"],
+                "id": video_id,
                 "url": e["url"],
                 "source": e.get("source", "tiktok"),
                 "thumbnail": e.get("thumbnail", ""),
                 "description": e.get("description", ""),
+                "creator": e.get("creator") or dict(DEFAULT_CREATOR),
             })
 
         grouped.append({
@@ -148,9 +162,7 @@ def group_exercises(flat_exercises: list[dict]) -> list[dict]:
 
 
 def main():
-    flat_file = os.path.join(PROJECT_DIR, "src", "data", "exercises.json")
-    if os.path.exists(INPUT_FILE):
-        flat_file = INPUT_FILE
+    flat_file = sys.argv[1] if len(sys.argv) > 1 else INPUT_FILE
 
     with open(flat_file) as f:
         flat_exercises = json.load(f)
@@ -158,12 +170,6 @@ def main():
     if flat_exercises and "videos" in flat_exercises[0]:
         print("Input already looks grouped. Skipping.")
         return
-
-    backup = flat_file.replace(".json", "_flat.json")
-    if not os.path.exists(backup):
-        with open(backup, "w") as f:
-            json.dump(flat_exercises, f, indent=2)
-        print(f"Backed up flat data to {backup}")
 
     grouped = group_exercises(flat_exercises)
 
