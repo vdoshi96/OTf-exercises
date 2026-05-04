@@ -4,12 +4,17 @@ import type { Metadata } from "next";
 import exercises from "@/data/exercises.json";
 import type { GroupedExercise } from "@/lib/types";
 import { CATEGORY_COLORS, CATEGORY_LABELS } from "@/lib/types";
+import { getExerciseCreators } from "@/lib/search";
 import VideoEmbed from "@/components/VideoEmbed";
 
 const allExercises = exercises as GroupedExercise[];
 
 interface PageProps {
   params: Promise<{ id: string }>;
+}
+
+function formatCreatorHandle(handle: string) {
+  return handle.startsWith("@") ? handle : `@${handle}`;
 }
 
 export async function generateStaticParams() {
@@ -27,10 +32,10 @@ export async function generateMetadata({
   const videoCount = exercise.videos.length;
   return {
     title: exercise.exercise_name,
-    description: `${exercise.exercise_name} — ${CATEGORY_LABELS[exercise.category] || exercise.category} exercise targeting ${muscleList}. ${videoCount} video demo${videoCount > 1 ? "s" : ""} from Coach Rudy.`,
+    description: `${exercise.exercise_name} — ${CATEGORY_LABELS[exercise.category] || exercise.category} exercise targeting ${muscleList}. ${videoCount} video demo${videoCount > 1 ? "s" : ""} in the OTF Exercise Directory.`,
     openGraph: {
       title: `${exercise.exercise_name} | OTF Exercise Directory`,
-      description: `${exercise.exercise_name} targeting ${muscleList}. Watch ${videoCount} video demo${videoCount > 1 ? "s" : ""} from Coach Rudy.`,
+      description: `${exercise.exercise_name} targeting ${muscleList}. Watch ${videoCount} video demo${videoCount > 1 ? "s" : ""} in this unofficial fan directory.`,
       ...(exercise.videos[0]?.thumbnail
         ? { images: [exercise.videos[0].thumbnail] }
         : {}),
@@ -48,6 +53,7 @@ export default async function ExerciseDetailPage({ params }: PageProps) {
     CATEGORY_COLORS[exercise.category] || CATEGORY_COLORS.other;
   const categoryLabel =
     CATEGORY_LABELS[exercise.category] || exercise.category;
+  const creators = getExerciseCreators(exercise);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
@@ -136,6 +142,27 @@ export default async function ExerciseDetailPage({ params }: PageProps) {
                   ))}
                 </dd>
               </div>
+              {creators.length > 0 && (
+                <div>
+                  <dt className="text-xs text-zinc-600">Creators</dt>
+                  <dd className="mt-1 space-y-1">
+                    {creators.map((creator) => (
+                      <a
+                        key={creator.id}
+                        href={creator.profile_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block text-sm font-medium text-zinc-300 hover:text-orange-400"
+                      >
+                        {creator.display_name}{" "}
+                        <span className="font-normal text-zinc-600">
+                          {formatCreatorHandle(creator.handle)}
+                        </span>
+                      </a>
+                    ))}
+                  </dd>
+                </div>
+              )}
             </dl>
           </div>
 

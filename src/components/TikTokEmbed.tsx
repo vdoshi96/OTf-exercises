@@ -15,7 +15,6 @@ export default function TikTokEmbed({ url }: TikTokEmbedProps) {
 
   useEffect(() => {
     if (!videoId) {
-      setError(true);
       return;
     }
 

@@ -1,9 +1,17 @@
+export interface Creator {
+  id: string;
+  display_name: string;
+  handle: string;
+  profile_url: string;
+}
+
 export interface Video {
   id: string;
   url: string;
   source: "tiktok" | "instagram";
   thumbnail: string;
   description: string;
+  creator: Creator;
 }
 
 export interface GroupedExercise {
