@@ -68,7 +68,7 @@ export default function VideoEmbed({ video, index, total }: VideoEmbedProps) {
       )}
 
       {video.source === "instagram" ? (
-        <InstagramEmbed url={video.url} />
+        <InstagramEmbed url={video.url} thumbnail={video.thumbnail} />
       ) : (
         <TikTokEmbed url={video.url} />
       )}
