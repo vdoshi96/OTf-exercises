@@ -41,9 +41,16 @@ python3 scripts/enrich_metadata.py       # Claude API (requires ANTHROPIC_API_KE
 # 4. Merge and filter into src/data/exercises.json
 python3 scripts/merge_and_filter.py
 
+# 5. Self-host Instagram thumbnails (cdninstagram URLs expire)
+node scripts/download_instagram_thumbnails.mjs
+
 # Or run everything at once:
 ./scripts/refresh.sh
 ```
+
+### Instagram thumbnails
+
+Instagram's CDN thumbnail URLs are signed and expire after a few days, so the URLs captured at scrape time return 403 once the static site loads them later. `scripts/download_instagram_thumbnails.mjs` walks `src/data/exercises.json`, fetches each reel's public page for a fresh `og:image`, downloads the JPEG to `public/thumbs/<shortcode>.jpg`, and rewrites the `thumbnail` field to point at the local copy. Re-run it whenever new reels are added; existing thumbs are skipped unless you pass `--force`.
 
 ## Project Structure
 
