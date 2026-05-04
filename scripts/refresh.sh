@@ -54,8 +54,13 @@ python3 "$SCRIPT_DIR/merge_and_filter.py"
 echo ""
 
 # Step 6: Group exercises by name
-echo "[6/6] Grouping src/data/exercises_flat.json into src/data/exercises.json..."
+echo "[6/7] Grouping src/data/exercises_flat.json into src/data/exercises.json..."
 python3 "$SCRIPT_DIR/group_exercises.py"
+echo ""
+
+# Step 7: Self-host thumbnails and clean up
+echo "[7/7] Ensuring all thumbnails are self-hosted..."
+node "$SCRIPT_DIR/ensure-thumbnails.mjs"
 echo ""
 
 echo "=== Done ==="
