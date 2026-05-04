@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { CATEGORY_LABELS, type Creator } from "@/lib/types";
 
 const PLATFORM_LABELS: Record<string, string> = {
@@ -26,6 +26,59 @@ interface FilterPanelProps {
   onCreatorChange: (creatorId: string | null) => void;
 }
 
+interface ActiveFilter {
+  key: string;
+  label: string;
+  onRemove: () => void;
+}
+
+function formatLabel(value: string): string {
+  return (
+    CATEGORY_LABELS[value] ??
+    value.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
+  );
+}
+
+function ChevronIcon({ open }: { open: boolean }) {
+  return (
+    <svg
+      aria-hidden="true"
+      className={`h-4 w-4 transition-transform duration-200 ${
+        open ? "rotate-180" : ""
+      }`}
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M19 9l-7 7-7-7"
+      />
+    </svg>
+  );
+}
+
+function FilterIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="h-4 w-4"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M3 5h18M7 12h10M10 19h4"
+      />
+    </svg>
+  );
+}
+
 function Chip({
   label,
   active,
@@ -37,69 +90,62 @@ function Chip({
 }) {
   return (
     <button
+      type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`rounded-lg border px-3 py-1.5 text-sm font-medium transition ${
+      className={`max-w-full rounded-md border px-3 py-1.5 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 ${
         active
-          ? "border-orange-500/50 bg-orange-500/20 text-orange-400"
-          : "border-zinc-700/50 bg-zinc-800/50 text-zinc-400 hover:border-zinc-600 hover:text-zinc-300"
+          ? "border-orange-400/70 bg-orange-500/20 text-orange-100 shadow-sm shadow-orange-950/40"
+          : "border-stone-800 bg-[#17100c] text-stone-400 hover:border-orange-500/40 hover:text-orange-100"
       }`}
     >
-      {label}
+      <span className="break-words">{label}</span>
     </button>
   );
 }
 
-function formatLabel(value: string): string {
-  return CATEGORY_LABELS[value] ?? value.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
-function ChevronIcon({ open }: { open: boolean }) {
+function ActiveFilterChip({ filter }: { filter: ActiveFilter }) {
   return (
-    <svg
-      className={`h-4 w-4 text-zinc-500 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-    </svg>
+    <span className="inline-flex max-w-full items-center gap-1.5 rounded-md border border-orange-500/35 bg-orange-500/15 px-2.5 py-1 text-sm font-semibold text-orange-100">
+      <span className="break-words">{filter.label}</span>
+      <button
+        type="button"
+        onClick={filter.onRemove}
+        aria-label={`Remove ${filter.label} filter`}
+        className="rounded-sm p-0.5 text-orange-200 transition hover:bg-orange-500/20 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400"
+      >
+        <svg
+          aria-hidden="true"
+          className="h-3.5 w-3.5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2.25}
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
+    </span>
   );
 }
 
-function FilterSection({
+function FilterGroup({
   title,
   children,
-  defaultOpen = false,
-  activeCount = 0,
+  wide = false,
 }: {
   title: string;
   children: React.ReactNode;
-  defaultOpen?: boolean;
-  activeCount?: number;
+  wide?: boolean;
 }) {
-  const [open, setOpen] = useState(defaultOpen);
-
   return (
-    <div>
-      <button
-        onClick={() => setOpen(!open)}
-        aria-expanded={open}
-        className="flex w-full items-center justify-between py-1"
-      >
-        <div className="flex items-center gap-2">
-          <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">
-            {title}
-          </p>
-          {activeCount > 0 && !open && (
-            <span className="rounded-full bg-orange-500/20 px-2 py-0.5 text-[10px] font-semibold text-orange-400">
-              {activeCount} active
-            </span>
-          )}
-        </div>
-        <ChevronIcon open={open} />
-      </button>
-      {open && <div className="mt-2 flex flex-wrap gap-2">{children}</div>}
+    <div className={wide ? "lg:col-span-2" : ""}>
+      <h3 className="mb-2 text-sm font-semibold text-stone-300">{title}</h3>
+      {children}
     </div>
   );
 }
@@ -121,20 +167,54 @@ export default function FilterPanel({
   onPlatformChange,
   onCreatorChange,
 }: FilterPanelProps) {
-  const hasFilters =
-    activeCategory ||
-    activeMuscleGroup ||
-    activeEquipment ||
-    activePlatform ||
-    activeCreators.length > 0;
   const [panelOpen, setPanelOpen] = useState(false);
+  const creatorById = useMemo(
+    () => new Map(creators.map((creator) => [creator.id, creator])),
+    [creators]
+  );
 
-  const activeFilterCount =
-    (activeCategory ? 1 : 0) +
-    (activeMuscleGroup ? 1 : 0) +
-    (activeEquipment ? 1 : 0) +
-    (activePlatform ? 1 : 0) +
-    activeCreators.length;
+  const activeFilters: ActiveFilter[] = [
+    activeCategory
+      ? {
+          key: "category",
+          label: formatLabel(activeCategory),
+          onRemove: () => onCategoryChange(null),
+        }
+      : null,
+    activeMuscleGroup
+      ? {
+          key: "muscle-group",
+          label: formatLabel(activeMuscleGroup),
+          onRemove: () => onMuscleGroupChange(null),
+        }
+      : null,
+    activeEquipment
+      ? {
+          key: "equipment",
+          label: formatLabel(activeEquipment),
+          onRemove: () => onEquipmentChange(null),
+        }
+      : null,
+    activePlatform
+      ? {
+          key: "platform",
+          label: PLATFORM_LABELS[activePlatform] ?? formatLabel(activePlatform),
+          onRemove: () => onPlatformChange(null),
+        }
+      : null,
+    ...activeCreators.map((creatorId) => {
+      const creator = creatorById.get(creatorId);
+
+      return {
+        key: `creator-${creatorId}`,
+        label: creator?.display_name ?? creatorId,
+        onRemove: () => onCreatorChange(creatorId),
+      };
+    }),
+  ].filter(Boolean) as ActiveFilter[];
+
+  const activeFilterCount = activeFilters.length;
+  const hasFilters = activeFilterCount > 0;
 
   const clearFilters = () => {
     onCategoryChange(null);
@@ -145,109 +225,134 @@ export default function FilterPanel({
   };
 
   return (
-    <div className="rounded-xl border border-zinc-800/50 bg-zinc-900/30">
-      <div className="flex items-center justify-between gap-2 px-4 py-3">
-        <button
-          onClick={() => setPanelOpen(!panelOpen)}
-          aria-expanded={panelOpen}
-          className="flex min-w-0 flex-1 items-center justify-between"
-        >
-          <span className="flex items-center gap-3">
-            <svg
-              className="h-4 w-4 text-zinc-500"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
-              />
-            </svg>
-            <span className="text-sm font-semibold uppercase tracking-wider text-zinc-400">
-              Filters
-            </span>
-            {activeFilterCount > 0 && !panelOpen && (
-              <span className="rounded-full bg-orange-500/20 px-2 py-0.5 text-xs font-semibold text-orange-400">
+    <section className="rounded-lg border border-orange-950/70 bg-[#100b08]/80 shadow-sm shadow-black/30">
+      <div className="flex flex-col gap-3 p-3 sm:p-4">
+        <div className="flex items-center justify-between gap-3">
+          <button
+            type="button"
+            onClick={() => setPanelOpen((open) => !open)}
+            aria-expanded={panelOpen}
+            aria-controls="exercise-filters-panel"
+            className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-orange-500/35 bg-orange-500/10 px-4 py-2 text-sm font-semibold text-orange-100 transition hover:bg-orange-500/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400"
+          >
+            <FilterIcon />
+            <span>Filters</span>
+            {activeFilterCount > 0 && (
+              <span className="rounded-md bg-orange-500 px-1.5 py-0.5 text-xs font-bold text-black">
                 {activeFilterCount}
               </span>
             )}
-          </span>
-          <ChevronIcon open={panelOpen} />
-        </button>
-        {hasFilters && (
-          <button
-            type="button"
-            onClick={clearFilters}
-            className="text-sm text-orange-400 hover:text-orange-300"
-          >
-            Clear all
+            <ChevronIcon open={panelOpen} />
           </button>
+
+          {hasFilters && (
+            <button
+              type="button"
+              onClick={clearFilters}
+              className="rounded-md px-2 py-1 text-sm font-semibold text-orange-300 transition hover:bg-orange-500/10 hover:text-orange-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400"
+            >
+              Clear all
+            </button>
+          )}
+        </div>
+
+        {hasFilters && (
+          <div
+            aria-label="Active filters"
+            className="flex flex-wrap gap-2 border-t border-orange-950/60 pt-3"
+          >
+            {activeFilters.map((filter) => (
+              <ActiveFilterChip key={filter.key} filter={filter} />
+            ))}
+          </div>
         )}
       </div>
 
       {panelOpen && (
-        <div className="space-y-3 border-t border-zinc-800/50 px-4 pb-4 pt-3">
-          <FilterSection title="Category" activeCount={activeCategory ? 1 : 0} defaultOpen>
-            {categories.map((cat) => (
-              <Chip
-                key={cat}
-                label={formatLabel(cat)}
-                active={activeCategory === cat}
-                onClick={() => onCategoryChange(activeCategory === cat ? null : cat)}
-              />
-            ))}
-          </FilterSection>
+        <div
+          id="exercise-filters-panel"
+          className="animate-filter-panel border-t border-orange-950/70 p-4"
+        >
+          <div className="grid gap-5 lg:grid-cols-2">
+            <FilterGroup title="Category">
+              <div className="flex flex-wrap gap-2">
+                {categories.map((cat) => (
+                  <Chip
+                    key={cat}
+                    label={formatLabel(cat)}
+                    active={activeCategory === cat}
+                    onClick={() =>
+                      onCategoryChange(activeCategory === cat ? null : cat)
+                    }
+                  />
+                ))}
+              </div>
+            </FilterGroup>
 
-          <FilterSection title="Muscle Group" activeCount={activeMuscleGroup ? 1 : 0}>
-            {muscleGroups.map((mg) => (
-              <Chip
-                key={mg}
-                label={formatLabel(mg)}
-                active={activeMuscleGroup === mg}
-                onClick={() => onMuscleGroupChange(activeMuscleGroup === mg ? null : mg)}
-              />
-            ))}
-          </FilterSection>
+            <FilterGroup title="Muscle group">
+              <div className="flex flex-wrap gap-2">
+                {muscleGroups.map((mg) => (
+                  <Chip
+                    key={mg}
+                    label={formatLabel(mg)}
+                    active={activeMuscleGroup === mg}
+                    onClick={() =>
+                      onMuscleGroupChange(activeMuscleGroup === mg ? null : mg)
+                    }
+                  />
+                ))}
+              </div>
+            </FilterGroup>
 
-          <FilterSection title="Equipment" activeCount={activeEquipment ? 1 : 0}>
-            {equipment.map((eq) => (
-              <Chip
-                key={eq}
-                label={formatLabel(eq)}
-                active={activeEquipment === eq}
-                onClick={() => onEquipmentChange(activeEquipment === eq ? null : eq)}
-              />
-            ))}
-          </FilterSection>
+            <FilterGroup title="Equipment">
+              <div className="flex flex-wrap gap-2">
+                {equipment.map((eq) => (
+                  <Chip
+                    key={eq}
+                    label={formatLabel(eq)}
+                    active={activeEquipment === eq}
+                    onClick={() =>
+                      onEquipmentChange(activeEquipment === eq ? null : eq)
+                    }
+                  />
+                ))}
+              </div>
+            </FilterGroup>
 
-          {platforms.length > 1 && (
-            <FilterSection title="Platform" activeCount={activePlatform ? 1 : 0}>
-              {platforms.map((p) => (
-                <Chip
-                  key={p}
-                  label={PLATFORM_LABELS[p] ?? formatLabel(p)}
-                  active={activePlatform === p}
-                  onClick={() => onPlatformChange(activePlatform === p ? null : p)}
-                />
-              ))}
-            </FilterSection>
-          )}
+            {platforms.length > 1 && (
+              <FilterGroup title="Platform">
+                <div className="flex flex-wrap gap-2">
+                  {platforms.map((p) => (
+                    <Chip
+                      key={p}
+                      label={PLATFORM_LABELS[p] ?? formatLabel(p)}
+                      active={activePlatform === p}
+                      onClick={() =>
+                        onPlatformChange(activePlatform === p ? null : p)
+                      }
+                    />
+                  ))}
+                </div>
+              </FilterGroup>
+            )}
 
-          <FilterSection title="Creator" activeCount={activeCreators.length}>
-            {creators.map((creator) => (
-              <Chip
-                key={creator.id}
-                label={creator.display_name}
-                active={activeCreators.includes(creator.id)}
-                onClick={() => onCreatorChange(creator.id)}
-              />
-            ))}
-          </FilterSection>
+            <FilterGroup title="Creator" wide>
+              <div className="max-h-52 overflow-y-auto pr-1">
+                <div className="flex flex-wrap gap-2">
+                  {creators.map((creator) => (
+                    <Chip
+                      key={creator.id}
+                      label={creator.display_name}
+                      active={activeCreators.includes(creator.id)}
+                      onClick={() => onCreatorChange(creator.id)}
+                    />
+                  ))}
+                </div>
+              </div>
+            </FilterGroup>
+          </div>
         </div>
       )}
-    </div>
+    </section>
   );
 }
