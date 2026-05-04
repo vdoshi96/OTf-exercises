@@ -18,12 +18,12 @@ interface FilterPanelProps {
   activeMuscleGroup: string | null;
   activeEquipment: string | null;
   activePlatform: string | null;
-  activeCreator: string | null;
+  activeCreators: string[];
   onCategoryChange: (category: string | null) => void;
   onMuscleGroupChange: (muscleGroup: string | null) => void;
   onEquipmentChange: (equipment: string | null) => void;
   onPlatformChange: (platform: string | null) => void;
-  onCreatorChange: (creator: string | null) => void;
+  onCreatorChange: (creatorId: string | null) => void;
 }
 
 function Chip({
@@ -114,7 +114,7 @@ export default function FilterPanel({
   activeMuscleGroup,
   activeEquipment,
   activePlatform,
-  activeCreator,
+  activeCreators,
   onCategoryChange,
   onMuscleGroupChange,
   onEquipmentChange,
@@ -126,7 +126,7 @@ export default function FilterPanel({
     activeMuscleGroup ||
     activeEquipment ||
     activePlatform ||
-    activeCreator;
+    activeCreators.length > 0;
   const [panelOpen, setPanelOpen] = useState(false);
 
   const activeFilterCount =
@@ -134,7 +134,7 @@ export default function FilterPanel({
     (activeMuscleGroup ? 1 : 0) +
     (activeEquipment ? 1 : 0) +
     (activePlatform ? 1 : 0) +
-    (activeCreator ? 1 : 0);
+    activeCreators.length;
 
   const clearFilters = () => {
     onCategoryChange(null);
@@ -236,17 +236,13 @@ export default function FilterPanel({
             </FilterSection>
           )}
 
-          <FilterSection title="Creator" activeCount={activeCreator ? 1 : 0}>
+          <FilterSection title="Creator" activeCount={activeCreators.length}>
             {creators.map((creator) => (
               <Chip
                 key={creator.id}
                 label={creator.display_name}
-                active={activeCreator === creator.id}
-                onClick={() =>
-                  onCreatorChange(
-                    activeCreator === creator.id ? null : creator.id
-                  )
-                }
+                active={activeCreators.includes(creator.id)}
+                onClick={() => onCreatorChange(creator.id)}
               />
             ))}
           </FilterSection>

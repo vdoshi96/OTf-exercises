@@ -23,13 +23,25 @@ export default function Home() {
   );
   const [activeEquipment, setActiveEquipment] = useState<string | null>(null);
   const [activePlatform, setActivePlatform] = useState<string | null>(null);
-  const [activeCreator, setActiveCreator] = useState<string | null>(null);
+  const [activeCreators, setActiveCreators] = useState<string[]>([]);
 
   const fuse = useMemo(() => createSearchIndex(allExercises), []);
   const filterOptions = useMemo(() => getFilterOptions(allExercises), []);
 
   const handleSearch = useCallback((q: string) => {
     setQuery(q);
+  }, []);
+
+  const handleCreatorToggle = useCallback((creatorId: string | null) => {
+    if (creatorId === null) {
+      setActiveCreators([]);
+    } else {
+      setActiveCreators((prev) =>
+        prev.includes(creatorId)
+          ? prev.filter((c) => c !== creatorId)
+          : [...prev, creatorId]
+      );
+    }
   }, []);
 
   const totalVideos = useMemo(
@@ -48,7 +60,7 @@ export default function Home() {
       muscleGroup: activeMuscleGroup,
       equipment: activeEquipment,
       platform: activePlatform,
-      creator: activeCreator,
+      creators: activeCreators,
     });
 
     return filtered;
@@ -58,7 +70,7 @@ export default function Home() {
     activeMuscleGroup,
     activeEquipment,
     activePlatform,
-    activeCreator,
+    activeCreators,
     fuse,
   ]);
 
@@ -93,12 +105,12 @@ export default function Home() {
           activeMuscleGroup={activeMuscleGroup}
           activeEquipment={activeEquipment}
           activePlatform={activePlatform}
-          activeCreator={activeCreator}
+          activeCreators={activeCreators}
           onCategoryChange={setActiveCategory}
           onMuscleGroupChange={setActiveMuscleGroup}
           onEquipmentChange={setActiveEquipment}
           onPlatformChange={setActivePlatform}
-          onCreatorChange={setActiveCreator}
+          onCreatorChange={handleCreatorToggle}
         />
       </div>
 

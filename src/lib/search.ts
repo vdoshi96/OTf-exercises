@@ -84,7 +84,7 @@ export function filterExercises(
     muscleGroup?: string | null;
     equipment?: string | null;
     platform?: string | null;
-    creator?: string | null;
+    creators?: string[];
   }
 ): GroupedExercise[] {
   return exercises.filter((ex) => {
@@ -102,8 +102,9 @@ export function filterExercises(
     )
       return false;
     if (
-      filters.creator &&
-      !ex.videos.some((v) => v.creator.id === filters.creator)
+      filters.creators &&
+      filters.creators.length > 0 &&
+      !ex.videos.some((v) => filters.creators!.includes(v.creator.id))
     )
       return false;
     return true;
