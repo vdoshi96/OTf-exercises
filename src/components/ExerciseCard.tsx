@@ -1,6 +1,3 @@
-"use client";
-
-import { useMemo, useState } from "react";
 import Link from "next/link";
 import {
   CATEGORY_COLORS,
@@ -10,15 +7,10 @@ import {
 import { getExerciseCreators } from "@/lib/search";
 import ExercisePlaceholder from "./ExercisePlaceholder";
 
-function getBestThumbnail(exercise: GroupedExercise): string | null {
-  const local = exercise.videos.find(
-    (v) => v.thumbnail && v.thumbnail.startsWith("/")
-  );
-  if (local) return local.thumbnail;
-
-  const remote = exercise.videos.find((v) => !!v.thumbnail);
-  if (remote) return remote.thumbnail;
-
+function getLocalThumbnail(exercise: GroupedExercise): string | null {
+  for (const v of exercise.videos) {
+    if (v.thumbnail && v.thumbnail.startsWith("/")) return v.thumbnail;
+  }
   return null;
 }
 
@@ -27,14 +19,13 @@ interface ExerciseCardProps {
 }
 
 export default function ExerciseCard({ exercise }: ExerciseCardProps) {
-  const [imgError, setImgError] = useState(false);
 
   const categoryColor =
     CATEGORY_COLORS[exercise.category] || CATEGORY_COLORS.other;
   const categoryLabel =
     CATEGORY_LABELS[exercise.category] || exercise.category;
 
-  const thumbnail = useMemo(() => getBestThumbnail(exercise), [exercise]);
+  const thumbnail = getLocalThumbnail(exercise);
   const videoCount = exercise.videos.length;
   const sources = new Set(exercise.videos.map((v) => v.source));
   const creators = getExerciseCreators(exercise);
@@ -43,26 +34,23 @@ export default function ExerciseCard({ exercise }: ExerciseCardProps) {
       ? creators[0].display_name
       : `${creators.length} creators`;
 
-  const showPlaceholder = !thumbnail || imgError;
-
   return (
     <Link
       href={`/exercise/${exercise.id}`}
       className="group flex flex-col rounded-xl border border-zinc-800 bg-zinc-900/50 transition hover:border-zinc-700 hover:bg-zinc-900"
     >
       <div className="relative aspect-[9/16] max-h-48 w-full overflow-hidden rounded-t-xl bg-zinc-800">
-        {showPlaceholder ? (
+        {thumbnail ? (
+          <img
+            src={thumbnail}
+            alt={exercise.exercise_name}
+            className="h-full w-full object-cover transition group-hover:scale-105"
+          />
+        ) : (
           <ExercisePlaceholder
             category={exercise.category}
             exerciseName={exercise.exercise_name}
             muscleGroups={exercise.muscle_groups}
-          />
-        ) : (
-          <img
-            src={thumbnail!}
-            alt={exercise.exercise_name}
-            className="h-full w-full object-cover transition group-hover:scale-105"
-            onError={() => setImgError(true)}
           />
         )}
         <span
