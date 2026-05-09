@@ -27,9 +27,9 @@ export default function ExercisePlaceholder({
   const iconPath = CATEGORY_ICONS[category] || CATEGORY_ICONS.other;
 
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-[#17100c] p-3 text-center">
+    <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-[#151616] p-3 text-center">
       <div
-        className={`flex h-10 w-10 items-center justify-center rounded-md border border-orange-500/20 ${bgClass}`}
+        className={`flex h-10 w-10 items-center justify-center rounded-md border border-orange-500/25 ${bgClass}`}
       >
         <svg
           className={`h-5 w-5 ${textClass}`}
@@ -43,7 +43,7 @@ export default function ExercisePlaceholder({
           <path d={iconPath} />
         </svg>
       </div>
-      <p className="line-clamp-2 text-xs font-medium leading-tight text-stone-300">
+      <p className="line-clamp-2 text-xs font-semibold leading-tight text-stone-300">
         {exerciseName}
       </p>
       {muscleGroups.length > 0 && (

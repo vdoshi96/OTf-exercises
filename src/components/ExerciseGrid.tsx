@@ -8,10 +8,10 @@ interface ExerciseGridProps {
 export default function ExerciseGrid({ exercises }: ExerciseGridProps) {
   if (exercises.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-center">
+      <div className="rounded-lg border border-white/10 bg-[#101111]/80 px-6 py-20 text-center">
         <svg
           aria-hidden="true"
-          className="mb-4 h-16 w-16 text-stone-700"
+          className="mx-auto mb-4 h-16 w-16 text-stone-700"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -23,10 +23,10 @@ export default function ExerciseGrid({ exercises }: ExerciseGridProps) {
             d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
           />
         </svg>
-        <p className="text-lg font-semibold text-stone-300">
+        <p className="text-lg font-semibold text-stone-200">
           No exercises found
         </p>
-        <p className="mt-1 text-sm text-stone-600">
+        <p className="mt-1 text-sm text-stone-500">
           Try adjusting your search or filters
         </p>
       </div>

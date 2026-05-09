@@ -6,6 +6,7 @@ const exercises = JSON.parse(
   await readFile(new URL("../src/data/exercises.json", import.meta.url), "utf8")
 );
 const detailExercise =
+  exercises.find((exercise) => exercise.id === "goblet-squat") ??
   exercises.find((exercise) => exercise.coaching_cues?.length > 0) ??
   exercises[0];
 
@@ -35,7 +36,7 @@ async function run() {
       page.getByRole("heading", {
         name: "Find the movement before class starts.",
       }),
-      "Homepage should show the approved editorial hero headline."
+      "Homepage should show the redesigned command-center hero headline."
     );
     await expectVisible(
       page.getByRole("searchbox", {
@@ -87,7 +88,7 @@ async function run() {
       "Detail page should make the video area intentional."
     );
     await expectVisible(
-      page.getByText("Movement Type"),
+      page.getByLabel("Exercise metadata").getByText("Movement Type"),
       "Detail page sidebar should preserve movement metadata."
     );
 

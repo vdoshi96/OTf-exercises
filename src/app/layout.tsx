@@ -42,19 +42,19 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${oswald.variable} dark h-full`}
     >
-      <body className="flex min-h-full flex-col bg-background font-sans text-foreground antialiased">
+      <body className="app-shell flex min-h-full flex-col bg-background font-sans text-foreground antialiased">
         <a
           href="#directory"
           className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-orange-500 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-black"
         >
           Skip to directory
         </a>
-        <header className="sticky top-0 z-50 border-b border-orange-950/70 bg-[#080604]/90 backdrop-blur-xl">
-          <div className="h-0.5 bg-orange-500" />
-          <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
+        <header className="sticky top-0 z-50 border-b border-white/10 bg-[#060707]/90 backdrop-blur-2xl">
+          <div className="h-1 bg-orange-500" />
+          <div className="mx-auto flex max-w-[92rem] items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
             <Link
               href="/"
-              className="flex items-center gap-3 rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-400"
+              className="flex items-center gap-4 rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-400"
             >
               <Image
                 src="/otf-logo.svg"
@@ -64,16 +64,17 @@ export default function RootLayout({
                 className="h-7 w-auto sm:h-8"
                 priority
               />
-              <span className="hidden border-l border-orange-500/30 pl-3 text-sm font-semibold text-stone-300 sm:inline">
+              <span className="hidden border-l border-white/15 pl-4 text-sm font-semibold text-stone-300 sm:inline">
                 Exercise Directory
               </span>
             </Link>
             <nav aria-label="Primary">
               <a
                 href="#directory"
-                className="rounded-md px-3 py-2 text-sm font-semibold text-orange-200 transition hover:bg-orange-500/10 hover:text-orange-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-400"
+                className="relative inline-flex min-h-10 items-center rounded-md px-3 text-sm font-semibold text-stone-100 transition hover:text-orange-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-400"
               >
                 Directory
+                <span className="absolute inset-x-3 -bottom-4 h-0.5 bg-orange-500" />
               </a>
             </nav>
           </div>
@@ -81,8 +82,8 @@ export default function RootLayout({
 
         <main className="flex-1">{children}</main>
 
-        <footer className="border-t border-orange-950/70 bg-[#080604] py-8">
-          <div className="mx-auto max-w-7xl px-4 text-center text-sm text-stone-500 sm:px-6">
+        <footer className="border-t border-white/10 bg-[#060707]/95 py-8">
+          <div className="mx-auto max-w-[92rem] px-4 text-center text-sm leading-6 text-stone-500 sm:px-6 lg:px-8">
             <p>
               Unofficial fan directory. Video demos link back to their original
               creators on Instagram, TikTok, and other source platforms.

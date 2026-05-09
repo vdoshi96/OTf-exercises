@@ -36,7 +36,7 @@ export default function TikTokEmbed({ url }: TikTokEmbedProps) {
 
   if (error || !videoId) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-lg border border-stone-800 bg-[#17100c] p-8">
+      <div className="flex flex-col items-center justify-center rounded-lg border border-white/10 bg-[#0f1010] p-8">
         <p className="mb-4 text-stone-400">Could not load TikTok embed</p>
         <a
           href={url}
@@ -51,7 +51,7 @@ export default function TikTokEmbed({ url }: TikTokEmbedProps) {
   }
 
   return (
-    <div ref={containerRef} className="flex justify-center">
+    <div ref={containerRef} className="flex justify-center overflow-hidden rounded-lg bg-[#0f1010]">
       <blockquote
         className="tiktok-embed"
         cite={url}

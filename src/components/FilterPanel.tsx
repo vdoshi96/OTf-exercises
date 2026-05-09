@@ -93,10 +93,10 @@ function Chip({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`max-w-full rounded-md border px-3 py-1.5 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 ${
+      className={`max-w-full rounded-md border px-3 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 ${
         active
           ? "border-orange-400/70 bg-orange-500/20 text-orange-100 shadow-sm shadow-orange-950/40"
-          : "border-stone-800 bg-[#17100c] text-stone-400 hover:border-orange-500/40 hover:text-orange-100"
+          : "border-white/10 bg-[#161717] text-stone-300 hover:border-orange-500/50 hover:text-orange-100"
       }`}
     >
       <span className="break-words">{label}</span>
@@ -106,7 +106,7 @@ function Chip({
 
 function ActiveFilterChip({ filter }: { filter: ActiveFilter }) {
   return (
-    <span className="inline-flex max-w-full items-center gap-1.5 rounded-md border border-orange-500/35 bg-orange-500/15 px-2.5 py-1 text-sm font-semibold text-orange-100">
+    <span className="inline-flex max-w-full items-center gap-1.5 rounded-md border border-orange-500/35 bg-orange-500/15 px-2.5 py-1.5 text-sm font-semibold text-orange-100">
       <span className="break-words">{filter.label}</span>
       <button
         type="button"
@@ -144,7 +144,9 @@ function FilterGroup({
 }) {
   return (
     <div className={wide ? "lg:col-span-2" : ""}>
-      <h3 className="mb-2 text-sm font-semibold text-stone-300">{title}</h3>
+      <h3 className="mb-2 text-xs font-bold uppercase text-stone-500">
+        {title}
+      </h3>
       {children}
     </div>
   );
@@ -225,15 +227,15 @@ export default function FilterPanel({
   };
 
   return (
-    <section className="rounded-lg border border-orange-950/70 bg-[#100b08]/80 shadow-sm shadow-black/30">
-      <div className="flex flex-col gap-3 p-3 sm:p-4">
+    <section className="w-full rounded-lg border border-white/10 bg-[#101111]/90 shadow-xl shadow-black/20 sm:max-w-5xl">
+      <div className="flex flex-col gap-3 p-3">
         <div className="flex items-center justify-between gap-3">
           <button
             type="button"
             onClick={() => setPanelOpen((open) => !open)}
             aria-expanded={panelOpen}
             aria-controls="exercise-filters-panel"
-            className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-orange-500/35 bg-orange-500/10 px-4 py-2 text-sm font-semibold text-orange-100 transition hover:bg-orange-500/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400"
+            className="inline-flex min-h-11 items-center gap-2 rounded-md border border-white/15 bg-[#181919] px-4 py-2 text-sm font-semibold text-stone-100 transition hover:border-orange-500/50 hover:text-orange-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400"
           >
             <FilterIcon />
             <span>Filters</span>
@@ -259,7 +261,7 @@ export default function FilterPanel({
         {hasFilters && (
           <div
             aria-label="Active filters"
-            className="flex flex-wrap gap-2 border-t border-orange-950/60 pt-3"
+            className="flex flex-wrap gap-2 border-t border-white/10 pt-3"
           >
             {activeFilters.map((filter) => (
               <ActiveFilterChip key={filter.key} filter={filter} />
@@ -271,7 +273,7 @@ export default function FilterPanel({
       {panelOpen && (
         <div
           id="exercise-filters-panel"
-          className="animate-filter-panel border-t border-orange-950/70 p-4"
+          className="animate-filter-panel border-t border-white/10 p-4"
         >
           <div className="grid gap-5 lg:grid-cols-2">
             <FilterGroup title="Category">
@@ -337,7 +339,7 @@ export default function FilterPanel({
             )}
 
             <FilterGroup title="Creator" wide>
-              <div className="max-h-52 overflow-y-auto pr-1">
+              <div className="thin-scrollbar max-h-52 overflow-y-auto pr-1">
                 <div className="flex flex-wrap gap-2">
                   {creators.map((creator) => (
                     <Chip

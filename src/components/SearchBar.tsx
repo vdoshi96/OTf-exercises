@@ -27,14 +27,21 @@ export default function SearchBar({
   }, [value, onSearch]);
 
   return (
-    <div className="w-full">
+    <form
+      className="w-full"
+      role="search"
+      onSubmit={(event) => {
+        event.preventDefault();
+        onSearch(value);
+      }}
+    >
       <label htmlFor="exercise-search" className="sr-only">
         Search exercises
       </label>
-      <div className="relative">
+      <div className="relative flex min-h-14 overflow-hidden rounded-lg border border-white/15 bg-[#111313]/90 shadow-2xl shadow-black/30 transition focus-within:border-orange-400 focus-within:ring-2 focus-within:ring-orange-500/30">
         <svg
           aria-hidden="true"
-          className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-orange-300"
+          className="absolute left-5 top-1/2 h-6 w-6 -translate-y-1/2 text-stone-300"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -52,14 +59,14 @@ export default function SearchBar({
           value={value}
           onChange={(e) => setValue(e.target.value)}
           placeholder="Search exercises, muscles, equipment, creators..."
-          className="w-full rounded-lg border border-orange-950/80 bg-[#120d0a] py-4 pl-12 pr-12 text-base text-stone-50 shadow-sm shadow-black/30 outline-none transition placeholder:text-stone-600 focus:border-orange-400 focus:ring-2 focus:ring-orange-500/35"
+          className="min-w-0 flex-1 bg-transparent py-4 pl-14 pr-11 text-base font-medium text-stone-50 outline-none placeholder:text-stone-500 sm:text-lg"
         />
         {value && (
           <button
             type="button"
             aria-label="Clear search"
             onClick={() => setValue("")}
-            className="absolute right-4 top-1/2 -translate-y-1/2 rounded-md p-1 text-stone-500 transition hover:bg-orange-500/10 hover:text-orange-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400"
+            className="absolute right-32 top-1/2 -translate-y-1/2 rounded-md p-1 text-stone-500 transition hover:bg-white/10 hover:text-orange-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 max-sm:right-4"
           >
             <svg
               aria-hidden="true"
@@ -77,12 +84,18 @@ export default function SearchBar({
             </svg>
           </button>
         )}
+        <button
+          type="submit"
+          className="hidden min-w-32 items-center justify-center bg-orange-500 px-6 text-base font-bold text-white transition hover:bg-orange-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-orange-100 sm:inline-flex"
+        >
+          Search
+        </button>
       </div>
-      <p className="mt-2 text-sm text-stone-500">
+      <p className="sr-only" aria-live="polite">
         {value
           ? `${resultCount} result${resultCount !== 1 ? "s" : ""} found`
           : `${totalCount} exercises`}
       </p>
-    </div>
+    </form>
   );
 }

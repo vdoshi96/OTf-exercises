@@ -13,7 +13,7 @@ interface VideoEmbedProps {
 function SourceBadge({ source }: { source: "tiktok" | "instagram" }) {
   if (source === "instagram") {
     return (
-      <span className="inline-flex items-center gap-1.5 rounded-md border border-orange-500/35 bg-orange-500/15 px-2.5 py-1 text-xs font-semibold text-orange-100">
+      <span className="inline-flex items-center gap-1.5 rounded-md border border-orange-500/35 bg-orange-500/15 px-2.5 py-1 text-xs font-bold uppercase text-orange-100">
         <svg
           aria-hidden="true"
           className="h-3 w-3"
@@ -28,7 +28,7 @@ function SourceBadge({ source }: { source: "tiktok" | "instagram" }) {
   }
 
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-md border border-orange-500/30 bg-black/40 px-2.5 py-1 text-xs font-semibold text-stone-200">
+    <span className="inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-black/40 px-2.5 py-1 text-xs font-bold uppercase text-stone-200">
       <svg
         aria-hidden="true"
         className="h-3 w-3"
@@ -52,7 +52,7 @@ export default function VideoEmbed({ video, index, total }: VideoEmbedProps) {
     : `@${video.creator.handle}`;
 
   return (
-    <article className="rounded-lg border border-stone-800 bg-[#110d0a] p-4 shadow-sm shadow-black/30">
+    <article className="rounded-lg border border-white/10 bg-[#151616] p-4 shadow-xl shadow-black/15">
       <div className="mb-3 flex items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">
           <SourceBadge source={video.source} />
@@ -60,16 +60,16 @@ export default function VideoEmbed({ video, index, total }: VideoEmbedProps) {
             href={video.creator.profile_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-sm text-xs font-semibold text-stone-400 transition hover:text-orange-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400"
+            className="rounded-sm text-xs font-semibold text-stone-300 transition hover:text-orange-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400"
           >
             {video.creator.display_name}{" "}
-            <span className="font-normal text-stone-600">
+            <span className="font-normal text-stone-500">
               {creatorHandle}
             </span>
           </a>
         </div>
         {total > 1 && (
-          <span className="shrink-0 text-xs font-semibold text-stone-600">
+          <span className="shrink-0 text-xs font-bold uppercase text-stone-500">
             {index + 1} of {total}
           </span>
         )}
