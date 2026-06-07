@@ -2,7 +2,7 @@
 
 A searchable, unofficial fan directory of OrangeTheory Fitness exercise demos from multiple creators and source platforms.
 
-Browse 1,746 exercise demonstrations across 1,054 grouped exercises, filterable by muscle group, equipment, category, platform, and creator. Each exercise links to the original video embed.
+Browse 1,966 exercise demonstrations across 1,231 grouped exercises, filterable by muscle group, equipment, category, platform, and creator. Each exercise links to the original video embed.
 
 > **Disclaimer:** This is an unofficial fan directory. All video content belongs to its original creators and source platforms.
 
@@ -12,7 +12,7 @@ Browse 1,746 exercise demonstrations across 1,054 grouped exercises, filterable 
 - **Styling:** Tailwind CSS 4
 - **Search:** Fuse.js (client-side fuzzy search)
 - **Video Embeds:** TikTok and Instagram embeds
-- **Data:** Static JSON bundled at build time (1,054 grouped exercises)
+- **Data:** Static JSON bundled at build time (1,231 grouped exercises)
 
 ## Getting Started
 
@@ -76,7 +76,7 @@ Instagram's CDN thumbnail URLs are signed and expire after a few days, so the UR
 │   │   ├── TikTokEmbed.tsx     # TikTok video embed
 │   │   └── InstagramEmbed.tsx  # Instagram video embed
 │   ├── data/
-│   │   └── exercises.json      # 1,054 grouped exercises
+│   │   └── exercises.json      # 1,231 grouped exercises
 │   └── lib/
 │       ├── search.ts           # Fuse.js search logic
 │       └── types.ts            # TypeScript types + constants
