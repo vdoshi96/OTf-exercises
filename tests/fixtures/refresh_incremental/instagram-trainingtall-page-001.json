@@ -1,0 +1,24 @@
+{
+  "items": [
+    {
+      "media": {
+        "code": "NEWTRAIN",
+        "taken_at": 210,
+        "caption": {
+          "text": "Deadlift Form Tips. Keep your back flat and use a hip hinge."
+        },
+        "image_versions2": {
+          "candidates": [
+            {
+              "url": "https://example.test/new-training.jpg"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "paging_info": {
+    "more_available": true,
+    "max_id": "training-page-2"
+  }
+}

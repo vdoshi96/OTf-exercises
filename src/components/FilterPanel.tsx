@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { CATEGORY_LABELS, type Creator } from "@/lib/types";
 
 const PLATFORM_LABELS: Record<string, string> = {
@@ -14,6 +14,7 @@ interface FilterPanelProps {
   equipment: string[];
   platforms: string[];
   creators: Creator[];
+  resultCount: number;
   activeCategory: string | null;
   activeMuscleGroup: string | null;
   activeEquipment: string | null;
@@ -32,20 +33,31 @@ interface ActiveFilter {
   onRemove: () => void;
 }
 
+interface FilterChoice {
+  value: string;
+  label: string;
+}
+
+interface FilterGroupConfig {
+  title: string;
+  choices: FilterChoice[];
+  isActive: (value: string) => boolean;
+  onToggle: (value: string) => void;
+  wide?: boolean;
+}
+
 function formatLabel(value: string): string {
   return (
     CATEGORY_LABELS[value] ??
-    value.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
+    value.replace(/_/g, " ").replace(/\b\w/g, (character) => character.toUpperCase())
   );
 }
 
-function ChevronIcon({ open }: { open: boolean }) {
+function ChevronIcon({ open }: { open?: boolean }) {
   return (
     <svg
       aria-hidden="true"
-      className={`h-4 w-4 transition-transform duration-200 ${
-        open ? "rotate-180" : ""
-      }`}
+      className={`h-4 w-4 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
       fill="none"
       stroke="currentColor"
       viewBox="0 0 24 24"
@@ -79,6 +91,25 @@ function FilterIcon() {
   );
 }
 
+function CloseIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="h-5 w-5"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M6 18 18 6M6 6l12 12"
+      />
+    </svg>
+  );
+}
+
 function Chip({
   label,
   active,
@@ -93,7 +124,7 @@ function Chip({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`max-w-full rounded-md border px-3 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 ${
+      className={`min-h-11 max-w-full rounded-md border px-3 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 ${
         active
           ? "border-orange-400/70 bg-orange-500/20 text-orange-100 shadow-sm shadow-orange-950/40"
           : "border-white/10 bg-[#161717] text-stone-300 hover:border-orange-500/50 hover:text-orange-100"
@@ -112,42 +143,85 @@ function ActiveFilterChip({ filter }: { filter: ActiveFilter }) {
         type="button"
         onClick={filter.onRemove}
         aria-label={`Remove ${filter.label} filter`}
-        className="rounded-sm p-0.5 text-orange-200 transition hover:bg-orange-500/20 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400"
+        className="-my-2 -mr-2 flex min-h-11 min-w-11 items-center justify-center rounded-sm text-orange-200 transition hover:bg-orange-500/20 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 sm:my-0 sm:mr-0 sm:min-h-0 sm:min-w-0 sm:p-0.5"
       >
-        <svg
-          aria-hidden="true"
-          className="h-3.5 w-3.5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2.25}
-            d="M6 18L18 6M6 6l12 12"
-          />
-        </svg>
+        <CloseIcon />
       </button>
     </span>
   );
 }
 
-function FilterGroup({
-  title,
-  children,
-  wide = false,
-}: {
-  title: string;
-  children: React.ReactNode;
-  wide?: boolean;
-}) {
+function DesktopFilterGroups({ groups }: { groups: FilterGroupConfig[] }) {
   return (
-    <div className={wide ? "lg:col-span-2" : ""}>
-      <h3 className="mb-2 text-xs font-bold uppercase text-stone-500">
-        {title}
-      </h3>
-      {children}
+    <div className="grid gap-5 lg:grid-cols-2">
+      {groups.map((group) => (
+        <div key={group.title} className={group.wide ? "lg:col-span-2" : ""}>
+          <h3 className="mb-2 text-xs font-bold uppercase text-stone-500">
+            {group.title}
+          </h3>
+          <div
+            className={
+              group.wide
+                ? "thin-scrollbar max-h-52 overflow-y-auto pr-1"
+                : undefined
+            }
+          >
+            <div className="flex flex-wrap gap-2">
+              {group.choices.map((choice) => (
+                <Chip
+                  key={choice.value}
+                  label={choice.label}
+                  active={group.isActive(choice.value)}
+                  onClick={() => group.onToggle(choice.value)}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function MobileFilterGroups({ groups }: { groups: FilterGroupConfig[] }) {
+  return (
+    <div className="divide-y divide-white/10">
+      {groups.map((group) => {
+        const selectedCount = group.choices.filter((choice) =>
+          group.isActive(choice.value)
+        ).length;
+
+        return (
+          <details
+            key={group.title}
+            className="group/filter py-1"
+          >
+            <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 rounded-md px-1 text-sm font-bold uppercase text-stone-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 [&::-webkit-details-marker]:hidden">
+              <span className="flex items-center gap-2">
+                {group.title}
+                {selectedCount > 0 && (
+                  <span className="rounded-md bg-orange-500 px-1.5 py-0.5 text-xs text-black">
+                    {selectedCount}
+                  </span>
+                )}
+              </span>
+              <span className="transition-transform group-open/filter:rotate-180">
+                <ChevronIcon />
+              </span>
+            </summary>
+            <div className="flex flex-wrap gap-2 pb-4 pt-2">
+              {group.choices.map((choice) => (
+                <Chip
+                  key={choice.value}
+                  label={choice.label}
+                  active={group.isActive(choice.value)}
+                  onClick={() => group.onToggle(choice.value)}
+                />
+              ))}
+            </div>
+          </details>
+        );
+      })}
     </div>
   );
 }
@@ -158,6 +232,7 @@ export default function FilterPanel({
   equipment,
   platforms,
   creators,
+  resultCount,
   activeCategory,
   activeMuscleGroup,
   activeEquipment,
@@ -169,7 +244,10 @@ export default function FilterPanel({
   onPlatformChange,
   onCreatorChange,
 }: FilterPanelProps) {
-  const [panelOpen, setPanelOpen] = useState(false);
+  const [desktopPanelOpen, setDesktopPanelOpen] = useState(false);
+  const mobileDialogRef = useRef<HTMLDialogElement>(null);
+  const mobileTriggerRef = useRef<HTMLButtonElement>(null);
+  const desktopTriggerRef = useRef<HTMLButtonElement>(null);
   const creatorById = useMemo(
     () => new Map(creators.map((creator) => [creator.id, creator])),
     [creators]
@@ -215,6 +293,54 @@ export default function FilterPanel({
     }),
   ].filter(Boolean) as ActiveFilter[];
 
+  const groups: FilterGroupConfig[] = [
+    {
+      title: "Category",
+      choices: categories.map((value) => ({ value, label: formatLabel(value) })),
+      isActive: (value) => activeCategory === value,
+      onToggle: (value) =>
+        onCategoryChange(activeCategory === value ? null : value),
+    },
+    {
+      title: "Muscle group",
+      choices: muscleGroups.map((value) => ({ value, label: formatLabel(value) })),
+      isActive: (value) => activeMuscleGroup === value,
+      onToggle: (value) =>
+        onMuscleGroupChange(activeMuscleGroup === value ? null : value),
+    },
+    {
+      title: "Equipment",
+      choices: equipment.map((value) => ({ value, label: formatLabel(value) })),
+      isActive: (value) => activeEquipment === value,
+      onToggle: (value) =>
+        onEquipmentChange(activeEquipment === value ? null : value),
+    },
+    ...(platforms.length > 1
+      ? [
+          {
+            title: "Platform",
+            choices: platforms.map((value) => ({
+              value,
+              label: PLATFORM_LABELS[value] ?? formatLabel(value),
+            })),
+            isActive: (value: string) => activePlatform === value,
+            onToggle: (value: string) =>
+              onPlatformChange(activePlatform === value ? null : value),
+          },
+        ]
+      : []),
+    {
+      title: "Creator",
+      choices: creators.map((creator) => ({
+        value: creator.id,
+        label: creator.display_name,
+      })),
+      isActive: (value) => activeCreators.includes(value),
+      onToggle: (value) => onCreatorChange(value),
+      wide: true,
+    },
+  ];
+
   const activeFilterCount = activeFilters.length;
   const hasFilters = activeFilterCount > 0;
 
@@ -226,16 +352,34 @@ export default function FilterPanel({
     onCreatorChange(null);
   };
 
+  const openMobileDialog = () => {
+    mobileDialogRef.current?.showModal();
+  };
+
+  const closeMobileDialog = () => {
+    mobileDialogRef.current?.close();
+  };
+
+  const restoreFilterTriggerFocus = () => {
+    const mobileTrigger = mobileTriggerRef.current;
+    const desktopTrigger = desktopTriggerRef.current;
+    const mobileTriggerIsVisible =
+      mobileTrigger && window.getComputedStyle(mobileTrigger).display !== "none";
+
+    (mobileTriggerIsVisible ? mobileTrigger : desktopTrigger)?.focus();
+  };
+
   return (
     <section className="w-full rounded-lg border border-white/10 bg-[#101111]/90 shadow-xl shadow-black/20 sm:max-w-5xl">
       <div className="flex flex-col gap-3 p-3">
         <div className="flex items-center justify-between gap-3">
           <button
+            ref={mobileTriggerRef}
             type="button"
-            onClick={() => setPanelOpen((open) => !open)}
-            aria-expanded={panelOpen}
-            aria-controls="exercise-filters-panel"
-            className="inline-flex min-h-11 items-center gap-2 rounded-md border border-white/15 bg-[#181919] px-4 py-2 text-sm font-semibold text-stone-100 transition hover:border-orange-500/50 hover:text-orange-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400"
+            onClick={openMobileDialog}
+            aria-haspopup="dialog"
+            aria-controls="mobile-exercise-filters"
+            className="inline-flex min-h-11 items-center gap-2 rounded-md border border-white/15 bg-[#181919] px-4 py-2 text-sm font-semibold text-stone-100 transition hover:border-orange-500/50 hover:text-orange-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 sm:hidden"
           >
             <FilterIcon />
             <span>Filters</span>
@@ -244,14 +388,31 @@ export default function FilterPanel({
                 {activeFilterCount}
               </span>
             )}
-            <ChevronIcon open={panelOpen} />
+          </button>
+
+          <button
+            ref={desktopTriggerRef}
+            type="button"
+            onClick={() => setDesktopPanelOpen((open) => !open)}
+            aria-expanded={desktopPanelOpen}
+            aria-controls="desktop-exercise-filters"
+            className="hidden min-h-11 items-center gap-2 rounded-md border border-white/15 bg-[#181919] px-4 py-2 text-sm font-semibold text-stone-100 transition hover:border-orange-500/50 hover:text-orange-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 sm:inline-flex"
+          >
+            <FilterIcon />
+            <span>Filters</span>
+            {activeFilterCount > 0 && (
+              <span className="rounded-md bg-orange-500 px-1.5 py-0.5 text-xs font-bold text-black">
+                {activeFilterCount}
+              </span>
+            )}
+            <ChevronIcon open={desktopPanelOpen} />
           </button>
 
           {hasFilters && (
             <button
               type="button"
               onClick={clearFilters}
-              className="rounded-md px-2 py-1 text-sm font-semibold text-orange-300 transition hover:bg-orange-500/10 hover:text-orange-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400"
+              className="hidden rounded-md px-2 py-1 text-sm font-semibold text-orange-300 transition hover:bg-orange-500/10 hover:text-orange-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 sm:block"
             >
               Clear all
             </button>
@@ -270,91 +431,80 @@ export default function FilterPanel({
         )}
       </div>
 
-      {panelOpen && (
+      {desktopPanelOpen && (
         <div
-          id="exercise-filters-panel"
-          className="animate-filter-panel border-t border-white/10 p-4"
+          id="desktop-exercise-filters"
+          className="animate-filter-panel hidden border-t border-white/10 p-4 sm:block"
         >
-          <div className="grid gap-5 lg:grid-cols-2">
-            <FilterGroup title="Category">
-              <div className="flex flex-wrap gap-2">
-                {categories.map((cat) => (
-                  <Chip
-                    key={cat}
-                    label={formatLabel(cat)}
-                    active={activeCategory === cat}
-                    onClick={() =>
-                      onCategoryChange(activeCategory === cat ? null : cat)
-                    }
-                  />
-                ))}
-              </div>
-            </FilterGroup>
-
-            <FilterGroup title="Muscle group">
-              <div className="flex flex-wrap gap-2">
-                {muscleGroups.map((mg) => (
-                  <Chip
-                    key={mg}
-                    label={formatLabel(mg)}
-                    active={activeMuscleGroup === mg}
-                    onClick={() =>
-                      onMuscleGroupChange(activeMuscleGroup === mg ? null : mg)
-                    }
-                  />
-                ))}
-              </div>
-            </FilterGroup>
-
-            <FilterGroup title="Equipment">
-              <div className="flex flex-wrap gap-2">
-                {equipment.map((eq) => (
-                  <Chip
-                    key={eq}
-                    label={formatLabel(eq)}
-                    active={activeEquipment === eq}
-                    onClick={() =>
-                      onEquipmentChange(activeEquipment === eq ? null : eq)
-                    }
-                  />
-                ))}
-              </div>
-            </FilterGroup>
-
-            {platforms.length > 1 && (
-              <FilterGroup title="Platform">
-                <div className="flex flex-wrap gap-2">
-                  {platforms.map((p) => (
-                    <Chip
-                      key={p}
-                      label={PLATFORM_LABELS[p] ?? formatLabel(p)}
-                      active={activePlatform === p}
-                      onClick={() =>
-                        onPlatformChange(activePlatform === p ? null : p)
-                      }
-                    />
-                  ))}
-                </div>
-              </FilterGroup>
-            )}
-
-            <FilterGroup title="Creator" wide>
-              <div className="thin-scrollbar max-h-52 overflow-y-auto pr-1">
-                <div className="flex flex-wrap gap-2">
-                  {creators.map((creator) => (
-                    <Chip
-                      key={creator.id}
-                      label={creator.display_name}
-                      active={activeCreators.includes(creator.id)}
-                      onClick={() => onCreatorChange(creator.id)}
-                    />
-                  ))}
-                </div>
-              </div>
-            </FilterGroup>
-          </div>
+          <DesktopFilterGroups groups={groups} />
         </div>
       )}
+
+      <dialog
+        ref={mobileDialogRef}
+        id="mobile-exercise-filters"
+        aria-labelledby="mobile-filter-heading"
+        onCancel={(event) => {
+          event.preventDefault();
+          closeMobileDialog();
+        }}
+        onKeyDown={(event) => {
+          if (event.key === "Escape") {
+            event.preventDefault();
+            closeMobileDialog();
+          }
+        }}
+        onClose={restoreFilterTriggerFocus}
+        onClick={(event) => {
+          if (event.target === event.currentTarget) closeMobileDialog();
+        }}
+        className="fixed inset-x-0 bottom-0 top-auto m-0 max-h-[88dvh] w-full max-w-none flex-col overflow-hidden rounded-t-2xl border border-white/15 bg-[#0b0c0c] p-0 text-stone-100 shadow-2xl shadow-black open:flex backdrop:bg-black/80 backdrop:backdrop-blur-sm sm:hidden"
+      >
+        <div className="flex shrink-0 items-center justify-between gap-4 border-b border-white/10 bg-[#101111] px-4 py-3">
+          <div>
+            <p className="text-xs font-bold uppercase text-orange-400">
+              Refine directory
+            </p>
+            <h2
+              id="mobile-filter-heading"
+              className="font-display display-tight mt-0.5 text-2xl font-semibold text-stone-50"
+            >
+              Filters
+            </h2>
+          </div>
+          <button
+            type="button"
+            onClick={closeMobileDialog}
+            aria-label="Close filters"
+            className="flex min-h-11 min-w-11 items-center justify-center rounded-md border border-white/10 bg-[#181919] text-stone-300 transition hover:border-orange-500/50 hover:text-orange-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400"
+          >
+            <CloseIcon />
+          </button>
+        </div>
+
+        <div className="thin-scrollbar min-h-0 flex-1 overflow-y-auto px-4 py-2">
+          <MobileFilterGroups groups={groups} />
+        </div>
+
+        <div className="grid shrink-0 grid-cols-[0.8fr_1.2fr] gap-3 border-t border-white/10 bg-[#101111] p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+          <button
+            type="button"
+            onClick={clearFilters}
+            disabled={!hasFilters}
+            className="min-h-12 rounded-md border border-white/15 px-4 text-sm font-bold text-stone-200 transition hover:border-orange-500/50 hover:text-orange-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            Clear
+          </button>
+          <button
+            type="button"
+            onClick={closeMobileDialog}
+            className="min-h-12 rounded-md bg-orange-500 px-4 text-sm font-bold text-black transition hover:bg-orange-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300"
+          >
+            Show {resultCount.toLocaleString()} result
+            {resultCount === 1 ? "" : "s"}
+          </button>
+        </div>
+      </dialog>
     </section>
   );
 }

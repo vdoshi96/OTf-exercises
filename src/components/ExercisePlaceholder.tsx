@@ -1,9 +1,12 @@
+import Image from "next/image";
 import { CATEGORY_COLORS, type GroupedExercise } from "@/lib/types";
+import { FALLBACK_THUMBNAIL } from "./thumbnailFallback";
 
 interface ExercisePlaceholderProps {
   category: GroupedExercise["category"];
   exerciseName: string;
   muscleGroups: string[];
+  eager?: boolean;
 }
 
 const CATEGORY_ICONS: Record<string, string> = {
@@ -20,6 +23,7 @@ export default function ExercisePlaceholder({
   category,
   exerciseName,
   muscleGroups,
+  eager = false,
 }: ExercisePlaceholderProps) {
   const colorClasses = CATEGORY_COLORS[category] || CATEGORY_COLORS.other;
   const bgClass = colorClasses.split(" ")[0]; // e.g. "bg-blue-500/20"
@@ -27,9 +31,18 @@ export default function ExercisePlaceholder({
   const iconPath = CATEGORY_ICONS[category] || CATEGORY_ICONS.other;
 
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-[#151616] p-3 text-center">
+    <div className="relative flex h-full w-full flex-col items-center justify-center gap-2 overflow-hidden bg-[#151616] p-3 text-center">
+      <Image
+        src={FALLBACK_THUMBNAIL}
+        alt=""
+        fill
+        sizes="(max-width: 639px) 40vw, (min-width: 1280px) 25vw, (min-width: 1024px) 33vw, 50vw"
+        loading={eager ? "eager" : "lazy"}
+        className="object-cover opacity-25"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/50 to-black/35" />
       <div
-        className={`flex h-10 w-10 items-center justify-center rounded-md border border-orange-500/25 ${bgClass}`}
+        className={`relative flex h-10 w-10 items-center justify-center rounded-md border border-orange-500/25 ${bgClass}`}
       >
         <svg
           className={`h-5 w-5 ${textClass}`}
@@ -43,11 +56,11 @@ export default function ExercisePlaceholder({
           <path d={iconPath} />
         </svg>
       </div>
-      <p className="line-clamp-2 text-xs font-semibold leading-tight text-stone-300">
+      <p className="relative line-clamp-2 text-xs font-semibold leading-tight text-stone-300">
         {exerciseName}
       </p>
       {muscleGroups.length > 0 && (
-        <p className="line-clamp-1 text-[10px] text-stone-600">
+        <p className="relative line-clamp-1 text-[10px] text-stone-400">
           {muscleGroups.slice(0, 3).join(" · ")}
         </p>
       )}

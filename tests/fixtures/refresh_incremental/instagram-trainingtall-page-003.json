@@ -1,0 +1,17 @@
+{
+  "items": [
+    {
+      "media": {
+        "code": "TRAINOLD3",
+        "taken_at": 70,
+        "caption": {
+          "text": "Older historical reel"
+        }
+      }
+    }
+  ],
+  "paging_info": {
+    "more_available": false,
+    "max_id": null
+  }
+}

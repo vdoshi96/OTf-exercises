@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import { CATEGORY_LABELS, type GroupedExercise } from "@/lib/types";
 import { getExerciseCreators } from "@/lib/search";
 import ExercisePlaceholder from "./ExercisePlaceholder";
@@ -20,13 +23,18 @@ function summarizeList(items: string[], limit: number): string {
 
 interface ExerciseCardProps {
   exercise: GroupedExercise;
+  eager?: boolean;
 }
 
-export default function ExerciseCard({ exercise }: ExerciseCardProps) {
+export default function ExerciseCard({
+  exercise,
+  eager = false,
+}: ExerciseCardProps) {
   const categoryLabel =
     CATEGORY_LABELS[exercise.category] || exercise.category;
 
   const thumbnail = getLocalThumbnail(exercise);
+  const [thumbnailError, setThumbnailError] = useState(false);
   const videoCount = exercise.videos.length;
   const sources = new Set(exercise.videos.map((v) => v.source));
   const creators = getExerciseCreators(exercise);
@@ -41,15 +49,17 @@ export default function ExerciseCard({ exercise }: ExerciseCardProps) {
     <Link
       href={`/exercise/${exercise.id}`}
       data-testid="exercise-card"
-      className="group flex h-full flex-col overflow-hidden rounded-lg border border-white/15 bg-[#101111] shadow-xl shadow-black/20 transition duration-200 hover:-translate-y-1 hover:border-orange-500/50 hover:shadow-orange-950/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-400"
+      className="group flex h-full min-h-36 flex-row overflow-hidden rounded-lg border border-white/15 bg-[#101111] shadow-xl shadow-black/20 transition duration-200 hover:border-orange-500/50 hover:shadow-orange-950/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-400 sm:flex-col sm:hover:-translate-y-1"
     >
-      <div className="relative aspect-[16/11] w-full overflow-hidden bg-[#151616]">
-        {thumbnail ? (
+      <div className="relative w-[40%] max-w-40 shrink-0 overflow-hidden bg-[#151616] sm:aspect-[16/11] sm:w-full sm:max-w-none">
+        {thumbnail && !thumbnailError ? (
           <Image
             src={thumbnail}
             alt={exercise.exercise_name}
             fill
-            sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+            sizes="(max-width: 639px) 40vw, (min-width: 1280px) 25vw, (min-width: 1024px) 33vw, 50vw"
+            loading={eager ? "eager" : "lazy"}
+            onError={() => setThumbnailError(true)}
             className="object-cover transition duration-300 group-hover:scale-105"
           />
         ) : (
@@ -57,28 +67,29 @@ export default function ExerciseCard({ exercise }: ExerciseCardProps) {
             category={exercise.category}
             exerciseName={exercise.exercise_name}
             muscleGroups={exercise.muscle_groups}
+            eager={eager}
           />
         )}
 
-        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/90 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/90 to-transparent sm:h-24" />
 
-        <div className="absolute left-3 top-3 flex flex-wrap gap-2">
-          <span className="rounded-md border border-orange-500/40 bg-black/70 px-2.5 py-1 text-xs font-bold uppercase text-orange-400 shadow-sm shadow-black/30 backdrop-blur-sm">
+        <div className="absolute left-2 top-2 flex flex-wrap gap-2 sm:left-3 sm:top-3">
+          <span className="rounded-md border border-orange-500/40 bg-black/70 px-2 py-1 text-[10px] font-bold uppercase text-orange-400 shadow-sm shadow-black/30 backdrop-blur-sm sm:px-2.5 sm:text-xs">
             {categoryLabel}
           </span>
         </div>
 
-        <div className="absolute right-3 top-3">
-          <span className="rounded-md border border-white/15 bg-black/70 px-2.5 py-1 text-xs font-bold uppercase text-stone-100 backdrop-blur-sm">
+        <div className="absolute right-2 top-2 hidden sm:right-3 sm:top-3 sm:block">
+          <span className="rounded-md border border-white/15 bg-black/70 px-2 py-1 text-[10px] font-bold uppercase text-stone-100 backdrop-blur-sm sm:px-2.5 sm:text-xs">
             {videoCount} video{videoCount === 1 ? "" : "s"}
           </span>
         </div>
 
-        <div className="absolute inset-x-3 bottom-3 flex items-center justify-between gap-3">
-          <span className="min-w-0 truncate text-sm font-semibold text-stone-100">
+        <div className="absolute inset-x-2 bottom-2 flex items-center justify-between gap-2 sm:inset-x-3 sm:bottom-3 sm:gap-3">
+          <span className="min-w-0 truncate text-[11px] font-semibold text-stone-100 sm:text-sm">
             {creatorSummary}
           </span>
-          <span className="flex shrink-0 gap-1.5">
+          <span className="hidden shrink-0 gap-1.5 sm:flex">
             {sources.has("tiktok") && (
               <span
                 aria-label="TikTok"
@@ -113,30 +124,32 @@ export default function ExerciseCard({ exercise }: ExerciseCardProps) {
         </div>
       </div>
 
-      <div className="flex flex-1 flex-col gap-3 p-4">
+      <div className="flex min-w-0 flex-1 flex-col gap-2 p-3 sm:gap-3 sm:p-4">
         <div>
-          <h3 className="line-clamp-2 text-xl font-bold leading-tight text-stone-50 transition group-hover:text-orange-200">
+          <h3 className="line-clamp-3 text-base font-bold leading-tight text-stone-50 transition group-hover:text-orange-200 sm:line-clamp-2 sm:text-xl">
             {exercise.exercise_name}
           </h3>
         </div>
 
-        <div className="flex flex-wrap gap-1.5">
-          {exercise.muscle_groups.slice(0, 3).map((mg) => (
+        <div className="flex flex-wrap gap-1 sm:gap-1.5">
+          {exercise.muscle_groups.slice(0, 3).map((mg, index) => (
             <span
               key={mg}
-              className="rounded-md border border-white/10 bg-[#181919] px-2.5 py-1.5 text-xs font-medium text-stone-300"
+              className={`rounded-md border border-white/10 bg-[#181919] px-2 py-1 text-[10px] font-medium text-stone-300 sm:px-2.5 sm:py-1.5 sm:text-xs ${
+                index === 2 ? "max-sm:hidden" : ""
+              }`}
             >
               {mg}
             </span>
           ))}
           {exercise.muscle_groups.length > 3 && (
-            <span className="rounded-md border border-white/10 bg-[#181919] px-2.5 py-1.5 text-xs font-medium text-stone-500">
+            <span className="rounded-md border border-white/10 bg-[#181919] px-2 py-1 text-[10px] font-medium text-stone-500 sm:px-2.5 sm:py-1.5 sm:text-xs">
               +{exercise.muscle_groups.length - 3}
             </span>
           )}
         </div>
 
-        <p className="mt-auto flex items-center gap-2 border-t border-white/10 pt-3 text-sm leading-5 text-stone-400">
+        <p className="mt-auto flex items-center gap-1.5 border-t border-white/10 pt-2 text-xs leading-5 text-stone-400 sm:gap-2 sm:pt-3 sm:text-sm">
           <svg
             aria-hidden="true"
             className="h-4 w-4 shrink-0 text-[var(--signal)]"

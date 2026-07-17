@@ -77,46 +77,55 @@ export default function Home() {
     fuse,
   ]);
   const formattedResultCount = results.length.toLocaleString();
+  const resultSetKey = [
+    query,
+    activeCategory,
+    activeMuscleGroup,
+    activeEquipment,
+    activePlatform,
+    activeCreators.join(","),
+  ].join("|");
 
   return (
     <>
       <section className="border-b border-white/10">
-        <div className="mx-auto max-w-[92rem] px-4 py-6 sm:px-6 sm:py-7 lg:px-8 lg:py-8">
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(420px,0.82fr)] lg:items-center">
+        <div className="mx-auto max-w-[92rem] px-4 py-4 sm:px-6 sm:py-7 lg:px-8 lg:py-8">
+          <div className="grid gap-4 sm:gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(420px,0.82fr)] lg:items-center">
             <div className="max-w-4xl">
-              <h1 className="font-display display-tight max-w-4xl text-5xl font-semibold leading-[0.94] text-stone-50 sm:text-6xl lg:text-6xl">
+              <h1 className="font-display display-tight max-w-4xl text-4xl font-semibold leading-[0.94] text-stone-50 sm:text-6xl lg:text-6xl">
                 Find the movement before class starts.
               </h1>
-              <p className="mt-3 max-w-2xl text-base leading-7 text-stone-300">
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-stone-300 sm:mt-3 sm:text-base sm:leading-7">
                 Search exercise demos by muscle group, equipment, category, and
                 creator so you can preview unfamiliar movements and walk into
                 the studio with context.
               </p>
             </div>
 
-            <div className="panel-glass rounded-lg border p-4 sm:p-5">
+            <div className="panel-glass rounded-lg border p-3 sm:p-5">
               <div className="grid grid-cols-3 divide-x divide-white/10">
-                <div className="px-3 first:pl-0">
-                  <p className="font-display display-tight text-4xl font-semibold leading-none text-orange-500 sm:text-5xl">
+                <div className="px-2 first:pl-0 sm:px-3">
+                  <p className="font-display display-tight text-2xl font-semibold leading-none text-orange-500 sm:text-5xl">
                     {formattedExerciseCount}
                   </p>
-                  <p className="mt-3 text-sm font-medium text-stone-300">
+                  <p className="mt-1 text-[11px] font-medium text-stone-300 sm:mt-3 sm:text-sm">
                     Exercises
                   </p>
                 </div>
-                <div className="px-3 sm:px-6">
-                  <p className="font-display display-tight text-4xl font-semibold leading-none text-orange-500 sm:text-5xl">
+                <div className="px-2 sm:px-6">
+                  <p className="font-display display-tight text-2xl font-semibold leading-none text-orange-500 sm:text-5xl">
                     {formattedVideoCount}
                   </p>
-                  <p className="mt-3 text-sm font-medium text-stone-300">
-                    Video demos
+                  <p className="mt-1 text-[11px] font-medium text-stone-300 sm:mt-3 sm:text-sm">
+                    <span className="sm:hidden">Videos</span>
+                    <span className="hidden sm:inline">Video demos</span>
                   </p>
                 </div>
-                <div className="px-3 last:pr-0 sm:px-6">
-                  <p className="font-display display-tight text-4xl font-semibold leading-none text-orange-500 sm:text-5xl">
+                <div className="px-2 last:pr-0 sm:px-6">
+                  <p className="font-display display-tight text-2xl font-semibold leading-none text-orange-500 sm:text-5xl">
                     {formattedCreatorCount}
                   </p>
-                  <p className="mt-3 text-sm font-medium text-stone-300">
+                  <p className="mt-1 text-[11px] font-medium text-stone-300 sm:mt-3 sm:text-sm">
                     Creator{totalCreators === 1 ? "" : "s"}
                   </p>
                 </div>
@@ -124,7 +133,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="mt-5 space-y-3">
+          <div className="mt-4 space-y-3 sm:mt-5">
             <SearchBar
               onSearch={handleSearch}
               resultCount={results.length}
@@ -137,6 +146,7 @@ export default function Home() {
                 equipment={filterOptions.equipment}
                 platforms={filterOptions.platforms}
                 creators={filterOptions.creators}
+                resultCount={results.length}
                 activeCategory={activeCategory}
                 activeMuscleGroup={activeMuscleGroup}
                 activeEquipment={activeEquipment}
@@ -148,7 +158,7 @@ export default function Home() {
                 onPlatformChange={setActivePlatform}
                 onCreatorChange={handleCreatorToggle}
               />
-              <p className="shrink-0 pt-3 text-sm font-medium text-stone-400 sm:text-base">
+              <p className="hidden shrink-0 pt-3 text-sm font-medium text-stone-400 sm:block sm:text-base">
                 Showing{" "}
                 <span className="font-semibold text-stone-100">
                   {formattedResultCount}
@@ -164,13 +174,16 @@ export default function Home() {
         id="directory"
         className="mx-auto max-w-[92rem] scroll-mt-24 px-4 py-3 sm:px-6 lg:px-8 lg:py-4"
       >
-        <div className="mb-4">
-          <h2 className="font-display display-tight text-3xl font-semibold text-stone-50 sm:text-4xl">
+        <div className="mb-3 flex items-end justify-between gap-4 sm:mb-4">
+          <h2 className="font-display display-tight text-2xl font-semibold text-stone-50 sm:text-4xl">
             Exercise reference
           </h2>
+          <p className="shrink-0 text-xs font-medium text-stone-400 sm:hidden">
+            {formattedResultCount} result{results.length === 1 ? "" : "s"}
+          </p>
         </div>
 
-        <ExerciseGrid exercises={results} />
+        <ExerciseGrid key={resultSetKey} exercises={results} />
       </section>
     </>
   );

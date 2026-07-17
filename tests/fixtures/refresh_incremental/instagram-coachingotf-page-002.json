@@ -1,0 +1,24 @@
+{
+  "items": [
+    {
+      "media": {
+        "code": "NEWCOACH",
+        "taken_at": 200,
+        "caption": {
+          "text": "Goblet Squat Form Tips. Keep your chest tall and drive through your heels."
+        },
+        "image_versions2": {
+          "candidates": [
+            {
+              "url": "https://example.test/new-coach.jpg"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "paging_info": {
+    "more_available": true,
+    "max_id": "coach-page-3"
+  }
+}

@@ -38,10 +38,10 @@ export default function SearchBar({
       <label htmlFor="exercise-search" className="sr-only">
         Search exercises
       </label>
-      <div className="relative flex min-h-14 overflow-hidden rounded-lg border border-white/15 bg-[#111313]/90 shadow-2xl shadow-black/30 transition focus-within:border-orange-400 focus-within:ring-2 focus-within:ring-orange-500/30">
+      <div className="relative flex min-h-12 overflow-hidden rounded-lg border border-white/15 bg-[#111313]/90 shadow-2xl shadow-black/30 transition focus-within:border-orange-400 focus-within:ring-2 focus-within:ring-orange-500/30 sm:min-h-14">
         <svg
           aria-hidden="true"
-          className="absolute left-5 top-1/2 h-6 w-6 -translate-y-1/2 text-stone-300"
+          className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-stone-300 sm:left-5 sm:h-6 sm:w-6"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -58,8 +58,8 @@ export default function SearchBar({
           type="search"
           value={value}
           onChange={(e) => setValue(e.target.value)}
-          placeholder="Search exercises, muscles, equipment, creators..."
-          className="min-w-0 flex-1 bg-transparent py-4 pl-14 pr-11 text-base font-medium text-stone-50 outline-none placeholder:text-stone-500 sm:text-lg"
+          placeholder="Search exercises…"
+          className="min-w-0 flex-1 bg-transparent py-3 pl-11 pr-11 text-base font-medium text-stone-50 outline-none placeholder:text-stone-500 sm:py-4 sm:pl-14 sm:text-lg"
         />
         {value && (
           <button

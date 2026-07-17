@@ -6,6 +6,7 @@ import InstagramEmbed from "./InstagramEmbed";
 
 interface VideoEmbedProps {
   video: Video;
+  exerciseName: string;
   index: number;
   total: number;
 }
@@ -42,7 +43,12 @@ function SourceBadge({ source }: { source: "tiktok" | "instagram" }) {
   );
 }
 
-export default function VideoEmbed({ video, index, total }: VideoEmbedProps) {
+export default function VideoEmbed({
+  video,
+  exerciseName,
+  index,
+  total,
+}: VideoEmbedProps) {
   const descFirstLine = video.description
     ?.split("#")[0]
     ?.split("\n")[0]
@@ -52,7 +58,7 @@ export default function VideoEmbed({ video, index, total }: VideoEmbedProps) {
     : `@${video.creator.handle}`;
 
   return (
-    <article className="rounded-lg border border-white/10 bg-[#151616] p-4 shadow-xl shadow-black/15">
+    <article className="rounded-lg border border-white/10 bg-[#151616] p-3 shadow-xl shadow-black/15 sm:p-4">
       <div className="mb-3 flex items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">
           <SourceBadge source={video.source} />
@@ -82,9 +88,19 @@ export default function VideoEmbed({ video, index, total }: VideoEmbedProps) {
       )}
 
       {video.source === "instagram" ? (
-        <InstagramEmbed url={video.url} thumbnail={video.thumbnail} />
+        <InstagramEmbed
+          url={video.url}
+          thumbnail={video.thumbnail}
+          eager={index === 0}
+        />
       ) : (
-        <TikTokEmbed url={video.url} />
+        <TikTokEmbed
+          url={video.url}
+          videoId={video.id}
+          thumbnailUrl={video.thumbnail}
+          title={exerciseName}
+          eager={index === 0}
+        />
       )}
     </article>
   );

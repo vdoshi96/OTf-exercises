@@ -2,7 +2,7 @@
 
 A searchable, unofficial fan directory of OrangeTheory Fitness exercise demos from multiple creators and source platforms.
 
-Browse 1,966 exercise demonstrations across 1,231 grouped exercises, filterable by muscle group, equipment, category, platform, and creator. Each exercise links to the original video embed.
+Browse 2,031 exercise demonstrations across 1,286 grouped exercises, filterable by muscle group, equipment, category, platform, and creator. Each exercise links to the original source video.
 
 > **Disclaimer:** This is an unofficial fan directory. All video content belongs to its original creators and source platforms.
 
@@ -23,34 +23,34 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-## Data Pipeline
+## Safe Data Refresh
 
-The exercise data is generated from social video metadata using these scripts:
+The refresh workflow scans Coach Rudy's tracked Instagram and TikTok feeds plus
+TrainingTall's Instagram feed. It is incremental and fail-closed: incomplete or
+rate-limited scans do not alter the catalogue or advance source state.
 
 ```bash
-# 1. Scrape metadata from source platforms (requires yt-dlp where supported)
-yt-dlp --skip-download --write-info-json --output "metadata/%(id)s" "https://www.tiktok.com/@coachingotf"
+# Always review the dry run first; this writes nothing.
+npm run refresh
 
-# 2. Parse into raw_videos.json
-python3 scripts/parse_metadata.py
-
-# 3. Enrich with exercise classification
-python3 scripts/enrich_local.py          # Pattern-based (no API key)
-python3 scripts/enrich_metadata.py       # Claude API (requires ANTHROPIC_API_KEY)
-
-# 4. Merge and filter into src/data/exercises.json
-python3 scripts/merge_and_filter.py
-
-# 5. Self-host Instagram thumbnails (cdninstagram URLs expire)
-node scripts/download_instagram_thumbnails.mjs
-
-# Or run everything at once:
-./scripts/refresh.sh
+# Apply the reviewed delta, backfill thumbnails, and run strict integrity checks.
+npm run refresh:apply
 ```
 
-### Instagram thumbnails
+Per-source checkpoints live in `data/refresh-state.json`. Reviewed include,
+reject, title, and exact-group decisions live in
+`data/refresh-overrides.json`. Each applied run writes provenance and counts to
+`data/refresh-report.json`.
 
-Instagram's CDN thumbnail URLs are signed and expire after a few days, so the URLs captured at scrape time return 403 once the static site loads them later. `scripts/download_instagram_thumbnails.mjs` walks `src/data/exercises.json`, fetches each reel's public page for a fresh `og:image`, downloads the JPEG to `public/thumbs/<shortcode>.jpg`, and rewrites the `thumbnail` field to point at the local copy. Re-run it whenever new reels are added; existing thumbs are skipped unless you pass `--force`.
+### Durable thumbnails
+
+Instagram and TikTok CDN URLs expire, so release data never references them
+directly. `scripts/ensure-thumbnails.mjs` recovers each platform's current
+preview, validates and normalizes it with Sharp, then stores it under
+`public/thumbs/`. Unavailable posts receive a durable local fallback and an
+explicit failure entry in `docs/qa/latest/thumbnail-report.json` so the UI never
+shows a broken image. See [the thumbnail pipeline](docs/thumbnail-pipeline.md)
+for recovery order, validation, and troubleshooting commands.
 
 ## Project Structure
 
@@ -58,9 +58,13 @@ Instagram's CDN thumbnail URLs are signed and expire after a few days, so the UR
 ├── scripts/
 │   ├── parse_metadata.py       # Parse yt-dlp .info.json files
 │   ├── enrich_local.py         # Local pattern-based enrichment
-│   ├── enrich_metadata.py      # Claude API enrichment (optional)
-│   ├── merge_and_filter.py     # Merge + filter to exercises.json
-│   └── refresh.sh              # Full pipeline automation
+│   ├── refresh_incremental.py  # Fail-closed creator source importer
+│   ├── ensure-thumbnails.mjs   # Shared IG/TikTok local thumbnail worker
+│   └── refresh.sh              # Dry-run/apply orchestration
+├── data/
+│   ├── refresh-state.json      # Last successful source checkpoints
+│   ├── refresh-overrides.json  # Reviewed classification decisions
+│   └── refresh-report.json     # Latest applied content provenance
 ├── src/
 │   ├── app/
 │   │   ├── page.tsx            # Main directory with search + filters
@@ -73,14 +77,14 @@ Instagram's CDN thumbnail URLs are signed and expire after a few days, so the UR
 │   │   ├── FilterPanel.tsx     # Category/muscle/equipment/creator filters
 │   │   ├── ExerciseCard.tsx    # Exercise card with tags
 │   │   ├── ExerciseGrid.tsx    # Responsive card grid
-│   │   ├── TikTokEmbed.tsx     # TikTok video embed
+│   │   ├── TikTokEmbed.tsx     # Tap-to-play TikTok player
 │   │   └── InstagramEmbed.tsx  # Instagram video embed
 │   ├── data/
-│   │   └── exercises.json      # 1,231 grouped exercises
+│   │   └── exercises.json      # 1,286 grouped exercises
 │   └── lib/
 │       ├── search.ts           # Fuse.js search logic
 │       └── types.ts            # TypeScript types + constants
-├── metadata/                   # yt-dlp output (gitignored)
+├── tests/                      # Import, thumbnail, and browser checks
 └── package.json
 ```
 
