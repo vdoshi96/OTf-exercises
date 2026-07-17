@@ -1,0 +1,24 @@
+{
+  "items": [
+    {
+      "media": {
+        "code": "PINNEDOLD",
+        "taken_at": 90,
+        "caption": {
+          "text": "Old pinned reel"
+        },
+        "image_versions2": {
+          "candidates": [
+            {
+              "url": "https://example.test/pinned.jpg"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "paging_info": {
+    "more_available": true,
+    "max_id": "coach-page-2"
+  }
+}

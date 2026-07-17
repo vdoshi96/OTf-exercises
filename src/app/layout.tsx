@@ -18,6 +18,7 @@ const oswald = Oswald({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://o-tf-exercises.vercel.app"),
   title: {
     default: "OTF Exercise Directory",
     template: "%s | OTF Exercise Directory",
@@ -40,14 +41,15 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      data-scroll-behavior="smooth"
       className={`${inter.variable} ${oswald.variable} dark h-full`}
     >
       <body className="app-shell flex min-h-full flex-col bg-background font-sans text-foreground antialiased">
         <a
-          href="#directory"
+          href="#main-content"
           className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-orange-500 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-black"
         >
-          Skip to directory
+          Skip to main content
         </a>
         <header className="sticky top-0 z-50 border-b border-white/10 bg-[#060707]/90 backdrop-blur-2xl">
           <div className="h-1 bg-orange-500" />
@@ -62,25 +64,27 @@ export default function RootLayout({
                 width={140}
                 height={34}
                 className="h-7 w-auto sm:h-8"
-                priority
+                preload
               />
               <span className="hidden border-l border-white/15 pl-4 text-sm font-semibold text-stone-300 sm:inline">
                 Exercise Directory
               </span>
             </Link>
             <nav aria-label="Primary">
-              <a
-                href="#directory"
+              <Link
+                href="/#directory"
                 className="relative inline-flex min-h-10 items-center rounded-md px-3 text-sm font-semibold text-stone-100 transition hover:text-orange-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-400"
               >
                 Directory
                 <span className="absolute inset-x-3 -bottom-4 h-0.5 bg-orange-500" />
-              </a>
+              </Link>
             </nav>
           </div>
         </header>
 
-        <main className="flex-1">{children}</main>
+        <main id="main-content" className="flex-1" tabIndex={-1}>
+          {children}
+        </main>
 
         <footer className="border-t border-white/10 bg-[#060707]/95 py-8">
           <div className="mx-auto max-w-[92rem] px-4 text-center text-sm leading-6 text-stone-500 sm:px-6 lg:px-8">
@@ -90,7 +94,7 @@ export default function RootLayout({
             </p>
           </div>
         </footer>
-        <Analytics />
+        {process.env.VERCEL === "1" ? <Analytics /> : null}
       </body>
     </html>
   );

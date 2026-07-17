@@ -1,0 +1,64 @@
+{
+  "after": {
+    "empty": 0,
+    "fallback": 1,
+    "local": 2030,
+    "remote": 0,
+    "total": 2031
+  },
+  "before": {
+    "empty": 817,
+    "fallback": 0,
+    "local": 1214,
+    "remote": 0,
+    "total": 2031
+  },
+  "by_source": {
+    "instagram": {
+      "local-valid": 1214,
+      "downloaded": 213
+    },
+    "tiktok": {
+      "downloaded": 603,
+      "fallback": 1
+    }
+  },
+  "catalog": "src/data/exercises.json",
+  "catalog_changed": true,
+  "completed_without_fallbacks": false,
+  "dry_run": false,
+  "failures": [
+    {
+      "errors": [
+        "source-resolution: request failed after 1 attempt(s): HTTP 400"
+      ],
+      "exercise_id": "single-arm-high-row",
+      "source": "tiktok",
+      "video_id": "7254008823747300650",
+      "video_url": "https://www.tiktok.com/@coachingotf/video/7254008823747300650"
+    }
+  ],
+  "fallback": {
+    "generated": false,
+    "generation": "640x960 JPEG, dark #111111 background, centered public/otf-logo.svg, quality 72 mozjpeg",
+    "path": "/thumbs/fallback-exercise.jpg",
+    "reused": true
+  },
+  "generated_at": "2026-07-16T23:48:53.343Z",
+  "options": {
+    "attempts": 3,
+    "between_items_ms": 200,
+    "concurrency": 4,
+    "force": false,
+    "limit": null,
+    "skip_download": false,
+    "source": null,
+    "timeout_ms": 15000
+  },
+  "processed": 2031,
+  "statuses": {
+    "local-valid": 1214,
+    "downloaded": 816,
+    "fallback": 1
+  }
+}

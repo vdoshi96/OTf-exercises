@@ -141,7 +141,7 @@ You won't hit any limits unless the site goes viral. If it does, Vercel Pro is $
 Run `npm run build` locally first to catch errors before pushing.
 
 **TikTok embeds not loading:**
-TikTok embeds require their JS script (`tiktok.com/embed.js`). If they break, the fallback link to the original TikTok should still work. Check the browser console for errors.
+TikTok players load only after the visitor taps the local preview. If a player is blocked, the permanent "Open original on TikTok" link remains available. Check the browser console and the original post's availability.
 
 **yt-dlp can't scrape TikTok:**
 TikTok blocks scrapers frequently. Try updating yt-dlp (`pip install -U yt-dlp`). If it still fails, manually collect video URLs from his profile page and put them in `urls.txt`.

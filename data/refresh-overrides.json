@@ -1,0 +1,322 @@
+{
+  "version": 1,
+  "initial_refresh_expectations": {
+    "baseline_videos": 1966,
+    "minimum_candidates_by_creator": {
+      "coachingotf": 42,
+      "trainingtall": 30
+    },
+    "minimum_accepted_by_creator": {
+      "coachingotf": 41,
+      "trainingtall": 24
+    },
+    "minimum_new_groups": 55,
+    "minimum_explicit_appends": 10
+  },
+  "rejected": {
+    "ig_DaK4O_cu2Ro": {
+      "reason": "Season of Strength community promotion"
+    },
+    "ig_DZbUFcOJuAr": {
+      "reason": "recipe content"
+    },
+    "ig_DaJVSabSzP_": {
+      "reason": "nutrition interview"
+    },
+    "ig_DaRa48zpOGZ": {
+      "reason": "nutrition interview"
+    },
+    "ig_DaTL2QAp0yX": {
+      "reason": "generic interview prompt"
+    },
+    "ig_DaTnU_JBNr_": {
+      "reason": "standalone running-course promotion"
+    },
+    "ig_DaWEqe-S_9k": {
+      "reason": "calorie-deficit advice rather than an exercise demonstration"
+    }
+  },
+  "force_include": {
+    "ig_DZd6DGLt0vU": {
+      "exercise_name": "Quick Forward Backward Hops",
+      "category": "cardio",
+      "muscle_groups": [
+        "calves",
+        "quads",
+        "glutes"
+      ],
+      "equipment": [
+        "bodyweight"
+      ],
+      "movement_type": "cardio",
+      "coaching_cues": []
+    },
+    "ig_DZn1qhWgbv-": {
+      "exercise_name": "Bridge Hold with Alternating Walkout",
+      "category": "lower_body",
+      "muscle_groups": [
+        "glutes",
+        "hamstrings",
+        "core"
+      ],
+      "equipment": [
+        "bodyweight"
+      ],
+      "movement_type": "compound",
+      "coaching_cues": []
+    },
+    "ig_DZ3gIBVATZ2": {
+      "exercise_name": "Dynamic Single Arm Body Twist",
+      "category": "core",
+      "muscle_groups": [
+        "core",
+        "obliques",
+        "thoracic spine"
+      ],
+      "equipment": [
+        "bodyweight"
+      ],
+      "movement_type": "compound",
+      "coaching_cues": []
+    },
+    "ig_DZ_pkjitR81": {
+      "exercise_name": "Seated Uppercut",
+      "category": "upper_body",
+      "muscle_groups": [
+        "shoulders",
+        "biceps",
+        "core"
+      ],
+      "equipment": [
+        "dumbbell",
+        "bench"
+      ],
+      "movement_type": "compound",
+      "coaching_cues": []
+    },
+    "ig_DaEz-g_Nsu5": {
+      "exercise_name": "Dumbbell Grip Strength",
+      "category": "upper_body",
+      "muscle_groups": [
+        "forearms",
+        "grip"
+      ],
+      "equipment": [
+        "dumbbell"
+      ],
+      "movement_type": "isolation",
+      "coaching_cues": []
+    },
+    "ig_DZTpKpaJKbg": {
+      "exercise_name": "Split Squat Knee-Pain Modification",
+      "category": "lower_body",
+      "muscle_groups": [
+        "quads",
+        "glutes"
+      ],
+      "equipment": [
+        "dumbbell",
+        "TRX straps",
+        "bench"
+      ],
+      "movement_type": "compound",
+      "coaching_cues": []
+    },
+    "ig_DZWKfY-p78Q": {
+      "exercise_name": "Lateral Lunge Goblet Hold",
+      "category": "lower_body",
+      "muscle_groups": [
+        "quads",
+        "glutes",
+        "adductors"
+      ],
+      "equipment": [
+        "dumbbell"
+      ],
+      "movement_type": "compound",
+      "coaching_cues": []
+    },
+    "ig_DZYf6Y7Bstp": {
+      "exercise_name": "Step-Down Heel Tap",
+      "category": "lower_body",
+      "muscle_groups": [
+        "quads",
+        "glutes"
+      ],
+      "equipment": [
+        "bench",
+        "dumbbell"
+      ],
+      "movement_type": "compound",
+      "coaching_cues": []
+    },
+    "ig_DZlrfyqJAW_": {
+      "exercise_name": "Deep Squat Mobility Drill",
+      "category": "mobility",
+      "muscle_groups": [
+        "glutes",
+        "adductors",
+        "hip flexors"
+      ],
+      "equipment": [
+        "bench"
+      ],
+      "movement_type": "stretch",
+      "coaching_cues": []
+    },
+    "ig_DZqhgTphRzD": {
+      "exercise_name": "Diagonal Push-Up",
+      "category": "upper_body",
+      "muscle_groups": [
+        "chest",
+        "triceps",
+        "shoulders",
+        "core"
+      ],
+      "equipment": [
+        "bodyweight"
+      ],
+      "movement_type": "compound",
+      "coaching_cues": []
+    },
+    "ig_DZ3s6pQp4rj": {
+      "exercise_name": "Shoulder Press Elbow Position",
+      "category": "upper_body",
+      "muscle_groups": [
+        "shoulders",
+        "triceps"
+      ],
+      "equipment": [
+        "dumbbell"
+      ],
+      "movement_type": "compound",
+      "coaching_cues": []
+    },
+    "ig_DaBl0KKBL-m": {
+      "exercise_name": "Reverse Fly Hinge Position",
+      "category": "upper_body",
+      "muscle_groups": [
+        "rear deltoids",
+        "upper back"
+      ],
+      "equipment": [
+        "dumbbell"
+      ],
+      "movement_type": "isolation",
+      "coaching_cues": []
+    },
+    "ig_DaL4-n9Bze9": {
+      "exercise_name": "Biceps Curl Wrist Position",
+      "category": "upper_body",
+      "muscle_groups": [
+        "biceps",
+        "forearms"
+      ],
+      "equipment": [
+        "dumbbell"
+      ],
+      "movement_type": "isolation",
+      "coaching_cues": []
+    },
+    "ig_Dabs3yspqdo": {
+      "exercise_name": "Diagonal Dumbbell Chest Press Grip",
+      "category": "upper_body",
+      "muscle_groups": [
+        "chest",
+        "triceps",
+        "shoulders"
+      ],
+      "equipment": [
+        "dumbbell"
+      ],
+      "movement_type": "compound",
+      "coaching_cues": []
+    },
+    "ig_DaeCLdbP-ul": {
+      "exercise_name": "Reverse Lunge Movement Timing",
+      "category": "lower_body",
+      "muscle_groups": [
+        "quads",
+        "glutes",
+        "hamstrings"
+      ],
+      "equipment": [
+        "bodyweight"
+      ],
+      "movement_type": "compound",
+      "coaching_cues": []
+    }
+  },
+  "append_to_group": {
+    "ig_DZRDnjXtAar": "single-arm-chest-press-with-leg-extension",
+    "ig_DZq19G8tzM9": "contralateral-single-arm-split-squat-with-hinge",
+    "ig_DZyqxVuNu4z": "strap-side-facing-single-arm-biceps-curl",
+    "ig_DaRjz-BNhnD": "high-plank-alternating-wide-step-with-power",
+    "ig_DaUS1b3AJTE": "alternating-full-step-up-to-knee-raise",
+    "ig_Dab_GCvN0k5": "squat-to-calf-raise",
+    "ig_DamOMbSNnCy": "contralateral-single-arm-reverse-lunge-to-press",
+    "ig_DZn8tryB6DT": "split-stance-deadlift",
+    "ig_DZ8cKYSBdRO": "snatch",
+    "ig_DZ_BAaJB8HB": "goblet-squat"
+  },
+  "title_overrides": {
+    "ig_DZOv6sUtz6-": "Strap Squat Jump",
+    "ig_DZTnx-Ht77X": "(Hang Power) Clean to Alternating Single Arm Neutral Grip Push Press",
+    "ig_DZVv6SHAYM6": "Skiers Swing",
+    "ig_DZYHFY6gaDY": "Mid Band Walkout to Push Up",
+    "ig_DZbMHoBAm0o": "Burpee to Alternating Reverse Lunge",
+    "ig_DZd6DGLt0vU": "Quick Forward Backward Hops",
+    "ig_DZfhOgTA6ZJ": "Y Bell Squat to Biceps Curl",
+    "ig_DZjKHodtyDk": "Alternating Sumo Squat",
+    "ig_DZlwZKNAiqM": "Tall Kneeling to Contralateral Single Arm Stand",
+    "ig_DZn1qhWgbv-": "Bridge Hold with Alternating Walkout",
+    "ig_DZtVOZDtR3H": "Floor Single Arm Chest Fly",
+    "ig_DZv-JwbtbdS": "Bench Goblet Sit to Stand",
+    "ig_DZ1HByBRIIa": "Strap Low Plank",
+    "ig_DZ3gIBVATZ2": "Dynamic Single Arm Body Twist",
+    "ig_DZ6fG3Gt3xX": "Front Rack Split Squat (AQAP: As Quick As Possible)",
+    "ig_DZ9G7sBtODy": "Bench High Plank Single Arm Triceps Kickback",
+    "ig_DZ_pkjitR81": "Seated Uppercut",
+    "ig_DaCPsuHNqBJ": "Mid Band Squat",
+    "ig_DaEz-g_Nsu5": "Dumbbell Grip Strength",
+    "ig_DaHXDW4N13i": "Alternating Biceps Curl",
+    "ig_DaJ6xTQt-tb": "Goblet Alternating Reverse Lunge with Torso Rotation",
+    "ig_DaMgf6PNphi": "Bench Seated High Row",
+    "ig_DaO-m2YNVeh": "Alternating Reverse Fly",
+    "ig_DaWwoZcgY4T": "Single Leg Contralateral Single Arm Low Row",
+    "ig_DaZawPMtivI": "Deadlift to High Pull",
+    "ig_DaecVvKNRW5": "Y Bell Squat Jump Punch",
+    "ig_Dag-rmstW2T": "Alternating Cross Back Lunge",
+    "ig_DajqsDpNHsz": "Lateral Step Over",
+    "ig_DapEQksAC5q": "Alternating Step Out Neutral Grip Thruster",
+    "ig_DarYFGBthYy": "Bench Pullover",
+    "ig_DauJzOzAxAv": "Burpee to Squat to Press",
+    "ig_DawMwoeN1uh": "Seated Reverse Fly",
+    "ig_DazEiFItJjY": "Scapular Protraction to Push Up",
+    "ig_Da1kMrPNmtt": "Bench Sit Up to Seated Torso Rotation",
+    "ig_DZTpKpaJKbg": "Split Squat Knee-Pain Modification",
+    "ig_DZWKfY-p78Q": "Lateral Lunge Goblet Hold",
+    "ig_DZYf6Y7Bstp": "Step-Down Heel Tap",
+    "ig_DZbEuBihh9d": "Running with Shin Splints",
+    "ig_DZdpj2yBFB9": "Dumbbell Burpee Setup",
+    "ig_DZlrfyqJAW_": "Deep Squat Mobility Drill",
+    "ig_DZn8tryB6DT": "Split Stance Deadlift",
+    "ig_DZqhgTphRzD": "Diagonal Push-Up",
+    "ig_DZtGRTKB21h": "Deadlift Wall Hinge Drill",
+    "ig_DZvrC9lSxzb": "Running Form at Any Speed",
+    "ig_DZ3s6pQp4rj": "Shoulder Press Elbow Position",
+    "ig_DZ53Z0QB_KO": "Running Cadence",
+    "ig_DZ8cKYSBdRO": "Snatch",
+    "ig_DZ_BAaJB8HB": "Goblet Squat",
+    "ig_DaBl0KKBL-m": "Reverse Fly Hinge Position",
+    "ig_DaJt09qJUcd": "Sit-Up Leg Position",
+    "ig_DaL4-n9Bze9": "Biceps Curl Wrist Position",
+    "ig_DaOdueghjOi": "Rear-Foot-Elevated Split Squat Setup",
+    "ig_DaRCn_ZBxki": "Single-Leg Deadlift Balance",
+    "ig_Dabs3yspqdo": "Diagonal Dumbbell Chest Press Grip",
+    "ig_DaeCLdbP-ul": "Reverse Lunge Movement Timing",
+    "ig_DajjlDMJY5A": "Deadlift Range of Motion",
+    "ig_Dat-tkLpkxF": "200m Row Sprint Technique",
+    "ig_DazF4j-p5Oo": "Lateral Step-Up Position"
+  }
+}

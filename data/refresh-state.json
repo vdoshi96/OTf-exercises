@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "baseline": {
+    "production_commit": "43beed930103530fa999226749c3d0fa498c8894",
+    "production_deployed_at": "2026-06-07T05:55:00Z",
+    "content_cutoff": "2026-06-05T03:21:02Z"
+  },
+  "sources": {
+    "instagram:coachingotf": {
+      "platform": "instagram",
+      "handle": "coachingotf",
+      "latest_seen_timestamp": 1784203200,
+      "latest_seen_id": "ig_Da1kMrPNmtt",
+      "last_successful_checked_at": "2026-07-16T23:03:16Z"
+    },
+    "instagram:trainingtall": {
+      "platform": "instagram",
+      "handle": "trainingtall",
+      "latest_seen_timestamp": 1784116800,
+      "latest_seen_id": "ig_DazF4j-p5Oo",
+      "last_successful_checked_at": "2026-07-16T23:03:16Z"
+    },
+    "tiktok:coachingotf": {
+      "platform": "tiktok",
+      "handle": "coachingotf",
+      "latest_seen_timestamp": 1772426254,
+      "latest_seen_id": "7612512725092158733",
+      "last_successful_checked_at": "2026-07-16T23:41:14Z"
+    }
+  }
+}

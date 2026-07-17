@@ -69,10 +69,10 @@ export default async function ExerciseDetailPage({ params }: PageProps) {
       : "Creator pending";
 
   return (
-    <div className="mx-auto max-w-[92rem] px-4 py-7 sm:px-6 lg:px-8 lg:py-9">
+    <div className="mx-auto max-w-[92rem] px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
       <Link
         href="/"
-        className="mb-8 inline-flex items-center gap-2 rounded-md text-sm font-semibold text-orange-400 transition hover:text-orange-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-400"
+        className="mb-5 inline-flex min-h-11 items-center gap-2 rounded-md text-sm font-semibold text-orange-400 transition hover:text-orange-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-400 sm:mb-8 sm:min-h-0"
       >
         <svg
           aria-hidden="true"
@@ -91,22 +91,22 @@ export default async function ExerciseDetailPage({ params }: PageProps) {
         Back to directory
       </Link>
 
-      <section className="mb-8 grid gap-8 border-b border-white/10 pb-8 lg:grid-cols-[minmax(0,0.82fr)_minmax(520px,1fr)] lg:items-end">
+      <section className="mb-6 grid gap-5 border-b border-white/10 pb-6 sm:mb-8 sm:gap-8 sm:pb-8 lg:grid-cols-[minmax(0,0.82fr)_minmax(520px,1fr)] lg:items-end">
         <div>
           <span className="inline-block rounded-md text-sm font-bold uppercase text-orange-500">
             {categoryLabel}
           </span>
-          <h1 className="font-display display-tight mt-3 text-6xl font-semibold leading-[0.92] text-stone-50 sm:text-7xl lg:text-8xl">
+          <h1 className="font-display display-tight mt-2 text-4xl font-semibold leading-[0.94] text-stone-50 sm:mt-3 sm:text-7xl sm:leading-[0.92] lg:text-8xl">
             {exercise.exercise_name}
           </h1>
-          <p className="mt-4 max-w-2xl text-base leading-7 text-stone-300">
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-stone-300 sm:mt-4 sm:text-base sm:leading-7">
             {exercise.videos.length} video
             {exercise.videos.length > 1 ? "s" : ""} with creator attribution,
             movement metadata, and coaching context.
           </p>
         </div>
 
-        <div className="grid gap-4 rounded-lg border border-white/10 bg-[#101111]/80 p-5 sm:grid-cols-4">
+        <div className="hidden gap-4 rounded-lg border border-white/10 bg-[#101111]/80 p-5 sm:grid sm:grid-cols-4">
           <div className="border-white/10 sm:border-r sm:pr-4">
             <p className="text-xs font-bold uppercase text-stone-500">
               Movement Type
@@ -147,10 +147,10 @@ export default async function ExerciseDetailPage({ params }: PageProps) {
           aria-labelledby="video-library-heading"
           className="overflow-hidden rounded-lg border border-white/10 bg-[#101111]/80 shadow-xl shadow-black/20"
         >
-          <div className="flex flex-col gap-3 border-b border-white/10 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-2 border-b border-white/10 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5 sm:py-4">
             <h2
               id="video-library-heading"
-              className="font-display display-tight text-3xl font-semibold text-stone-50"
+              className="font-display display-tight text-2xl font-semibold text-stone-50 sm:text-3xl"
             >
               Video library
             </h2>
@@ -161,11 +161,12 @@ export default async function ExerciseDetailPage({ params }: PageProps) {
             )}
           </div>
 
-          <div className="space-y-5 p-5">
+          <div className="space-y-4 p-3 sm:space-y-5 sm:p-5">
             {exercise.videos.map((video, i) => (
               <VideoEmbed
                 key={video.id}
                 video={video}
+                exerciseName={exercise.exercise_name}
                 index={i}
                 total={exercise.videos.length}
               />
@@ -175,10 +176,10 @@ export default async function ExerciseDetailPage({ params }: PageProps) {
 
         <aside
           aria-label="Exercise metadata"
-          className="space-y-5 lg:sticky lg:top-28 lg:self-start"
+          className="space-y-4 sm:space-y-5 lg:sticky lg:top-28 lg:self-start"
         >
-          <section className="rounded-lg border border-white/10 bg-[#101111]/85 p-5 shadow-xl shadow-black/20">
-            <h2 className="font-display display-tight mb-5 border-b border-white/10 pb-4 text-2xl font-semibold text-stone-50">
+          <section className="rounded-lg border border-white/10 bg-[#101111]/85 p-4 shadow-xl shadow-black/20 sm:p-5">
+            <h2 className="font-display display-tight mb-4 border-b border-white/10 pb-3 text-2xl font-semibold text-stone-50 sm:mb-5 sm:pb-4">
               Details
             </h2>
             <dl className="space-y-5">
@@ -257,8 +258,8 @@ export default async function ExerciseDetailPage({ params }: PageProps) {
           </section>
 
           {exercise.coaching_cues.length > 0 && (
-            <section className="rounded-lg border border-white/10 bg-[#101111]/85 p-5 shadow-xl shadow-black/20">
-              <h2 className="font-display display-tight mb-5 border-b border-white/10 pb-4 text-2xl font-semibold text-stone-50">
+            <section className="rounded-lg border border-white/10 bg-[#101111]/85 p-4 shadow-xl shadow-black/20 sm:p-5">
+              <h2 className="font-display display-tight mb-4 border-b border-white/10 pb-3 text-2xl font-semibold text-stone-50 sm:mb-5 sm:pb-4">
                 Coaching Cues
               </h2>
               <ul className="space-y-2">

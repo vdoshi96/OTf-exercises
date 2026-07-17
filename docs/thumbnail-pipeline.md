@@ -1,71 +1,111 @@
 # Thumbnail Pipeline
 
-## Why self-hosted thumbnails?
+The catalogue stores durable local thumbnail paths. A video thumbnail must be
+either a validated `/thumbs/...` asset or the shared
+`/thumbs/fallback-exercise.jpg`; remote CDN URLs and blank image states are not
+valid release output.
 
-Instagram CDN URLs expire after a few days (403). TikTok CDN URLs also expire.
-If we store remote URLs in `exercises.json`, the site shows broken images for
-10-30 seconds while the browser waits for timeout.
+`scripts/ensure-thumbnails.mjs` is the single implementation used by the
+refresh workflow and the legacy platform-specific entry points.
 
-**Rule: every thumbnail in `exercises.json` must be a local `/thumbs/` path or
-empty string. Zero remote URLs.**
+## Recovery order
 
-## How it works
+| Platform | First candidate | Fallback candidate | Stable filename |
+| --- | --- | --- | --- |
+| Instagram | A live signed URL supplied by the latest scrape | Public post `og:image` | `public/thumbs/<shortcode>.jpg` |
+| TikTok | A live signed URL supplied by the latest scrape | Official TikTok oEmbed `thumbnail_url` | `public/thumbs/tiktok-<video-id>.jpg` |
 
-`scripts/ensure-thumbnails.mjs` runs as the final step of `refresh.sh` (step 7/7).
-It can also be run standalone after any data change.
+Existing local files are decoded and validated before they are reused. File
+existence by itself is not considered a cache hit.
 
-### The 4-step process
+For an unavailable post, the pipeline assigns
+`public/thumbs/fallback-exercise.jpg`. This is a deterministic 640x960,
+quality-72 progressive JPEG generated from the centered
+`public/otf-logo.svg` on `#111111`. The fallback is a presentation safeguard,
+not a permanent cache hit: the pipeline retries source recovery on every later
+run.
 
-1. **Download Instagram thumbnails** — For any Instagram video missing a local
-   thumbnail, fetches the public reel page, extracts `og:image`, downloads the
-   JPEG to `public/thumbs/<shortcode>.jpg`.
+## Integrity guarantees
 
-2. **Purge Instagram logo files** — The scraper sometimes downloads Instagram's
-   gradient branding page instead of the actual thumbnail. All such files are
-   exactly 778,568 bytes. The script detects them by file size and deletes them.
+Each remote candidate is handled as follows:
 
-3. **Reorder videos** — Within each exercise, sorts videos so the one with the
-   best local thumbnail comes first. This is what `ExerciseCard` uses for the
-   grid preview.
+1. Fetch with four workers, a 200ms per-worker pause after network recovery, a
+   15-second timeout, and up to three attempts. The timeout remains active while
+   the response body is read, and body-stream errors retry the entire request.
+   HTTP 408, 425, 429, and 5xx responses are retryable; permanent 4xx responses
+   fail immediately and their bodies are cancelled.
+2. Stream each image through a hard 15 MB cap before allocating the final
+   buffer. Reject payloads under 1 KB, images smaller than 64x64, incomplete
+   decodes, and the known Instagram branding-page content hash.
+3. Auto-rotate, resize to at most 640 pixels wide without enlargement, strip
+   metadata, and encode as quality-72 mozjpeg.
+4. Write and sync a temporary file, then atomically rename it to the stable
+   path. A failed candidate never replaces a valid local asset.
+5. Replace an unrecoverable remote or blank reference with the durable fallback
+   and record the failure in the JSON report.
 
-4. **Clear remote URLs** — Any thumbnail that isn't a local `/thumbs/` path gets
-   set to empty string. This ensures the site never makes external requests for
-   thumbnails.
+The catalogue itself is also written atomically. Before committing it, the
+worker verifies that no other refresh process changed the source file while
+downloads were running; if it did, the worker exits rather than overwriting the
+newer data.
 
-### Running it
+The pipeline does not delete orphaned images or reorder video arrays.
+
+## Commands
 
 ```bash
-# As part of full pipeline
-./scripts/refresh.sh
-
-# Standalone (after any exercises.json change)
+# Normal post-refresh run; writes images, catalogue refs, and QA report
 node scripts/ensure-thumbnails.mjs
 
-# Skip downloads (just cleanup + reorder)
+# Full network/decoding preview with no filesystem writes
+node scripts/ensure-thumbnails.mjs --dry-run
+
+# Validate locals and assign the fallback without network recovery
 node scripts/ensure-thumbnails.mjs --skip-download
 
-# Force re-download everything
+# Re-fetch real local thumbnails, preserving them if recovery fails
 node scripts/ensure-thumbnails.mjs --force
+
+# Focused troubleshooting
+node scripts/ensure-thumbnails.mjs --source instagram --limit 10
+node scripts/ensure-thumbnails.mjs --source tiktok --limit 10
+
+# Fixture/automation paths
+node scripts/ensure-thumbnails.mjs \
+  --catalog /tmp/exercises.json \
+  --thumbs-dir /tmp/thumbs \
+  --report /tmp/thumbnail-report.json
 ```
 
-## For agents refreshing the catalogue
+Other supported controls are `--concurrency`, `--between-items-ms`,
+`--attempts`, `--timeout-ms`, and `--no-report`. Run
+`node scripts/ensure-thumbnails.mjs --help` for the complete CLI reference.
 
-When refreshing exercise data (e.g. after 3 months), always run the full
-pipeline via `./scripts/refresh.sh`. The thumbnail step runs automatically
-as step 7/7.
+`scripts/download_instagram_thumbnails.mjs` and
+`scripts/download-tiktok-thumbs.mjs` remain as compatibility entry points. They
+delegate to the same worker with the appropriate `--source` value; they do not
+contain separate download logic. Filtered runs do not overwrite the canonical
+full-run QA report; pass an explicit different `--report` path when a focused
+run needs its own artifact.
 
-If you're only adding new exercises manually (editing `exercises.json`), run
-`ensure-thumbnails.mjs` afterwards to download and self-host their thumbnails.
+## Report and release checks
 
-### What the agent should verify after a refresh
+Normal runs write `docs/qa/latest/thumbnail-report.json`. It includes before and
+after coverage, per-platform statuses, fallback-generation provenance, options,
+and per-video failure reasons. A dry run writes no report unless the caller
+chooses a separate automation around the returned output.
 
-1. `node -e "const d=require('./src/data/exercises.json'); let r=0; d.forEach(e=>e.videos.forEach(v=>{if(v.thumbnail && !v.thumbnail.startsWith('/'))r++})); console.log('Remote URLs:', r)"` — should be 0
-2. `npm run build` — should pass
-3. Check the first few exercises visually if possible
+Run the focused suite after changing this worker:
 
-## ExerciseCard behavior
+```bash
+node --test tests/thumbnail-pipeline.test.mjs
+```
 
-`ExerciseCard` only trusts local `/thumbs/` paths. It is a server component
-(no client-side state). If a local thumbnail exists, it renders instantly.
-If not, `ExercisePlaceholder` shows immediately with the exercise name,
-category icon, and muscle groups. No broken images, no loading delay.
+Before release, verify the report and catalogue show:
+
+- zero remote thumbnail references;
+- zero empty thumbnail references;
+- every referenced local file is present and decodable;
+- no known Instagram error-logo hash;
+- every fallback assignment has a corresponding report entry;
+- the app build and mobile visual checks pass.
