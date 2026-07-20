@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: https:; style-src 'unsafe-inline'">
+  <meta name="generator" content="otf-docs-parity/v1">
+  <meta name="doc-source" content="docs/superpowers/handoffs/task-04a-live-scrape-fallback.md">
+  <meta name="doc-source-sha256" content="ea260141152fe75880cb24d648ccd9aa6ece8715a488e0086b83c96dbe00b04e">
+  <title>Task 04A: Live Scrape Fallback</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      --background: #ffffff;
+      --foreground: #172033;
+      --muted: #5d6678;
+      --surface: #f5f7fa;
+      --border: #d8dee9;
+      --accent: #b84f10;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #111827;
+        --foreground: #e5e7eb;
+        --muted: #aeb7c6;
+        --surface: #1f2937;
+        --border: #445064;
+        --accent: #ff9b5e;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--background);
+      color: var(--foreground);
+    }
+    main {
+      width: min(100% - 2rem, 72rem);
+      margin: 0 auto;
+      padding: 2.5rem 0 5rem;
+      overflow-x: auto;
+      overflow-wrap: anywhere;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      line-height: 1.25;
+      margin-block: 2rem 0.75rem;
+    }
+    h1 { margin-top: 0; }
+    a { color: var(--accent); text-underline-offset: 0.15em; }
+    a:focus-visible { outline: 0.2rem solid currentColor; outline-offset: 0.2rem; }
+    blockquote {
+      margin-inline: 0;
+      padding: 0.2rem 1rem;
+      color: var(--muted);
+      border-inline-start: 0.25rem solid var(--border);
+    }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    code {
+      padding: 0.1rem 0.3rem;
+      background: var(--surface);
+      border-radius: 0.25rem;
+    }
+    pre {
+      padding: 1rem;
+      overflow-x: auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+    }
+    pre code { padding: 0; background: transparent; }
+    table {
+      width: 100%;
+      margin-block: 1rem;
+      border-collapse: collapse;
+    }
+    th, td { padding: 0.5rem 0.75rem; border: 1px solid var(--border); text-align: start; }
+    th { background: var(--surface); }
+    img { max-width: 100%; height: auto; }
+    hr { border: 0; border-top: 1px solid var(--border); }
+    .plain-text { white-space: pre-wrap; }
+    .task-list-item { list-style: none; }
+    input[type="checkbox"] { margin-inline: -1.25rem 0.5rem; }
+  </style>
+</head>
+<body>
+  <main>
+<h1 id="task-04a-live-scrape-fallback">Task 04A: Live Scrape Fallback</h1>
+<p>Status: DONE</p>
+<h2 id="context">Context</h2>
+<p>Live run failed immediately:</p>
+<pre><code class="language-bash">python3 scripts/scrape_instagram.py --user vizhal007 --profiles trainingtall,coach.fajardo,brookerooney,lustertraining,coachgarin
+</code></pre>
+<p>Instaloader returned <code>ProfileNotExistsException</code> during profile resolution for all target handles, so the script could not reach post scanning.</p>
+<p>Direct Instagram web API was confirmed to work for at least <code>trainingtall</code>:</p>
+<ul>
+<li><code>GET https://www.instagram.com/api/v1/users/web_profile_info/?username=trainingtall</code></li>
+<li>Required headers: <code>x-ig-app-id: 936619743392459</code>, <code>User-Agent: Mozilla/5.0</code></li>
+<li>Returned profile id and timeline metadata.</li>
+<li><code>POST https://www.instagram.com/api/v1/clips/user/</code> with <code>target_user_id=452950430&amp;page_size=12</code> and headers including <code>x-ig-app-id</code>, <code>User-Agent</code>, <code>x-csrftoken</code>, <code>Referer</code> returned reels plus <code>paging_info.max_id</code> / <code>more_available</code>.</li>
+</ul>
+<h2 id="changes">Changes</h2>
+<ul>
+<li>Kept the existing Instaloader path intact when profile resolution succeeds.</li>
+<li>Caught <code>ProfileNotExistsException</code> and other profile-resolution errors per handle so the import can continue.</li>
+<li>Fixed the live fallback control-flow failure:<ul>
+<li><code>Profile.from_username</code> returning not found for a target handle no longer triggers a forced fresh login before fallback.</li>
+<li>The script now tries the web API fallback immediately after Instaloader profile resolution fails for that handle.</li>
+<li><code>login(..., force_fresh=True)</code> is guarded so a future fresh-login caller requires either <code>IG_PASSWORD</code> or an interactive stdin, avoiding <code>EOFError</code> in non-interactive shells.</li>
+</ul>
+</li>
+<li>Added a stdlib-only <code>urllib</code> Instagram web API fallback:<ul>
+<li>Resolves creator metadata from <code>/api/v1/users/web_profile_info/?username={handle}</code>.</li>
+<li>Pages <code>/api/v1/clips/user/</code> using <code>target_user_id</code>, <code>page_size</code>, and <code>max_id</code>.</li>
+<li>Stops when <code>more_available</code> is false or the <code>WEB_API_MAX_PAGES</code> safety limit is reached.</li>
+<li>Sleeps briefly between pages.</li>
+<li>Converts reel media to the existing raw JSON shape, adding <code>is_video: true</code> for fallback records.</li>
+<li>Deduplicates fallback records by <code>id</code>.</li>
+</ul>
+</li>
+<li>One handle failing in either Instaloader or fallback no longer crashes the whole import.</li>
+</ul>
+<p>No new dependencies were added. The fallback uses Python stdlib <code>urllib</code>; <code>requests</code> was not needed.</p>
+<h2 id="live-eoferror-follow-up">Live EOFError Follow-Up</h2>
+<p>A subsequent live run reached this sequence for <code>@trainingtall</code>:</p>
+<ol>
+<li>Saved-session login loaded first.</li>
+<li><code>Profile.from_username</code> returned not found for the target handle.</li>
+<li><code>main()</code> retried with <code>login(..., force_fresh=True)</code> before reaching the web API fallback.</li>
+<li>In the non-interactive shell, <code>interactive_login()</code> attempted to prompt and raised <code>EOFError</code>.</li>
+</ol>
+<p>The fix removes that normal profile-resolution fresh-login retry from <code>main()</code>, so one handle&#39;s Instaloader resolution failure proceeds to web API fallback and does not crash the remaining handles. Any future explicit fresh-login path is now documented in code via <code>can_attempt_fresh_login</code>: it is only safe when <code>IG_PASSWORD</code> is present or stdin is interactive.</p>
+<h2 id="verification">Verification</h2>
+<p>Compile:</p>
+<pre><code class="language-bash">python3 -m py_compile scripts/scrape_instagram.py
+</code></pre>
+<p>Non-network smoke for conversion and dedupe:</p>
+<pre><code class="language-bash">python3 - &lt;&lt;&#39;PY&#39;
+import importlib.util
+spec = importlib.util.spec_from_file_location(&#39;scrape_instagram&#39;, &#39;scripts/scrape_instagram.py&#39;)
+mod = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(mod)
+creator = mod.creator_from_web_profile({&#39;username&#39;: &#39;TrainingTall&#39;, &#39;full_name&#39;: &#39;&#39;})
+assert creator == {
+    &#39;id&#39;: &#39;trainingtall&#39;,
+    &#39;display_name&#39;: &#39;TrainingTall&#39;,
+    &#39;handle&#39;: &#39;TrainingTall&#39;,
+    &#39;profile_url&#39;: &#39;https://www.instagram.com/TrainingTall/&#39;,
+}
+media = {
+    &#39;code&#39;: &#39;ABC123&#39;,
+    &#39;caption&#39;: {&#39;text&#39;: &#39;row tips&#39;},
+    &#39;image_versions2&#39;: {&#39;candidates&#39;: [{&#39;url&#39;: &#39;https://thumb.test/a.jpg&#39;}]},
+    &#39;video_duration&#39;: 12.4,
+    &#39;taken_at&#39;: 1700000000,
+}
+converted = mod.reel_media_to_raw_video(media, creator)
+assert converted[&#39;id&#39;] == &#39;ig_ABC123&#39;
+assert converted[&#39;url&#39;] == &#39;https://www.instagram.com/reel/ABC123/&#39;
+assert converted[&#39;description&#39;] == &#39;row tips&#39;
+assert converted[&#39;thumbnail&#39;] == &#39;https://thumb.test/a.jpg&#39;
+assert converted[&#39;upload_date&#39;] == &#39;20231114&#39;
+assert converted[&#39;source&#39;] == &#39;instagram&#39;
+assert converted[&#39;is_video&#39;] is True
+videos, duplicates = mod.dedupe_videos_by_id([converted, dict(converted)])
+assert len(videos) == 1
+assert duplicates == 1
+print(&#39;smoke ok&#39;)
+PY
+</code></pre>
+<p>Both commands passed.</p>
+<h2 id="concerns">Concerns</h2>
+<ul>
+<li>I did not run the full live scrape, per task instruction.</li>
+<li>The fallback depends on Instagram&#39;s private web API and may still be sensitive to cookies, headers, or rate limiting.</li>
+<li>Fallback records include <code>is_video: true</code>; the pre-existing Instaloader records were left unchanged to avoid changing working behavior.</li>
+</ul>
+  </main>
+</body>
+</html>

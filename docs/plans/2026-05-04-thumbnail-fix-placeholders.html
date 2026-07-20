@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: https:; style-src 'unsafe-inline'">
+  <meta name="generator" content="otf-docs-parity/v1">
+  <meta name="doc-source" content="docs/plans/2026-05-04-thumbnail-fix-placeholders.md">
+  <meta name="doc-source-sha256" content="c9f0bc2ec20cd7065d996a39f2dc8beff0867be24f41a94274abffad0bfbe6ba">
+  <title>Thumbnail Fix &amp; Exercise Diagram Placeholders</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      --background: #ffffff;
+      --foreground: #172033;
+      --muted: #5d6678;
+      --surface: #f5f7fa;
+      --border: #d8dee9;
+      --accent: #b84f10;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #111827;
+        --foreground: #e5e7eb;
+        --muted: #aeb7c6;
+        --surface: #1f2937;
+        --border: #445064;
+        --accent: #ff9b5e;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--background);
+      color: var(--foreground);
+    }
+    main {
+      width: min(100% - 2rem, 72rem);
+      margin: 0 auto;
+      padding: 2.5rem 0 5rem;
+      overflow-x: auto;
+      overflow-wrap: anywhere;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      line-height: 1.25;
+      margin-block: 2rem 0.75rem;
+    }
+    h1 { margin-top: 0; }
+    a { color: var(--accent); text-underline-offset: 0.15em; }
+    a:focus-visible { outline: 0.2rem solid currentColor; outline-offset: 0.2rem; }
+    blockquote {
+      margin-inline: 0;
+      padding: 0.2rem 1rem;
+      color: var(--muted);
+      border-inline-start: 0.25rem solid var(--border);
+    }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    code {
+      padding: 0.1rem 0.3rem;
+      background: var(--surface);
+      border-radius: 0.25rem;
+    }
+    pre {
+      padding: 1rem;
+      overflow-x: auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+    }
+    pre code { padding: 0; background: transparent; }
+    table {
+      width: 100%;
+      margin-block: 1rem;
+      border-collapse: collapse;
+    }
+    th, td { padding: 0.5rem 0.75rem; border: 1px solid var(--border); text-align: start; }
+    th { background: var(--surface); }
+    img { max-width: 100%; height: auto; }
+    hr { border: 0; border-top: 1px solid var(--border); }
+    .plain-text { white-space: pre-wrap; }
+    .task-list-item { list-style: none; }
+    input[type="checkbox"] { margin-inline: -1.25rem 0.5rem; }
+  </style>
+</head>
+<body>
+  <main>
+<h1 id="thumbnail-fix-exercise-diagram-placeholders">Thumbnail Fix &amp; Exercise Diagram Placeholders</h1>
+<blockquote>
+<p><strong>Branch:</strong> <code>fix/thumbnail-placeholders</code>
+<strong>Base:</strong> <code>main</code></p>
+</blockquote>
+<p><strong>Goal:</strong> Self-host TikTok CDN thumbnails so they never expire, and add graceful fallback placeholders that show exercise-relevant muscle group diagrams (like gym machine labels) instead of broken images.</p>
+<p><strong>Architecture:</strong> Download all 603 TikTok CDN thumbnail images to <code>public/thumbs/</code>, update <code>exercises.json</code> to reference local paths, and add an <code>onError</code> handler in <code>ExerciseCard</code> that swaps broken images for category-specific SVG exercise diagrams.</p>
+<p><strong>Tech Stack:</strong> Node.js script for downloading, Next.js/React for UI, inline SVGs for placeholders</p>
+<hr>
+<h2 id="current-state">Current State</h2>
+<ul>
+<li>1980 total videos across 1236 exercises</li>
+<li>1377 thumbnails already self-hosted at <code>/thumbs/&lt;id&gt;.jpg</code> (Instagram videos)</li>
+<li>603 thumbnails still use TikTok CDN URLs (<code>p16-common-sign.tiktokcdn-us.com</code>, <code>p19-common-sign.tiktokcdn-us.com</code>) which expire</li>
+<li>All local thumbnail files exist on disk in <code>public/thumbs/</code></li>
+<li><code>ExerciseCard.tsx</code> checks <code>firstVideo?.thumbnail</code> for truthiness but has no <code>onError</code> handler</li>
+<li>When a TikTok CDN URL expires, the <code>&lt;img&gt;</code> tag silently fails, showing a broken image</li>
+</ul>
+<h2 id="task-1-download-tiktok-thumbnails-locally">Task 1: Download TikTok Thumbnails Locally</h2>
+<p><strong>Files:</strong></p>
+<ul>
+<li><p>Create: <code>scripts/download-tiktok-thumbs.mjs</code></p>
+</li>
+<li><p>Modify: <code>src/data/exercises.json</code></p>
+</li>
+<li><p><input disabled="" type="checkbox"> <strong>Step 1: Write the download script</strong></p>
+</li>
+</ul>
+<pre><code class="language-javascript">// scripts/download-tiktok-thumbs.mjs
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from &#39;fs&#39;;
+import { join } from &#39;path&#39;;
+import https from &#39;https&#39;;
+import http from &#39;http&#39;;
+
+const EXERCISES_PATH = join(process.cwd(), &#39;src/data/exercises.json&#39;);
+const THUMBS_DIR = join(process.cwd(), &#39;public/thumbs&#39;);
+
+function download(url) {
+  return new Promise((resolve, reject) =&gt; {
+    const mod = url.startsWith(&#39;https&#39;) ? https : http;
+    mod.get(url, { headers: { &#39;User-Agent&#39;: &#39;Mozilla/5.0&#39; } }, (res) =&gt; {
+      if (res.statusCode &gt;= 300 &amp;&amp; res.statusCode &lt; 400 &amp;&amp; res.headers.location) {
+        return download(res.headers.location).then(resolve, reject);
+      }
+      if (res.statusCode !== 200) {
+        return reject(new Error(`HTTP ${res.statusCode} for ${url}`));
+      }
+      const chunks = [];
+      res.on(&#39;data&#39;, (c) =&gt; chunks.push(c));
+      res.on(&#39;end&#39;, () =&gt; resolve(Buffer.concat(chunks)));
+      res.on(&#39;error&#39;, reject);
+    }).on(&#39;error&#39;, reject);
+  });
+}
+
+async function main() {
+  mkdirSync(THUMBS_DIR, { recursive: true });
+  const exercises = JSON.parse(readFileSync(EXERCISES_PATH, &#39;utf-8&#39;));
+&#32;&#32;
+  let downloaded = 0, failed = 0, skipped = 0;
+&#32;&#32;
+  for (const ex of exercises) {
+    for (const video of ex.videos) {
+      if (video.thumbnail.startsWith(&#39;/&#39;)) {
+        skipped++;
+        continue;
+      }
+&#32;&#32;&#32;&#32;&#32;&#32;
+      const filename = `${video.id}.jpg`;
+      const localPath = `/thumbs/${filename}`;
+      const diskPath = join(THUMBS_DIR, filename);
+&#32;&#32;&#32;&#32;&#32;&#32;
+      if (existsSync(diskPath)) {
+        video.thumbnail = localPath;
+        skipped++;
+        continue;
+      }
+&#32;&#32;&#32;&#32;&#32;&#32;
+      try {
+        const buf = await download(video.thumbnail);
+        writeFileSync(diskPath, buf);
+        video.thumbnail = localPath;
+        downloaded++;
+        if (downloaded % 50 === 0) console.log(`Downloaded ${downloaded}...`);
+      } catch (err) {
+        console.error(`FAIL ${video.id}: ${err.message}`);
+        failed++;
+      }
+    }
+  }
+&#32;&#32;
+  writeFileSync(EXERCISES_PATH, JSON.stringify(exercises, null, 2) + &#39;\n&#39;);
+  console.log(`Done. Downloaded: ${downloaded}, Skipped: ${skipped}, Failed: ${failed}`);
+}
+
+main();
+</code></pre>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>Step 2: Run the download script</strong></li>
+</ul>
+<p>Run: <code>node scripts/download-tiktok-thumbs.mjs</code>
+Expected: Downloads ~603 images to <code>public/thumbs/</code>, updates <code>exercises.json</code> to use local paths. Some may fail if CDN URLs already expired.</p>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>Step 3: Verify all thumbnails are now local</strong></li>
+</ul>
+<p>Run: <code>node -e &quot;const d=require(&#39;./src/data/exercises.json&#39;); let ext=0; d.forEach(e=&gt;e.videos.forEach(v=&gt;{if(!v.thumbnail.startsWith(&#39;/&#39;))ext++})); console.log(&#39;External thumbs remaining:&#39;, ext)&quot;</code>
+Expected: <code>External thumbs remaining: 0</code> (or a small number of failures)</p>
+<h2 id="task-2-create-exercise-diagram-placeholder-svgs">Task 2: Create Exercise Diagram Placeholder SVGs</h2>
+<p><strong>Files:</strong></p>
+<ul>
+<li><p>Create: <code>src/components/ExercisePlaceholder.tsx</code></p>
+</li>
+<li><p><input disabled="" type="checkbox"> <strong>Step 4: Create the placeholder component</strong></p>
+</li>
+</ul>
+<p>Build a component that renders a category-appropriate muscle/exercise diagram SVG. These mimic the diagrams found on gym machines — clean line-art showing target muscle groups.</p>
+<p>The component accepts a <code>category</code> prop and renders the appropriate diagram.</p>
+<h2 id="task-3-add-onerror-fallback-to-exercisecard">Task 3: Add onError Fallback to ExerciseCard</h2>
+<p><strong>Files:</strong></p>
+<ul>
+<li><p>Modify: <code>src/components/ExerciseCard.tsx</code></p>
+</li>
+<li><p><input disabled="" type="checkbox"> <strong>Step 5: Make ExerciseCard a client component with onError handler</strong></p>
+</li>
+</ul>
+<p>Convert <code>ExerciseCard</code> to a client component (add <code>&quot;use client&quot;</code>) and add state to track image load failure. When the thumbnail <code>&lt;img&gt;</code> fires <code>onError</code>, swap to the <code>ExercisePlaceholder</code> component.</p>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>Step 6: Build and verify</strong></li>
+</ul>
+<p>Run: <code>npm run build</code>
+Expected: Build succeeds with 0 errors</p>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>Step 7: Visual verification</strong></li>
+</ul>
+<p>Run: <code>npm run dev</code>
+Open browser, check that:</p>
+<ol>
+<li>Cards with local thumbnails load correctly</li>
+<li>Any remaining external thumbnail failures show the exercise diagram placeholder</li>
+<li>No broken image icons visible</li>
+</ol>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>Step 8: Commit</strong></li>
+</ul>
+<pre><code class="language-bash">git add -A
+git commit -m &quot;fix: self-host TikTok thumbnails, add exercise diagram placeholders&quot;
+</code></pre>
+<h2 id="verification-checklist">Verification Checklist</h2>
+<ul>
+<li><input disabled="" type="checkbox"> All thumbnails in <code>exercises.json</code> use local <code>/thumbs/</code> paths</li>
+<li><input disabled="" type="checkbox"> <code>ExerciseCard</code> has <code>onError</code> handler that shows diagram placeholder</li>
+<li><input disabled="" type="checkbox"> Placeholder shows category-relevant exercise diagram (not Instagram logo, not broken image)</li>
+<li><input disabled="" type="checkbox"> <code>npm run build</code> succeeds</li>
+<li><input disabled="" type="checkbox"> Visual check in browser passes</li>
+</ul>
+  </main>
+</body>
+</html>

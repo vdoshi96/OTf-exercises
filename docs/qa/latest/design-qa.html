@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: https:; style-src 'unsafe-inline'">
+  <meta name="generator" content="otf-docs-parity/v1">
+  <meta name="doc-source" content="docs/qa/latest/design-qa.md">
+  <meta name="doc-source-sha256" content="a0d9fa764d4a626c6daa5c4e74a79761abb7cc6c33f3b769c6c87ef8d6e7baf3">
+  <title>Design QA — 2026-07-16 refresh</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      --background: #ffffff;
+      --foreground: #172033;
+      --muted: #5d6678;
+      --surface: #f5f7fa;
+      --border: #d8dee9;
+      --accent: #b84f10;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #111827;
+        --foreground: #e5e7eb;
+        --muted: #aeb7c6;
+        --surface: #1f2937;
+        --border: #445064;
+        --accent: #ff9b5e;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--background);
+      color: var(--foreground);
+    }
+    main {
+      width: min(100% - 2rem, 72rem);
+      margin: 0 auto;
+      padding: 2.5rem 0 5rem;
+      overflow-x: auto;
+      overflow-wrap: anywhere;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      line-height: 1.25;
+      margin-block: 2rem 0.75rem;
+    }
+    h1 { margin-top: 0; }
+    a { color: var(--accent); text-underline-offset: 0.15em; }
+    a:focus-visible { outline: 0.2rem solid currentColor; outline-offset: 0.2rem; }
+    blockquote {
+      margin-inline: 0;
+      padding: 0.2rem 1rem;
+      color: var(--muted);
+      border-inline-start: 0.25rem solid var(--border);
+    }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    code {
+      padding: 0.1rem 0.3rem;
+      background: var(--surface);
+      border-radius: 0.25rem;
+    }
+    pre {
+      padding: 1rem;
+      overflow-x: auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+    }
+    pre code { padding: 0; background: transparent; }
+    table {
+      width: 100%;
+      margin-block: 1rem;
+      border-collapse: collapse;
+    }
+    th, td { padding: 0.5rem 0.75rem; border: 1px solid var(--border); text-align: start; }
+    th { background: var(--surface); }
+    img { max-width: 100%; height: auto; }
+    hr { border: 0; border-top: 1px solid var(--border); }
+    .plain-text { white-space: pre-wrap; }
+    .task-list-item { list-style: none; }
+    input[type="checkbox"] { margin-inline: -1.25rem 0.5rem; }
+  </style>
+</head>
+<body>
+  <main>
+<h1 id="design-qa-2026-07-16-refresh">Design QA — 2026-07-16 refresh</h1>
+<p><strong>Final result: PASSED</strong></p>
+<h2 id="source-truth">Source truth</h2>
+<p>The desktop visual language, colors, typography, card hierarchy, and supplied
+mobile baseline screenshots were treated as the source of truth. The mobile
+changes were limited to density, discovery, filters, result rows, detail order,
+and video activation behavior.</p>
+<h2 id="mobile-comparisons">Mobile comparisons</h2>
+<p>All comparison screenshots below use the same 375 × 812 captured content area.
+The production browser suite separately exercises the requested 390 × 844 CSS
+viewport and a 320px overflow viewport.</p>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>Baseline</th>
+<th>Final implementation</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Directory</td>
+<td><img src="baseline-directory-mobile.png" alt="Baseline mobile directory"></td>
+<td><img src="mobile-directory-390x844.png" alt="Final mobile directory"></td>
+</tr>
+<tr>
+<td>Filters open</td>
+<td><img src="baseline-filters-mobile.png" alt="Baseline inline filters"></td>
+<td><img src="mobile-filters-390x844.png" alt="Final filter bottom sheet"></td>
+</tr>
+<tr>
+<td>Exercise detail</td>
+<td><img src="baseline-detail-mobile.png" alt="Baseline mobile detail"></td>
+<td><img src="mobile-detail-390x844.png" alt="Final mobile detail"></td>
+</tr>
+</tbody></table>
+<h2 id="additional-evidence">Additional evidence</h2>
+<ul>
+<li><a href="desktop-directory-1280x900.png">Desktop directory</a></li>
+<li><a href="mobile-tiktok-active-390x844.png">Activated mobile TikTok player</a></li>
+<li><a href="thumbnail-report.json">Thumbnail coverage report</a></li>
+</ul>
+<h2 id="findings-and-fixes">Findings and fixes</h2>
+<ul>
+<li>The first exercise is now visible in the initial mobile viewport.</li>
+<li>The former 52-chip inline wall is replaced by a native-dialog bottom sheet
+with grouped accordions, sticky actions, 44px targets, Escape handling, and
+trigger focus restoration.</li>
+<li>Mobile cards are compact thumbnail-left rows; 24 are initially visible and
+load-more pagination resets when the result set changes. Desktop retains the
+complete grid without pagination.</li>
+<li>The detail page moves the video library before secondary facts and reduces
+title size and vertical padding on mobile.</li>
+<li>TikTok keeps a local preview until activation, inserts a responsive player,
+moves keyboard focus to it, and preserves the original-post link.</li>
+<li>No horizontal overflow was found at 390px or 320px.</li>
+</ul>
+<h2 id="automated-browser-matrix">Automated browser matrix</h2>
+<ul>
+<li>Chromium desktop 1280 × 900: passed</li>
+<li>Chromium mobile 390 × 844: passed</li>
+<li>Chromium mobile 320 × 844: passed</li>
+<li>WebKit mobile 390 × 844: passed</li>
+<li>Catalog routes in sitemap: 1,287 of 1,287</li>
+<li>Local browser console, page, request, and HTTP failure checks: passed</li>
+</ul>
+  </main>
+</body>
+</html>

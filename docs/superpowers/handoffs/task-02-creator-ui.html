@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: https:; style-src 'unsafe-inline'">
+  <meta name="generator" content="otf-docs-parity/v1">
+  <meta name="doc-source" content="docs/superpowers/handoffs/task-02-creator-ui.md">
+  <meta name="doc-source-sha256" content="5114ffab30aa9e8ca3550b6eca043622c7a077d6b1cacb9a3f4f64c970202a87">
+  <title>Task 02 Handoff: Creator UI, Search, And Filtering</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      --background: #ffffff;
+      --foreground: #172033;
+      --muted: #5d6678;
+      --surface: #f5f7fa;
+      --border: #d8dee9;
+      --accent: #b84f10;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #111827;
+        --foreground: #e5e7eb;
+        --muted: #aeb7c6;
+        --surface: #1f2937;
+        --border: #445064;
+        --accent: #ff9b5e;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--background);
+      color: var(--foreground);
+    }
+    main {
+      width: min(100% - 2rem, 72rem);
+      margin: 0 auto;
+      padding: 2.5rem 0 5rem;
+      overflow-x: auto;
+      overflow-wrap: anywhere;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      line-height: 1.25;
+      margin-block: 2rem 0.75rem;
+    }
+    h1 { margin-top: 0; }
+    a { color: var(--accent); text-underline-offset: 0.15em; }
+    a:focus-visible { outline: 0.2rem solid currentColor; outline-offset: 0.2rem; }
+    blockquote {
+      margin-inline: 0;
+      padding: 0.2rem 1rem;
+      color: var(--muted);
+      border-inline-start: 0.25rem solid var(--border);
+    }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    code {
+      padding: 0.1rem 0.3rem;
+      background: var(--surface);
+      border-radius: 0.25rem;
+    }
+    pre {
+      padding: 1rem;
+      overflow-x: auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+    }
+    pre code { padding: 0; background: transparent; }
+    table {
+      width: 100%;
+      margin-block: 1rem;
+      border-collapse: collapse;
+    }
+    th, td { padding: 0.5rem 0.75rem; border: 1px solid var(--border); text-align: start; }
+    th { background: var(--surface); }
+    img { max-width: 100%; height: auto; }
+    hr { border: 0; border-top: 1px solid var(--border); }
+    .plain-text { white-space: pre-wrap; }
+    .task-list-item { list-style: none; }
+    input[type="checkbox"] { margin-inline: -1.25rem 0.5rem; }
+  </style>
+</head>
+<body>
+  <main>
+<h1 id="task-02-handoff-creator-ui-search-and-filtering">Task 02 Handoff: Creator UI, Search, And Filtering</h1>
+<h2 id="owner">Owner</h2>
+<p>Worker Task 2</p>
+<h2 id="scope">Scope</h2>
+<ul>
+<li>Added creator-aware search, creator filter options, and creator filtering.</li>
+<li>Wired the homepage to shared search helpers and added single-select creator filtering.</li>
+<li>Added compact creator attribution to exercise cards, video embeds, and exercise detail pages.</li>
+<li>Replaced single-creator site copy with neutral multi-creator, unofficial fan directory wording.</li>
+</ul>
+<h2 id="files-touched">Files Touched</h2>
+<ul>
+<li><code>src/lib/search.ts</code></li>
+<li><code>src/app/page.tsx</code></li>
+<li><code>src/app/layout.tsx</code></li>
+<li><code>src/app/exercise/[id]/page.tsx</code></li>
+<li><code>src/components/FilterPanel.tsx</code></li>
+<li><code>src/components/ExerciseCard.tsx</code></li>
+<li><code>src/components/VideoEmbed.tsx</code></li>
+<li><code>README.md</code></li>
+<li><code>docs/superpowers/handoffs/task-02-creator-ui.md</code></li>
+</ul>
+<h2 id="implementation-notes">Implementation Notes</h2>
+<ul>
+<li>Creator data remains derived from <code>exercise.videos</code>; no group-level creator data was added.</li>
+<li><code>getExerciseCreators</code> deduplicates creators per exercise by <code>creator.id</code> and sorts by <code>display_name</code>.</li>
+<li><code>getFilterOptions</code> now returns <code>creators</code>, derived from all videos and sorted by <code>display_name</code>.</li>
+<li>Fuse search keys now include <code>videos.creator.display_name</code> and <code>videos.creator.handle</code>.</li>
+<li><code>filterExercises</code> accepts a <code>creator</code> id filter and matches any video on the exercise.</li>
+<li>Homepage uses <code>createSearchIndex</code> and <code>searchExercises</code> from <code>src/lib/search.ts</code> instead of duplicating Fuse configuration.</li>
+<li>Filter chips now include <code>aria-pressed</code>; collapsible controls include <code>aria-expanded</code>.</li>
+<li>The filter panel clear action is now a separate button, not an interactive span inside another button.</li>
+<li><code>ExerciseCard</code> shows one creator display name or <code>N creators</code> without adding nested links inside the card link.</li>
+<li><code>VideoEmbed</code> shows creator display name and handle with a profile link next to the source badge.</li>
+<li>The detail sidebar lists deduplicated creator profile links.</li>
+</ul>
+<h2 id="review-findings-and-resolutions">Review Findings And Resolutions</h2>
+<ul>
+<li>Finding: The exercise detail sidebar prepended <code>@</code> unconditionally, which would render handles already stored with <code>@</code> as <code>@@handle</code>.
+Resolution: Added detail-page handle normalization matching <code>VideoEmbed</code>; handles now render with exactly one leading <code>@</code>.</li>
+<li>Finding: The header still linked to creator-specific Instagram and TikTok profiles, which was misleading for a multi-creator directory and left mobile icon-only links without accessible names.
+Resolution: Removed the creator-specific header buttons. The header now stays neutral with the directory logo link, and footer attribution remains neutral.</li>
+</ul>
+<h2 id="verification">Verification</h2>
+<pre><code class="language-bash">node --experimental-strip-types --input-type=module &lt;&lt;&#39;EOF&#39;
+import { getFilterOptions, filterExercises, createSearchIndex, searchExercises } from &#39;./src/lib/search.ts&#39;;
+const exercises = [
+  { id: &#39;one&#39;, exercise_name: &#39;Hammer Curl&#39;, category: &#39;upper_body&#39;, muscle_groups: [&#39;biceps&#39;], equipment: [&#39;dumbbell&#39;], movement_type: &#39;isolation&#39;, coaching_cues: [], videos: [{ id: &#39;v1&#39;, url: &#39;https://example.com/1&#39;, source: &#39;tiktok&#39;, thumbnail: &#39;&#39;, description: &#39;&#39;, creator: { id: &#39;alpha&#39;, display_name: &#39;Alpha Coach&#39;, handle: &#39;alphaotf&#39;, profile_url: &#39;https://example.com/a&#39; } }] },
+  { id: &#39;two&#39;, exercise_name: &#39;Goblet Squat&#39;, category: &#39;lower_body&#39;, muscle_groups: [&#39;quads&#39;], equipment: [&#39;dumbbell&#39;], movement_type: &#39;compound&#39;, coaching_cues: [], videos: [{ id: &#39;v2&#39;, url: &#39;https://example.com/2&#39;, source: &#39;instagram&#39;, thumbnail: &#39;&#39;, description: &#39;&#39;, creator: { id: &#39;beta&#39;, display_name: &#39;Beta Coach&#39;, handle: &#39;betaotf&#39;, profile_url: &#39;https://example.com/b&#39; } }] }
+];
+const options = getFilterOptions(exercises);
+if (!Array.isArray(options.creators)) throw new Error(&#39;expected creator filter options&#39;);
+if (options.creators.map((c) =&gt; c.id).join(&#39;,&#39;) !== &#39;alpha,beta&#39;) throw new Error(&#39;expected creators sorted by display name&#39;);
+const filtered = filterExercises(exercises, { creator: &#39;beta&#39; });
+if (filtered.length !== 1 || filtered[0].id !== &#39;two&#39;) throw new Error(&#39;expected creator filter to match videos&#39;);
+const fuse = createSearchIndex(exercises);
+const searchByHandle = searchExercises(fuse, exercises, &#39;betaotf&#39;);
+if (searchByHandle.length !== 1 || searchByHandle[0].id !== &#39;two&#39;) throw new Error(&#39;expected search to include creator handles&#39;);
+console.log(&#39;creator search/filter behavior passed&#39;);
+EOF
+</code></pre>
+<p>Outcome: passed after implementation. Before implementation, the same check failed with <code>expected creator filter options</code>.</p>
+<pre><code class="language-bash">./node_modules/.bin/tsc --noEmit
+</code></pre>
+<p>Outcome: passed with exit code 0.</p>
+<pre><code class="language-bash">NEXT_TELEMETRY_DISABLED=1 npm run build
+</code></pre>
+<p>Outcome: passed with exit code 0. Next.js 16.2.1 compiled successfully and generated 1,058 static pages.</p>
+<pre><code class="language-bash">npm run lint
+</code></pre>
+<p>Outcome: failed with exit code 1 from pre-existing issues:</p>
+<ul>
+<li><code>scripts/fetch_instagram_posts.js</code>: three <code>@typescript-eslint/no-require-imports</code> errors.</li>
+<li><code>src/components/TikTokEmbed.tsx</code>: <code>react-hooks/set-state-in-effect</code> error.</li>
+<li>Existing <code>@next/next/no-img-element</code> warnings in <code>src/components/ExerciseCard.tsx</code> and <code>src/components/InstagramEmbed.tsx</code>.</li>
+</ul>
+<h2 id="concerns">Concerns</h2>
+<ul>
+<li>Lint is not clean because of the pre-existing errors listed above. I left the existing image-rendering pattern in <code>ExerciseCard</code> unchanged aside from adding creator text.</li>
+<li>Current data has one unique creator, so the creator UI is ready for multiple creators but only displays one option until additional creator data lands.</li>
+</ul>
+  </main>
+</body>
+</html>

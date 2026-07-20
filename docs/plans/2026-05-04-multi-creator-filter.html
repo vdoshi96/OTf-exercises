@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: https:; style-src 'unsafe-inline'">
+  <meta name="generator" content="otf-docs-parity/v1">
+  <meta name="doc-source" content="docs/plans/2026-05-04-multi-creator-filter.md">
+  <meta name="doc-source-sha256" content="390a23f06903cbbb2bccfb62e2d4d6b8cc27c7b89b986bd145d32086b13181fc">
+  <title>Multi-Select Creator Filter &amp; Creator Cleanup</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      --background: #ffffff;
+      --foreground: #172033;
+      --muted: #5d6678;
+      --surface: #f5f7fa;
+      --border: #d8dee9;
+      --accent: #b84f10;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #111827;
+        --foreground: #e5e7eb;
+        --muted: #aeb7c6;
+        --surface: #1f2937;
+        --border: #445064;
+        --accent: #ff9b5e;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--background);
+      color: var(--foreground);
+    }
+    main {
+      width: min(100% - 2rem, 72rem);
+      margin: 0 auto;
+      padding: 2.5rem 0 5rem;
+      overflow-x: auto;
+      overflow-wrap: anywhere;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      line-height: 1.25;
+      margin-block: 2rem 0.75rem;
+    }
+    h1 { margin-top: 0; }
+    a { color: var(--accent); text-underline-offset: 0.15em; }
+    a:focus-visible { outline: 0.2rem solid currentColor; outline-offset: 0.2rem; }
+    blockquote {
+      margin-inline: 0;
+      padding: 0.2rem 1rem;
+      color: var(--muted);
+      border-inline-start: 0.25rem solid var(--border);
+    }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    code {
+      padding: 0.1rem 0.3rem;
+      background: var(--surface);
+      border-radius: 0.25rem;
+    }
+    pre {
+      padding: 1rem;
+      overflow-x: auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+    }
+    pre code { padding: 0; background: transparent; }
+    table {
+      width: 100%;
+      margin-block: 1rem;
+      border-collapse: collapse;
+    }
+    th, td { padding: 0.5rem 0.75rem; border: 1px solid var(--border); text-align: start; }
+    th { background: var(--surface); }
+    img { max-width: 100%; height: auto; }
+    hr { border: 0; border-top: 1px solid var(--border); }
+    .plain-text { white-space: pre-wrap; }
+    .task-list-item { list-style: none; }
+    input[type="checkbox"] { margin-inline: -1.25rem 0.5rem; }
+  </style>
+</head>
+<body>
+  <main>
+<h1 id="multi-select-creator-filter-creator-cleanup">Multi-Select Creator Filter &amp; Creator Cleanup</h1>
+<blockquote>
+<p><strong>Branch:</strong> <code>feat/multi-creator-filter</code>
+<strong>Base:</strong> <code>main</code></p>
+</blockquote>
+<p><strong>Goal:</strong> Change the creator filter from single-select to multi-select so users can filter by multiple creators at once. Remove all creators except Austin Hendrickson (Trainingtall) and Coach Rudy. Update Austin&#39;s display name to include his alias.</p>
+<p><strong>Architecture:</strong> Change <code>activeCreator: string | null</code> to <code>activeCreators: string[]</code> throughout the filter pipeline (page state, FilterPanel, search.ts). Remove exercises/videos from other creators in <code>exercises.json</code>. Update Austin&#39;s <code>display_name</code> to include &quot;Trainingtall&quot;.</p>
+<p><strong>Tech Stack:</strong> React state, TypeScript types</p>
+<hr>
+<h2 id="current-state">Current State</h2>
+<ul>
+<li>5 creators in data:<ul>
+<li><code>coachingotf</code> — Coach Rudy (1747 videos)</li>
+<li><code>trainingtall</code> — Austin Hendrickson (206 videos)</li>
+<li><code>lustertraining</code> — Bryce Luster (15 videos)</li>
+<li><code>brookerooney</code> — SHE LIFTS (6 videos)</li>
+<li><code>coach.fajardo</code> — David Fajardo (6 videos)</li>
+</ul>
+</li>
+<li>Creator filter is single-select: <code>activeCreator: string | null</code></li>
+<li>FilterPanel uses <code>Chip</code> component with toggle behavior</li>
+<li><code>filterExercises()</code> in <code>search.ts</code> checks <code>filters.creator</code> as a single string</li>
+</ul>
+<h2 id="task-1-clean-up-creator-data">Task 1: Clean Up Creator Data</h2>
+<p><strong>Files:</strong></p>
+<ul>
+<li><p>Create: <code>scripts/cleanup-creators.mjs</code></p>
+</li>
+<li><p>Modify: <code>src/data/exercises.json</code></p>
+</li>
+<li><p><input disabled="" type="checkbox"> <strong>Step 1: Write the cleanup script</strong></p>
+</li>
+</ul>
+<pre><code class="language-javascript">// scripts/cleanup-creators.mjs
+import { readFileSync, writeFileSync } from &#39;fs&#39;;
+import { join } from &#39;path&#39;;
+
+const EXERCISES_PATH = join(process.cwd(), &#39;src/data/exercises.json&#39;);
+const KEEP_CREATORS = new Set([&#39;coachingotf&#39;, &#39;trainingtall&#39;]);
+
+const exercises = JSON.parse(readFileSync(EXERCISES_PATH, &#39;utf-8&#39;));
+
+let removedVideos = 0;
+let removedExercises = 0;
+
+const cleaned = exercises
+  .map((ex) =&gt; {
+    const kept = ex.videos.filter((v) =&gt; KEEP_CREATORS.has(v.creator.id));
+    removedVideos += ex.videos.length - kept.length;
+    return { ...ex, videos: kept };
+  })
+  .filter((ex) =&gt; {
+    if (ex.videos.length === 0) {
+      removedExercises++;
+      return false;
+    }
+    return true;
+  });
+
+// Update Austin&#39;s display_name
+for (const ex of cleaned) {
+  for (const v of ex.videos) {
+    if (v.creator.id === &#39;trainingtall&#39;) {
+      v.creator.display_name = &#39;Austin Hendrickson (Trainingtall)&#39;;
+    }
+  }
+}
+
+writeFileSync(EXERCISES_PATH, JSON.stringify(cleaned, null, 2) + &#39;\n&#39;);
+
+console.log(`Removed ${removedVideos} videos from non-kept creators`);
+console.log(`Removed ${removedExercises} exercises with no remaining videos`);
+console.log(`Remaining: ${cleaned.length} exercises`);
+</code></pre>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>Step 2: Run the cleanup script</strong></li>
+</ul>
+<p>Run: <code>node scripts/cleanup-creators.mjs</code>
+Expected: Removes ~27 videos (15+6+6), possibly removes a few exercises that only had those creators.</p>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>Step 3: Verify cleanup</strong></li>
+</ul>
+<p>Run: <code>node -e &quot;const d=require(&#39;./src/data/exercises.json&#39;); const c=new Set(); d.forEach(e=&gt;e.videos.forEach(v=&gt;c.add(v.creator.id))); console.log(&#39;Remaining creators:&#39;, [...c])&quot;</code>
+Expected: <code>Remaining creators: [ &#39;coachingotf&#39;, &#39;trainingtall&#39; ]</code></p>
+<h2 id="task-2-change-creator-filter-to-multi-select">Task 2: Change Creator Filter to Multi-Select</h2>
+<p><strong>Files:</strong></p>
+<ul>
+<li><p>Modify: <code>src/lib/search.ts</code> — change <code>creator</code> filter from single string to array</p>
+</li>
+<li><p>Modify: <code>src/app/page.tsx</code> — change state from <code>string | null</code> to <code>string[]</code></p>
+</li>
+<li><p>Modify: <code>src/components/FilterPanel.tsx</code> — change props and chip toggle logic</p>
+</li>
+<li><p><input disabled="" type="checkbox"> <strong>Step 4: Update <code>filterExercises</code> in <code>search.ts</code></strong></p>
+</li>
+</ul>
+<p>Change the <code>creator</code> filter parameter from <code>string | null</code> to <code>string[]</code> and update the filtering logic to match any of the selected creators.</p>
+<pre><code class="language-typescript">// In filterExercises, change:
+//   creator?: string | null;
+// To:
+//   creators?: string[];
+
+// And change filter logic from:
+//   if (filters.creator &amp;&amp; !ex.videos.some((v) =&gt; v.creator.id === filters.creator)) return false;
+// To:
+//   if (filters.creators?.length &amp;&amp; !ex.videos.some((v) =&gt; filters.creators!.includes(v.creator.id))) return false;
+</code></pre>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>Step 5: Update <code>page.tsx</code> state management</strong></li>
+</ul>
+<pre><code class="language-typescript">// Change:
+//   const [activeCreator, setActiveCreator] = useState&lt;string | null&gt;(null);
+// To:
+//   const [activeCreators, setActiveCreators] = useState&lt;string[]&gt;([]);
+
+// Update filterExercises call:
+//   creator: activeCreator,
+// To:
+//   creators: activeCreators,
+
+// Update toggle handler:
+//   onCreatorChange={(id) =&gt; setActiveCreators(prev =&gt;
+//     prev.includes(id) ? prev.filter(c =&gt; c !== id) : [...prev, id]
+//   )}
+
+// Update clear:
+//   setActiveCreators([]) in clearFilters equivalent
+</code></pre>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>Step 6: Update <code>FilterPanel.tsx</code> props and behavior</strong></li>
+</ul>
+<p>Change from single-select to multi-select:</p>
+<ul>
+<li><p><code>activeCreator: string | null</code> → <code>activeCreators: string[]</code></p>
+</li>
+<li><p><code>onCreatorChange: (creator: string | null) =&gt; void</code> → <code>onCreatorChange: (creatorId: string) =&gt; void</code></p>
+</li>
+<li><p>Chip <code>active</code> check: <code>activeCreator === creator.id</code> → <code>activeCreators.includes(creator.id)</code></p>
+</li>
+<li><p>Active count: <code>activeCreator ? 1 : 0</code> → <code>activeCreators.length</code></p>
+</li>
+<li><p>Filter count calculation updated</p>
+</li>
+<li><p><input disabled="" type="checkbox"> <strong>Step 7: Build and verify</strong></p>
+</li>
+</ul>
+<p>Run: <code>npm run build</code>
+Expected: Build succeeds with 0 TypeScript errors</p>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>Step 8: Visual verification</strong></li>
+</ul>
+<p>Run: <code>npm run dev</code>
+Open browser, check that:</p>
+<ol>
+<li>Only Austin Hendrickson (Trainingtall) and Coach Rudy appear as creator filter options</li>
+<li>Both can be selected simultaneously (multi-select)</li>
+<li>Clicking a selected creator deselects it</li>
+<li>&quot;Clear all&quot; resets creator selection</li>
+<li>Filter count badge shows correct number</li>
+<li>Exercise grid properly filters when creators are selected</li>
+</ol>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>Step 9: Commit</strong></li>
+</ul>
+<pre><code class="language-bash">git add -A
+git commit -m &quot;feat: multi-select creator filter, remove non-primary creators&quot;
+</code></pre>
+<h2 id="verification-checklist">Verification Checklist</h2>
+<ul>
+<li><input disabled="" type="checkbox"> Only 2 creators in data: Coach Rudy, Austin Hendrickson (Trainingtall)</li>
+<li><input disabled="" type="checkbox"> Austin&#39;s display name shows &quot;Austin Hendrickson (Trainingtall)&quot;</li>
+<li><input disabled="" type="checkbox"> Creator filter supports selecting multiple creators</li>
+<li><input disabled="" type="checkbox"> Filter works correctly (AND with other filters, OR between selected creators)</li>
+<li><input disabled="" type="checkbox"> Active filter count is correct</li>
+<li><input disabled="" type="checkbox"> Clear all works</li>
+<li><input disabled="" type="checkbox"> <code>npm run build</code> succeeds</li>
+<li><input disabled="" type="checkbox"> Visual check in browser passes</li>
+</ul>
+  </main>
+</body>
+</html>

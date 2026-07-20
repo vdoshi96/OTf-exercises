@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: https:; style-src 'unsafe-inline'">
+  <meta name="generator" content="otf-docs-parity/v1">
+  <meta name="doc-source" content="hosting-guide.md">
+  <meta name="doc-source-sha256" content="d190bafe50322a1c04c70cbe3e92d13b2d89e2d7a9eacc3fd72fbe51ce34a575">
+  <title>Hosting Guide — OTF Exercise Directory</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      --background: #ffffff;
+      --foreground: #172033;
+      --muted: #5d6678;
+      --surface: #f5f7fa;
+      --border: #d8dee9;
+      --accent: #b84f10;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #111827;
+        --foreground: #e5e7eb;
+        --muted: #aeb7c6;
+        --surface: #1f2937;
+        --border: #445064;
+        --accent: #ff9b5e;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--background);
+      color: var(--foreground);
+    }
+    main {
+      width: min(100% - 2rem, 72rem);
+      margin: 0 auto;
+      padding: 2.5rem 0 5rem;
+      overflow-x: auto;
+      overflow-wrap: anywhere;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      line-height: 1.25;
+      margin-block: 2rem 0.75rem;
+    }
+    h1 { margin-top: 0; }
+    a { color: var(--accent); text-underline-offset: 0.15em; }
+    a:focus-visible { outline: 0.2rem solid currentColor; outline-offset: 0.2rem; }
+    blockquote {
+      margin-inline: 0;
+      padding: 0.2rem 1rem;
+      color: var(--muted);
+      border-inline-start: 0.25rem solid var(--border);
+    }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    code {
+      padding: 0.1rem 0.3rem;
+      background: var(--surface);
+      border-radius: 0.25rem;
+    }
+    pre {
+      padding: 1rem;
+      overflow-x: auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+    }
+    pre code { padding: 0; background: transparent; }
+    table {
+      width: 100%;
+      margin-block: 1rem;
+      border-collapse: collapse;
+    }
+    th, td { padding: 0.5rem 0.75rem; border: 1px solid var(--border); text-align: start; }
+    th { background: var(--surface); }
+    img { max-width: 100%; height: auto; }
+    hr { border: 0; border-top: 1px solid var(--border); }
+    .plain-text { white-space: pre-wrap; }
+    .task-list-item { list-style: none; }
+    input[type="checkbox"] { margin-inline: -1.25rem 0.5rem; }
+  </style>
+</head>
+<body>
+  <main>
+<h1 id="hosting-guide-otf-exercise-directory">Hosting Guide — OTF Exercise Directory</h1>
+<p>Step-by-step instructions to deploy the exercise directory to the internet.</p>
+<hr>
+<h2 id="prerequisites">Prerequisites</h2>
+<p>Make sure these are installed on your Mac:</p>
+<pre><code class="language-bash"># Check Node.js (need v20.9+)
+node --version
+
+# If not installed or outdated:
+brew install node
+
+# Check git
+git --version
+</code></pre>
+<p>You&#39;ll also need:</p>
+<ul>
+<li>A GitHub account (github.com)</li>
+<li>A Vercel account (vercel.com) — sign up with GitHub, it&#39;s free</li>
+</ul>
+<hr>
+<h2 id="step-1-push-the-project-to-github">Step 1: Push the Project to GitHub</h2>
+<p>Once Claude Code finishes building the project:</p>
+<pre><code class="language-bash">cd otf-exercise-directory
+
+# Initialize git repo
+git init
+git add .
+git commit -m &quot;Initial commit: OTF exercise directory&quot;
+
+# Create a repo on GitHub (use GitHub CLI or do it on github.com)
+# If you have GitHub CLI:
+brew install gh
+gh auth login
+gh repo create otf-exercise-directory --public --source=. --push
+
+# If you don&#39;t have GitHub CLI, create the repo on github.com, then:
+git remote add origin https://github.com/YOUR_USERNAME/otf-exercise-directory.git
+git branch -M main
+git push -u origin main
+</code></pre>
+<hr>
+<h2 id="step-2-deploy-to-vercel">Step 2: Deploy to Vercel</h2>
+<h3 id="option-a-via-vercel-dashboard-easiest">Option A: Via Vercel Dashboard (easiest)</h3>
+<ol>
+<li>Go to <a href="https://vercel.com">https://vercel.com</a> and sign in with GitHub</li>
+<li>Click &quot;Add New Project&quot;</li>
+<li>Import your <code>otf-exercise-directory</code> repository</li>
+<li>Vercel auto-detects Next.js — leave all settings as defaults</li>
+<li>Click &quot;Deploy&quot;</li>
+<li>Wait ~60 seconds. You&#39;ll get a live URL like <code>otf-exercise-directory.vercel.app</code></li>
+</ol>
+<h3 id="option-b-via-vercel-cli">Option B: Via Vercel CLI</h3>
+<pre><code class="language-bash"># Install Vercel CLI
+npm install -g vercel
+
+# Deploy from project root
+cd otf-exercise-directory
+vercel
+
+# Follow the prompts:
+# - Link to existing project? No
+# - Project name: otf-exercise-directory
+# - Directory: ./
+# - Override settings? No
+
+# For production deployment:
+vercel --prod
+</code></pre>
+<hr>
+<h2 id="step-3-custom-domain-optional-1015year">Step 3: Custom Domain (Optional, ~$10–15/year)</h2>
+<p>If you want a clean URL like <code>otfexercises.com</code>:</p>
+<ol>
+<li><p>Buy a domain from Namecheap, Cloudflare Registrar, or Google Domains</p>
+<ul>
+<li>Cloudflare Registrar is cheapest (at-cost pricing, ~$10/year for .com)</li>
+<li>Go to <a href="https://dash.cloudflare.com">https://dash.cloudflare.com</a> → &quot;Register Domains&quot;</li>
+</ul>
+</li>
+<li><p>In Vercel dashboard:</p>
+<ul>
+<li>Go to your project → Settings → Domains</li>
+<li>Type your domain name and click &quot;Add&quot;</li>
+<li>Vercel gives you DNS records to add</li>
+</ul>
+</li>
+<li><p>In your domain registrar&#39;s DNS settings, add:</p>
+<ul>
+<li><code>A</code> record: <code>76.76.21.21</code></li>
+<li><code>CNAME</code> record for <code>www</code>: <code>cname.vercel-dns.com</code></li>
+</ul>
+</li>
+<li><p>Wait 5–30 minutes for DNS propagation. Vercel auto-provisions HTTPS.</p>
+</li>
+</ol>
+<hr>
+<h2 id="step-4-updating-the-site">Step 4: Updating the Site</h2>
+<p>When you add new exercises or make changes:</p>
+<pre><code class="language-bash">cd otf-exercise-directory
+
+# Make your changes, then:
+git add .
+git commit -m &quot;Add new exercises from March 2026&quot;
+git push origin main
+</code></pre>
+<p>Vercel automatically redeploys on every push to <code>main</code>. Your site updates within ~60 seconds.</p>
+<hr>
+<h2 id="step-5-monitoring">Step 5: Monitoring</h2>
+<p>Vercel free tier includes:</p>
+<ul>
+<li>100 GB bandwidth/month (more than enough for a static-ish site)</li>
+<li>Serverless function invocations if you add any API routes</li>
+<li>Analytics (basic, under Settings → Analytics)</li>
+</ul>
+<p>Check usage at: <a href="https://vercel.com/dashboard">https://vercel.com/dashboard</a> → your project → Usage</p>
+<p>You won&#39;t hit any limits unless the site goes viral. If it does, Vercel Pro is $20/month with much higher limits.</p>
+<hr>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<p><strong>Build fails on Vercel:</strong>
+Run <code>npm run build</code> locally first to catch errors before pushing.</p>
+<p><strong>TikTok embeds not loading:</strong>
+TikTok players load only after the visitor taps the local preview. If a player is blocked, the permanent &quot;Open original on TikTok&quot; link remains available. Check the browser console and the original post&#39;s availability.</p>
+<p><strong>yt-dlp can&#39;t scrape TikTok:</strong>
+TikTok blocks scrapers frequently. Try updating yt-dlp (<code>pip install -U yt-dlp</code>). If it still fails, manually collect video URLs from his profile page and put them in <code>urls.txt</code>.</p>
+<p><strong>Want to move off Vercel later?</strong>
+Since this is a standard Next.js app, it deploys anywhere: Netlify, Cloudflare Pages, AWS Amplify, or even a $5 VPS with <code>npm run build &amp;&amp; npm start</code>.</p>
+<hr>
+<h2 id="cost-summary">Cost Summary</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Monthly</th>
+<th>Annual</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Vercel hosting</td>
+<td>$0</td>
+<td>$0</td>
+</tr>
+<tr>
+<td>Domain (optional)</td>
+<td>—</td>
+<td>$10–15</td>
+</tr>
+<tr>
+<td>Cloudflare DNS (if using CF registrar)</td>
+<td>$0</td>
+<td>$0</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td><strong>$0</strong></td>
+<td><strong>$0–15</strong></td>
+</tr>
+</tbody></table>
+  </main>
+</body>
+</html>

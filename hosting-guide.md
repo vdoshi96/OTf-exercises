@@ -9,7 +9,7 @@ Step-by-step instructions to deploy the exercise directory to the internet.
 Make sure these are installed on your Mac:
 
 ```bash
-# Check Node.js (need v18+)
+# Check Node.js (need v20.9+)
 node --version
 
 # If not installed or outdated:

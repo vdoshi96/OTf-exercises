@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: https:; style-src 'unsafe-inline'">
+  <meta name="generator" content="otf-docs-parity/v1">
+  <meta name="doc-source" content="docs/superpowers/handoffs/task-04c-new-creator-quality-guard.md">
+  <meta name="doc-source-sha256" content="f7cdf9ed98b8b175f27b9c3e4bace6127ed70b377840f81aed22032e94064d8d">
+  <title>Task 04C: New Creator Import Quality Guard</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      --background: #ffffff;
+      --foreground: #172033;
+      --muted: #5d6678;
+      --surface: #f5f7fa;
+      --border: #d8dee9;
+      --accent: #b84f10;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #111827;
+        --foreground: #e5e7eb;
+        --muted: #aeb7c6;
+        --surface: #1f2937;
+        --border: #445064;
+        --accent: #ff9b5e;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--background);
+      color: var(--foreground);
+    }
+    main {
+      width: min(100% - 2rem, 72rem);
+      margin: 0 auto;
+      padding: 2.5rem 0 5rem;
+      overflow-x: auto;
+      overflow-wrap: anywhere;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      line-height: 1.25;
+      margin-block: 2rem 0.75rem;
+    }
+    h1 { margin-top: 0; }
+    a { color: var(--accent); text-underline-offset: 0.15em; }
+    a:focus-visible { outline: 0.2rem solid currentColor; outline-offset: 0.2rem; }
+    blockquote {
+      margin-inline: 0;
+      padding: 0.2rem 1rem;
+      color: var(--muted);
+      border-inline-start: 0.25rem solid var(--border);
+    }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    code {
+      padding: 0.1rem 0.3rem;
+      background: var(--surface);
+      border-radius: 0.25rem;
+    }
+    pre {
+      padding: 1rem;
+      overflow-x: auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+    }
+    pre code { padding: 0; background: transparent; }
+    table {
+      width: 100%;
+      margin-block: 1rem;
+      border-collapse: collapse;
+    }
+    th, td { padding: 0.5rem 0.75rem; border: 1px solid var(--border); text-align: start; }
+    th { background: var(--surface); }
+    img { max-width: 100%; height: auto; }
+    hr { border: 0; border-top: 1px solid var(--border); }
+    .plain-text { white-space: pre-wrap; }
+    .task-list-item { list-style: none; }
+    input[type="checkbox"] { margin-inline: -1.25rem 0.5rem; }
+  </style>
+</head>
+<body>
+  <main>
+<h1 id="task-04c-new-creator-import-quality-guard">Task 04C: New Creator Import Quality Guard</h1>
+<h2 id="root-cause">Root Cause</h2>
+<p>The local enrichment classifier is intentionally keyword-heavy. For newly imported Instagram creators, that let obvious non-demo captions pass whenever they included terms like <code>run</code>, <code>row</code>, <code>workout</code>, or <code>coach</code> in class promos, lifestyle posts, or hashtags. Follow-up audit also found that broad instruction signals could override non-demo patterns when normal prose contained words like <code>goals set</code>, <code>make sure to post</code>, table <code>set up</code>, <code>drive me crazy</code>, or generic <code>how to keep your...</code> phrasing.</p>
+<p>Legacy <code>coachingotf</code> data has a separate correction pass in <code>scripts/apply_corrections.py</code>, so this guard is scoped away from that creator to avoid changing existing legacy behavior before PR3.</p>
+<h2 id="guard-scope">Guard Scope</h2>
+<p>Changed <code>scripts/enrich_local.py</code> to add an early non-demo guard for records where:</p>
+<ul>
+<li><code>source == &quot;instagram&quot;</code></li>
+<li><code>creator.id</code> is present</li>
+<li><code>creator.id != &quot;coachingotf&quot;</code></li>
+</ul>
+<p>The guard runs before <code>is_exercise_demo()</code> can mark the record as a demo. TikTok records and legacy <code>coachingotf</code> Instagram records skip this path.</p>
+<h2 id="rejected-examples">Rejected Examples</h2>
+<p>The new guard rejects narrow classes of obvious non-demos:</p>
+<ul>
+<li>Studio scheduling and promos: <code>prebook</code>, <code>book your class/session</code>, spots available, class times, <code>come see me/us</code>, <code>who will I see</code>, classes back on schedule, playlist/theme party announcements.</li>
+<li>Contextual studio/class announcements without exercise instruction: tomorrow-based challenge prompts, <code>who&#39;s ready</code> / <code>who&#39;s coming</code>, <code>don&#39;t miss</code>, <code>book into</code>, OTF friends/crew/studio notices, template/cookie-exchange announcements, Tread 50 promos, Orange Lights promos, heart-rate/rower technology notices, benchmark PR recaps, studio-week announcements, and studio-activity gag captions.</li>
+<li>OTF event/challenge announcements without exercise instruction: Transformation Challenge, Dri Tri, Capture The Flag, All Out with Aoki, Orange Everest, Marathon Month, Mayhem, Tornado, 12 Days of Fitness, Member Appreciation, benchmark/tomorrow class promos.</li>
+<li>Lifestyle/event posts: newborn/birth/labor/labour/postpartum announcements, narrow baby-arrival phrases, contextual pregnancy posts, wedding/proposal/travel recap/travel day/event recap posts, BJJ tournament/date night, self-defense date night, kids business / Muddy Buddies / Italian sodas.</li>
+<li>Nutrition, recipe, supplement, sponsor, and product promos: protein powder, oatmeal recipes, macros/calories around food, supplements, <code>sponsor me</code>, product promotion language, and link-in-bio CTAs.</li>
+<li>Non-directory sports content: <code>Day X/30 of making you a college basketball player</code>, basketball gameplay/open-gym/runs clips, pass/shot/layup captions, and follow-for-lifting-and-basketball-content CTAs when there is no clear exercise-instruction signal.</li>
+<li>Coach work-life/schedule posts and outdoor/lifestyle posts: opener/closing/clopen/silent-studio captions, PNW/couple/wood-chopping clips, and similar hashtag-driven lifestyle content.</li>
+<li>Hashtag-driven near-empty captions like <code>Helpful?</code>, <code>WE DID IT!</code>, and <code>Today was a big day</code> when exercise terms only appear in hashtags, including emoji and <code>Follow for more</code> filler before the hashtags.</li>
+<li>Generic fitness-adjacent posts without clear visible demo language: group-fitness endorsements, holiday motivation, rower battle recaps, goals/sustainability advice, coaching philosophy, school/job announcements, recruiting advice, and personal tribute captions.</li>
+</ul>
+<p>Promo, nutrition/product, business, coach work-life, outdoor lifestyle, and most lifestyle patterns are unconditional import rejects. Event/challenge, studio-promo, and basketball gameplay patterns are contextual: they reject class announcements, challenge promos, recaps, studio notices, studio gag captions, and non-directory sports clips when there is no clear import instruction signal, but allow real TrainingTall tutorials that mention event names as context. Pregnancy is contextual so TrainingTall&#39;s rowing tutorial that mentions pregnancy as a form exception can still pass, and bare <code>baby</code> is not rejected because Austin uses it colloquially in real tutorials.</p>
+<p>After explicit rejects, non-legacy Instagram imports now have a positive gate: if there is no clear import instruction signal, the visible caption body must still have demo-like exercise language, not just hashtags or generic fitness/lifestyle wording. The visible gate favors first-line/title style demo language such as named movements with <code>tips</code>, <code>form</code>, <code>technique</code>, <code>pain during</code>, <code>secret</code>, <code>fix</code>, etc.; row/run/treadmill language must be paired with visible tutorial/form/strategy/cue terms. This rejects generic fitness-adjacent posts even when they mention rower, treadmill, workout, coaching, strength, or fitness.</p>
+<p>Instruction signals use explicit word-boundary tutorial phrases and exercise-context setup patterns; bare <code>set</code>, generic <code>make sure</code>, table <code>set up</code>, substring <code>form</code> in <code>Transformation</code>, <code>push</code> in <code>pushing</code>, <code>drive me crazy</code>, generic <code>how to keep your...</code>, and <code>coach</code> in lifestyle text do not create an escape hatch. The travel pattern is limited to recap/day language so exercise phrases like <code>distance to travel</code> do not trigger the lifestyle guard.</p>
+<h2 id="changed-files">Changed Files</h2>
+<ul>
+<li><code>scripts/enrich_local.py</code></li>
+<li><code>docs/superpowers/handoffs/task-04c-new-creator-quality-guard.md</code></li>
+</ul>
+<h2 id="verification">Verification</h2>
+<p>Ran a targeted smoke with crafted records:</p>
+<ul>
+<li><code>coachgarin</code> class promo with <code>Prebook now</code> and run/workout hashtags: guard <code>True</code>, demo <code>False</code>.</li>
+<li><code>trainingtall</code> rowing benchmark tip with coaching cues: guard <code>False</code>, demo <code>True</code>.</li>
+<li><code>coachingotf</code> short legacy caption: guard <code>False</code>, confirming the new path does not apply.</li>
+<li><code>Transformation Challenge starts today #workout #run</code>: guard <code>True</code>, demo <code>False</code>.</li>
+<li>Newborn/birth caption with <code>pushing</code> plus workout-ish hashtags: guard <code>True</code>, demo <code>False</code>.</li>
+<li><code>Day X/30 of making you a college basketball player</code>: guard <code>True</code>, demo <code>False</code>.</li>
+<li>Malformed creator values, legacy <code>coachingotf</code>, and TikTok records skip the new import guard.</li>
+</ul>
+<p>Ran raw-sample verification from <code>raw_instagram_videos.json</code>:</p>
+<ul>
+<li><code>https://www.instagram.com/reel/C_zNNWrpt3c/</code>: TrainingTall rowing tutorial with <code>pregnant</code> context is not an import-quality non-demo and enriches as an exercise demo.</li>
+<li><code>https://www.instagram.com/reel/C_Rb5fxylHm/</code>: TrainingTall burpee tutorial with <code>distance to travel</code> is not an import-quality non-demo and enriches as an exercise demo.</li>
+<li><code>https://www.instagram.com/reel/DPchoN3CSyh/</code>: TrainingTall upright row shoulder pain tutorial with colloquial <code>baby</code> is not an import-quality non-demo and enriches as an exercise demo.</li>
+<li><code>https://www.instagram.com/reel/DKvcV7qvOua/</code>: TrainingTall deadlift hinge tutorial with colloquial <code>baby</code> is not an import-quality non-demo and enriches as an exercise demo.</li>
+<li><code>https://www.instagram.com/reel/DKYSTgIJOEh/</code>: TrainingTall lunge pain tips with colloquial <code>baby</code> is not an import-quality non-demo and enriches as an exercise demo.</li>
+<li><code>https://www.instagram.com/reel/C-1KAyiyxMX/</code>: TrainingTall running advice with colloquial <code>baby</code> is not an import-quality non-demo and enriches as an exercise demo.</li>
+<li><code>https://www.instagram.com/reel/DGMiVeZJ8TE/</code>: TrainingTall incline running form tutorial mentioning Orange Everest is not an import-quality non-demo and enriches as an exercise demo.</li>
+<li><code>https://www.instagram.com/reel/DJ4SrGyJ1wf/</code>: TrainingTall plank pop regression tutorial mentioning Mayhem is not an import-quality non-demo and enriches as an exercise demo.</li>
+<li><code>https://www.instagram.com/reel/DXhB9sniZUG/</code>: coach.fajardo near-empty <code>Helpful?</code> / <code>Follow for more</code> caption is an import-quality non-demo and does not enrich as an exercise demo.</li>
+<li><code>https://www.instagram.com/reel/Ckg6lS0OnTv/</code>: Coach Garin class-promo caption is an import-quality non-demo and does not enrich as an exercise demo.</li>
+<li><code>https://www.instagram.com/reel/C2YMscHLCJF/</code>: Coach Garin Transformation Challenge / 1 Mile Benchmark class promo is an import-quality non-demo and does not enrich as an exercise demo.</li>
+<li><code>https://www.instagram.com/reel/CndEVB7JFdu/</code>: Coach Garin Transformation Challenge / Power Hour promo is an import-quality non-demo and does not enrich as an exercise demo.</li>
+<li><code>https://www.instagram.com/reel/DXQFZdWjomz/</code>: coach.fajardo kids business / Muddy Buddies / Italian sodas promo is an import-quality non-demo and does not enrich as an exercise demo.</li>
+<li><code>https://www.instagram.com/reel/DUHSQsKiR-t/</code>: Coach Garin studio gag about climbing over rowers / bouncing over treadmills is an import-quality non-demo and does not enrich as an exercise demo.</li>
+<li><code>https://www.instagram.com/reel/C-D2jw9SKc5/</code>: TrainingTall protein powder / oatmeal sponsor recipe post is an import-quality non-demo and does not enrich as an exercise demo.</li>
+<li><code>https://www.instagram.com/reel/DKXb5fDNHas/</code>: lustertraining basketball/open-gym clip is an import-quality non-demo and does not enrich as an exercise demo.</li>
+<li><code>https://www.instagram.com/reel/DLIkRftyJZ1/</code>: lustertraining basketball pass/shot clip with follow-for-lifting-and-basketball-content CTA is an import-quality non-demo and does not enrich as an exercise demo.</li>
+<li><code>https://www.instagram.com/reel/DXedFuSCWAA/</code>: coach.fajardo opener/closing coach work-life post is an import-quality non-demo and does not enrich as an exercise demo.</li>
+<li><code>https://www.instagram.com/reel/DXSWYrDD9n8/</code>: lustertraining diet/nutrition advice post is an import-quality non-demo and does not enrich as an exercise demo.</li>
+<li><code>https://www.instagram.com/reel/CsCmQ0WOJX7/</code>: brookerooney outdoor wood-chopping/lifestyle clip is an import-quality non-demo and does not enrich as an exercise demo.</li>
+<li>Positive-gate generated-audit rejects are import-quality non-demos and do not enrich as exercise demos: <code>DI2ERzDzy-Q</code> TrainingTall OTF/group-fitness endorsement, <code>DD_GuaQppM_</code> TrainingTall Christmas/holiday motivation, <code>C8DI1NwSaHT</code> TrainingTall salad recipe/nutrition post, <code>C7PlWfBOeou</code> TrainingTall/Muscle &amp; Fitness rower battle recap, <code>DWMQqXVCV97</code> coach.fajardo goals/sustainability advice, <code>DVbNvzpCTmX</code> coach.fajardo coaching philosophy, <code>DXSexfWEpmd</code> coach.fajardo kids entrepreneur/school post, <code>DUdhULCjk2x</code> coach.fajardo job/social-media-director announcement, <code>DXSXJB0DzWw</code> lustertraining nutrition/basketball recruiting advice, <code>DMTA_fJgdp4</code> lustertraining basketball shooting form, <code>DWg1dg9j3ju</code> lustertraining recruiting/strength advice, and <code>DK8OFBcSl8c</code> brookerooney personal tribute caption.</li>
+<li>Representative generated-audit Coach Garin studio/class announcements are import-quality non-demos and do not enrich as exercise demos: <code>Ct7hrwwNa39</code> Catch Me If You Can tomorrow, <code>DAJ-vJ9PTZn</code> Day 1 tomorrow, <code>CeMr_rXFtRo</code> chipping/don&#39;t-miss tomorrow, <code>C0-PiA0LNoi</code> cookie exchange/templates, <code>C2Ii2Hov5kr</code> OTF friends shoe notice, <code>C_G1G4lSYET</code> book-into class times, <code>Ci_IlAlpFsJ</code> heart-rate/rower technology notice, <code>C3lZ2hLrMHO</code> full-workout/cooldown prompt, <code>CnDnPbcpGwh</code> 200m Benchmark Row PR recap, <code>C20XBjPvhEQ</code> Tread 50 promo, <code>Cq0vnfAgoiu</code> studio-week announcement, <code>DCuororyKPi</code> Orange Lights promo, <code>C2yRqQmLyfE</code> 500m Row tomorrow promo, and <code>CrHPmn7PGWC</code> Inferno tomorrow promo.</li>
+</ul>
+<p>Ran crafted TrainingTall tutorial verification:</p>
+<ul>
+<li>Running, split squat, TRX row, pushup, and deadlift instructional captions: guard <code>False</code>, demo <code>True</code>.</li>
+</ul>
+<p>Ran syntax verification:</p>
+<ul>
+<li><code>python3 -m py_compile scripts/enrich_local.py</code></li>
+</ul>
+  </main>
+</body>
+</html>

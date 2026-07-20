@@ -12,7 +12,7 @@ Browse 2,031 exercise demonstrations across 1,286 grouped exercises, filterable 
 - **Styling:** Tailwind CSS 4
 - **Search:** Fuse.js (client-side fuzzy search)
 - **Video Embeds:** TikTok and Instagram embeds
-- **Data:** Static JSON bundled at build time (1,231 grouped exercises)
+- **Data:** Static JSON bundled at build time (1,286 grouped exercises / 2,031 demos)
 
 ## Getting Started
 
@@ -51,6 +51,20 @@ preview, validates and normalizes it with Sharp, then stores it under
 explicit failure entry in `docs/qa/latest/thumbnail-report.json` so the UI never
 shows a broken image. See [the thumbnail pipeline](docs/thumbnail-pipeline.md)
 for recovery order, validation, and troubleshooting commands.
+
+## Documentation parity
+
+Project-owned prose documentation is maintained in source form and generated as
+same-directory HTML counterparts. Stage a newly created source document first so
+tracked-file discovery includes it without touching private untracked notes. Then
+run the canonical regeneration command after editing or adding documentation:
+
+```bash
+npm run docs:generate
+```
+
+Use `npm run docs:check` for a mutation-free completeness and content-parity
+check. The same check runs automatically before every production build.
 
 ## Project Structure
 

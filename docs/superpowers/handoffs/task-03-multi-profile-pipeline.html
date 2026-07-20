@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: https:; style-src 'unsafe-inline'">
+  <meta name="generator" content="otf-docs-parity/v1">
+  <meta name="doc-source" content="docs/superpowers/handoffs/task-03-multi-profile-pipeline.md">
+  <meta name="doc-source-sha256" content="237a094e101d1af24cf40d60fcbafdb269120bf60ec2e51fb0e4862fb8276478">
+  <title>Task 03 Handoff: Multi-Profile Pipeline Provenance</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      --background: #ffffff;
+      --foreground: #172033;
+      --muted: #5d6678;
+      --surface: #f5f7fa;
+      --border: #d8dee9;
+      --accent: #b84f10;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #111827;
+        --foreground: #e5e7eb;
+        --muted: #aeb7c6;
+        --surface: #1f2937;
+        --border: #445064;
+        --accent: #ff9b5e;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--background);
+      color: var(--foreground);
+    }
+    main {
+      width: min(100% - 2rem, 72rem);
+      margin: 0 auto;
+      padding: 2.5rem 0 5rem;
+      overflow-x: auto;
+      overflow-wrap: anywhere;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      line-height: 1.25;
+      margin-block: 2rem 0.75rem;
+    }
+    h1 { margin-top: 0; }
+    a { color: var(--accent); text-underline-offset: 0.15em; }
+    a:focus-visible { outline: 0.2rem solid currentColor; outline-offset: 0.2rem; }
+    blockquote {
+      margin-inline: 0;
+      padding: 0.2rem 1rem;
+      color: var(--muted);
+      border-inline-start: 0.25rem solid var(--border);
+    }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    code {
+      padding: 0.1rem 0.3rem;
+      background: var(--surface);
+      border-radius: 0.25rem;
+    }
+    pre {
+      padding: 1rem;
+      overflow-x: auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+    }
+    pre code { padding: 0; background: transparent; }
+    table {
+      width: 100%;
+      margin-block: 1rem;
+      border-collapse: collapse;
+    }
+    th, td { padding: 0.5rem 0.75rem; border: 1px solid var(--border); text-align: start; }
+    th { background: var(--surface); }
+    img { max-width: 100%; height: auto; }
+    hr { border: 0; border-top: 1px solid var(--border); }
+    .plain-text { white-space: pre-wrap; }
+    .task-list-item { list-style: none; }
+    input[type="checkbox"] { margin-inline: -1.25rem 0.5rem; }
+  </style>
+</head>
+<body>
+  <main>
+<h1 id="task-03-handoff-multi-profile-pipeline-provenance">Task 03 Handoff: Multi-Profile Pipeline Provenance</h1>
+<p>Owner: Worker Task 3</p>
+<h2 id="scope">Scope</h2>
+<ul>
+<li>Parameterized Instagram scraping so the login account remains <code>--user</code> and target creator accounts come from <code>--profiles</code>.</li>
+<li>Preserved per-video <code>creator</code> metadata from raw Instagram records through enrichment, flat filtering, and final grouped videos.</li>
+<li>Backfilled legacy TikTok and Instagram records missing <code>creator</code> as Coach Rudy / <code>@coachingotf</code>.</li>
+<li>Changed the generated flat output to <code>src/data/exercises_flat.json</code> and made grouping default to that fresh flat file instead of falling back to stale grouped/backup input.</li>
+<li>Did not run live Instagram scraping and did not intentionally modify generated exercise data.</li>
+</ul>
+<h2 id="files-touched">Files Touched</h2>
+<ul>
+<li><code>scripts/scrape_instagram.py</code></li>
+<li><code>scripts/enrich_local.py</code></li>
+<li><code>scripts/merge_and_filter.py</code></li>
+<li><code>scripts/group_exercises.py</code></li>
+<li><code>scripts/refresh.sh</code></li>
+<li><code>docs/superpowers/handoffs/task-03-multi-profile-pipeline.md</code></li>
+</ul>
+<h2 id="root-decisions">Root Decisions</h2>
+<ul>
+<li><code>--profiles</code> accepts comma-separated handles and defaults to <code>coachingotf</code> for backward compatibility.</li>
+<li><code>KNOWN_SHORTCODES</code> fallback is now only registered for <code>coachingotf</code>; other handles use <code>Profile.from_username</code>.</li>
+<li>Scraped Instagram records receive a <code>creator</code> object before writing <code>raw_instagram_videos.json</code>.</li>
+<li><code>coachingotf</code> creator metadata uses the canonical Task 1 object: Coach Rudy, handle <code>coachingotf</code>, Instagram profile URL.</li>
+<li>Other Instagram creator metadata is derived from the resolved Instaloader profile: lowercase username id, <code>full_name</code> fallback to handle, and Instagram profile URL.</li>
+<li><code>enrich_local.py</code> preserves any existing raw <code>creator</code>; records without one are defaulted to Coach Rudy.</li>
+<li><code>merge_and_filter.py</code> now writes <code>src/data/exercises_flat.json</code> and copies <code>creator</code> into each accepted flat row.</li>
+<li><code>group_exercises.py</code> defaults to <code>src/data/exercises_flat.json</code>, still accepts an explicit CLI input path, and defensively defaults missing flat-row creators to Coach Rudy in grouped <code>videos</code>.</li>
+<li>Duplicate Instagram scrape records are deduped by stable video <code>id</code> before writing raw output.</li>
+<li>Duplicate flat rows with the same video <code>id</code> are skipped within each grouped exercise.</li>
+<li>The old grouping backup creation was removed to avoid stale flat backup behavior.</li>
+</ul>
+<h2 id="verification">Verification</h2>
+<p>Command:</p>
+<pre><code class="language-bash">python3 -m py_compile scripts/scrape_instagram.py scripts/enrich_local.py scripts/merge_and_filter.py scripts/group_exercises.py
+</code></pre>
+<p>Outcome: passed with no output.</p>
+<p>Command:</p>
+<pre><code class="language-bash">./node_modules/.bin/tsc --noEmit
+</code></pre>
+<p>Outcome: passed with no output.</p>
+<p>Command:</p>
+<pre><code class="language-bash">npm run lint
+</code></pre>
+<p>Outcome: exited 0. ESLint reported 2 warnings outside Task 3 files:</p>
+<pre><code class="language-text">src/components/ExerciseCard.tsx
+  35:11  warning  Using `&lt;img&gt;` could result in slower LCP and higher bandwidth  @next/next/no-img-element
+
+src/components/InstagramEmbed.tsx
+  23:13  warning  Using `&lt;img&gt;` could result in slower LCP and higher bandwidth  @next/next/no-img-element
+</code></pre>
+<p>Command:</p>
+<pre><code class="language-bash">python3 - &lt;&lt;&#39;PY&#39;
+import importlib.util
+import json
+import sys
+import tempfile
+import types
+from pathlib import Path
+
+ROOT = Path.cwd()
+
+fake_instaloader = types.ModuleType(&quot;instaloader&quot;)
+fake_instaloader.Instaloader = type(&quot;Instaloader&quot;, (), {})
+fake_instaloader.Profile = type(&quot;Profile&quot;, (), {})
+fake_instaloader.Post = type(&quot;Post&quot;, (), {})
+fake_exceptions = types.ModuleType(&quot;instaloader.exceptions&quot;)
+fake_exceptions.ProfileNotExistsException = type(&quot;ProfileNotExistsException&quot;, (Exception,), {})
+fake_exceptions.QueryReturnedNotFoundException = type(&quot;QueryReturnedNotFoundException&quot;, (Exception,), {})
+fake_instaloader.exceptions = fake_exceptions
+sys.modules[&quot;instaloader&quot;] = fake_instaloader
+sys.modules[&quot;instaloader.exceptions&quot;] = fake_exceptions
+
+def load(name, path):
+    spec = importlib.util.spec_from_file_location(name, ROOT / path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+scrape_instagram = load(&quot;scrape_instagram&quot;, &quot;scripts/scrape_instagram.py&quot;)
+enrich_local = load(&quot;enrich_local&quot;, &quot;scripts/enrich_local.py&quot;)
+merge_and_filter = load(&quot;merge_and_filter&quot;, &quot;scripts/merge_and_filter.py&quot;)
+group_exercises = load(&quot;group_exercises&quot;, &quot;scripts/group_exercises.py&quot;)
+
+deduped, duplicate_count = scrape_instagram.dedupe_videos_by_id([
+    {&quot;id&quot;: &quot;ig_dup&quot;, &quot;url&quot;: &quot;https://example.com/1&quot;},
+    {&quot;id&quot;: &quot;ig_dup&quot;, &quot;url&quot;: &quot;https://example.com/1-copy&quot;},
+    {&quot;id&quot;: &quot;ig_unique&quot;, &quot;url&quot;: &quot;https://example.com/2&quot;},
+])
+assert [video[&quot;id&quot;] for video in deduped] == [&quot;ig_dup&quot;, &quot;ig_unique&quot;], deduped
+assert duplicate_count == 1, duplicate_count
+
+custom_creator = {
+    &quot;id&quot;: &quot;coachalpha&quot;,
+    &quot;display_name&quot;: &quot;Coach Alpha&quot;,
+    &quot;handle&quot;: &quot;coachalpha&quot;,
+    &quot;profile_url&quot;: &quot;https://www.instagram.com/coachalpha/&quot;,
+}
+
+with tempfile.TemporaryDirectory() as tmp:
+    tmp_path = Path(tmp)
+    raw_tiktok = tmp_path / &quot;raw_videos.json&quot;
+    raw_ig = tmp_path / &quot;raw_instagram_videos.json&quot;
+    enriched_path = tmp_path / &quot;enriched_videos.json&quot;
+
+    raw_tiktok.write_text(json.dumps([{
+        &quot;id&quot;: &quot;tt_1&quot;,
+        &quot;url&quot;: &quot;https://www.tiktok.com/@coachingotf/video/1&quot;,
+        &quot;description&quot;: &quot;Goblet squat form. Keep your chest tall and control the tempo for each rep.&quot;,
+        &quot;thumbnail&quot;: &quot;&quot;,
+        &quot;upload_date&quot;: &quot;20260504&quot;,
+    }]))
+    raw_ig.write_text(json.dumps([{
+        &quot;id&quot;: &quot;ig_1&quot;,
+        &quot;url&quot;: &quot;https://www.instagram.com/reel/abc/&quot;,
+        &quot;description&quot;: &quot;Hammer curl technique. Keep elbows still and squeeze the biceps through every rep.&quot;,
+        &quot;thumbnail&quot;: &quot;&quot;,
+        &quot;upload_date&quot;: &quot;20260504&quot;,
+        &quot;source&quot;: &quot;instagram&quot;,
+        &quot;creator&quot;: custom_creator,
+    }]))
+
+    enrich_local.RAW_FILE = str(raw_tiktok)
+    enrich_local.RAW_IG_FILE = str(raw_ig)
+    loaded = enrich_local.load_combined_raw()
+    assert loaded[0][&quot;creator&quot;][&quot;id&quot;] == &quot;coachingotf&quot;, loaded[0]
+    assert loaded[1][&quot;creator&quot;] == custom_creator, loaded[1]
+
+    enriched = [enrich_local.enrich_video(video) for video in loaded]
+    assert all(video[&quot;enrichment&quot;][&quot;is_exercise_demo&quot;] for video in enriched), enriched
+    enriched_path.write_text(json.dumps(enriched))
+
+    flat = merge_and_filter.merge_and_filter(str(enriched_path))
+    assert len(flat) == 2, flat
+    assert {row[&quot;creator&quot;][&quot;id&quot;] for row in flat} == {&quot;coachingotf&quot;, &quot;coachalpha&quot;}, flat
+
+    duplicate = dict(flat[0])
+    flat.append(duplicate)
+    flat.append({
+        &quot;id&quot;: &quot;legacy_1&quot;,
+        &quot;url&quot;: &quot;https://example.com/legacy&quot;,
+        &quot;source&quot;: &quot;instagram&quot;,
+        &quot;thumbnail&quot;: &quot;&quot;,
+        &quot;description&quot;: &quot;Legacy row&quot;,
+        &quot;exercise_name&quot;: &quot;Legacy Row&quot;,
+        &quot;muscle_groups&quot;: [],
+        &quot;equipment&quot;: [],
+        &quot;category&quot;: &quot;other&quot;,
+        &quot;movement_type&quot;: &quot;other&quot;,
+        &quot;coaching_cues&quot;: [],
+    })
+    grouped = group_exercises.group_exercises(flat)
+    videos = [video for exercise in grouped for video in exercise[&quot;videos&quot;]]
+    video_ids = [video[&quot;id&quot;] for video in videos]
+    assert video_ids.count(flat[0][&quot;id&quot;]) == 1, video_ids
+    assert all(video.get(&quot;creator&quot;, {}).get(&quot;id&quot;) for video in videos), videos
+    assert any(video[&quot;creator&quot;][&quot;id&quot;] == &quot;coachalpha&quot; for video in videos), videos
+    assert any(video[&quot;id&quot;] == &quot;legacy_1&quot; and video[&quot;creator&quot;][&quot;id&quot;] == &quot;coachingotf&quot; for video in videos), videos
+
+print(&quot;pipeline creator provenance and dedupe smoke passed&quot;)
+PY
+</code></pre>
+<p>Outcome:</p>
+<pre><code class="language-text">Loaded 1 TikTok videos
+Loaded 1 Instagram videos
+Grouping stats: 1 exact, 0 fuzzy-merged, 0 near-match (kept separate), 3 new
+pipeline creator provenance and dedupe smoke passed
+</code></pre>
+<p>The smoke test verified Instagram scrape dedupe, TikTok creator defaulting, Instagram creator preservation, creator copying into flat rows, grouped-video duplicate id suppression, and grouped-video defensive defaulting for a legacy flat row.</p>
+<h2 id="concerns-and-limitations">Concerns And Limitations</h2>
+<ul>
+<li>Live Instagram scraping was intentionally not run; session/rate-limit behavior still needs validation during the data import task.</li>
+<li>Non-<code>coachingotf</code> display names depend on <code>profile.full_name</code>; this is correct for provenance but may need manual cleanup if Instagram profile names are noisy.</li>
+<li><code>refresh.sh</code> keeps Instagram failures non-fatal, matching existing behavior, so a refresh can continue with stale or missing raw Instagram data if scraping fails.</li>
+</ul>
+  </main>
+</body>
+</html>
