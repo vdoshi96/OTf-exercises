@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: https:; style-src 'unsafe-inline'">
+  <meta name="generator" content="otf-docs-parity/v1">
+  <meta name="doc-source" content="docs/steps/2026-05-04-multi-creator-filter-steps 2.md">
+  <meta name="doc-source-sha256" content="08dfbccc59dbebc1678127a4439d058270d4434ad04db56325281c4303ec900b">
+  <title>Multi-Creator Filter Implementation Steps</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      --background: #ffffff;
+      --foreground: #172033;
+      --muted: #5d6678;
+      --surface: #f5f7fa;
+      --border: #d8dee9;
+      --accent: #b84f10;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #111827;
+        --foreground: #e5e7eb;
+        --muted: #aeb7c6;
+        --surface: #1f2937;
+        --border: #445064;
+        --accent: #ff9b5e;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--background);
+      color: var(--foreground);
+    }
+    main {
+      width: min(100% - 2rem, 72rem);
+      margin: 0 auto;
+      padding: 2.5rem 0 5rem;
+      overflow-x: auto;
+      overflow-wrap: anywhere;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      line-height: 1.25;
+      margin-block: 2rem 0.75rem;
+    }
+    h1 { margin-top: 0; }
+    a { color: var(--accent); text-underline-offset: 0.15em; }
+    a:focus-visible { outline: 0.2rem solid currentColor; outline-offset: 0.2rem; }
+    blockquote {
+      margin-inline: 0;
+      padding: 0.2rem 1rem;
+      color: var(--muted);
+      border-inline-start: 0.25rem solid var(--border);
+    }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    code {
+      padding: 0.1rem 0.3rem;
+      background: var(--surface);
+      border-radius: 0.25rem;
+    }
+    pre {
+      padding: 1rem;
+      overflow-x: auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+    }
+    pre code { padding: 0; background: transparent; }
+    table {
+      width: 100%;
+      margin-block: 1rem;
+      border-collapse: collapse;
+    }
+    th, td { padding: 0.5rem 0.75rem; border: 1px solid var(--border); text-align: start; }
+    th { background: var(--surface); }
+    img { max-width: 100%; height: auto; }
+    hr { border: 0; border-top: 1px solid var(--border); }
+    .plain-text { white-space: pre-wrap; }
+    .task-list-item { list-style: none; }
+    input[type="checkbox"] { margin-inline: -1.25rem 0.5rem; }
+  </style>
+</head>
+<body>
+  <main>
+<h1 id="multi-creator-filter-implementation-steps">Multi-Creator Filter Implementation Steps</h1>
+<p><strong>Date:</strong> 2026-05-04<br><strong>Branch:</strong> <code>feat/multi-creator-filter</code></p>
+<h2 id="summary">Summary</h2>
+<p>Changed the creator filter from single-select to multi-select and removed non-primary creators from the exercise data.</p>
+<h2 id="beforeafter">Before/After</h2>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Before</th>
+<th>After</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Exercises</td>
+<td>1236</td>
+<td>1220</td>
+</tr>
+<tr>
+<td>Creators</td>
+<td>5</td>
+<td>2</td>
+</tr>
+<tr>
+<td>coachingotf videos</td>
+<td>1747</td>
+<td>1747</td>
+</tr>
+<tr>
+<td>trainingtall videos</td>
+<td>206</td>
+<td>206</td>
+</tr>
+<tr>
+<td>lustertraining videos</td>
+<td>15</td>
+<td>0 (removed)</td>
+</tr>
+<tr>
+<td>brookerooney videos</td>
+<td>6</td>
+<td>0 (removed)</td>
+</tr>
+<tr>
+<td>coach.fajardo videos</td>
+<td>6</td>
+<td>0 (removed)</td>
+</tr>
+<tr>
+<td>Austin display_name</td>
+<td>&quot;Austin Hendrickson&quot;</td>
+<td>&quot;Austin Hendrickson (Trainingtall)&quot;</td>
+</tr>
+<tr>
+<td>Creator filter type</td>
+<td>Single-select</td>
+<td>Multi-select</td>
+</tr>
+</tbody></table>
+<h2 id="steps-taken">Steps Taken</h2>
+<h3 id="1-created-cleanup-script-scriptscleanup-creatorsmjs">1. Created cleanup script (<code>scripts/cleanup-creators.mjs</code>)</h3>
+<ul>
+<li>Reads <code>src/data/exercises.json</code></li>
+<li>Filters out videos from creators not in the keep-list (<code>coachingotf</code>, <code>trainingtall</code>)</li>
+<li>Removes exercises that end up with zero videos after filtering</li>
+<li>Updates Austin&#39;s <code>display_name</code> to include &quot;(Trainingtall)&quot;</li>
+<li>Writes updated JSON back to disk</li>
+</ul>
+<p><strong>Result:</strong> 16 exercises removed (had only non-primary creator videos), 1220 exercises remain.</p>
+<h3 id="2-modified-srclibsearchts">2. Modified <code>src/lib/search.ts</code></h3>
+<ul>
+<li>Changed <code>filterExercises</code> filter parameter from <code>creator?: string | null</code> to <code>creators?: string[]</code></li>
+<li>Updated filter logic: if <code>creators</code> array has entries, exercise must have at least one video from any of those creators (OR semantics)</li>
+<li>Empty array or undefined means no creator filtering</li>
+</ul>
+<h3 id="3-modified-srcapppagetsx">3. Modified <code>src/app/page.tsx</code></h3>
+<ul>
+<li>Changed state from <code>useState&lt;string | null&gt;(null)</code> to <code>useState&lt;string[]&gt;([])</code></li>
+<li>Created <code>handleCreatorToggle</code> callback that supports:<ul>
+<li><code>null</code> → clears all creators (used by FilterPanel&#39;s &quot;Clear all&quot;)</li>
+<li><code>string</code> → toggles that creator in/out of the array</li>
+</ul>
+</li>
+<li>Updated <code>filterExercises</code> call to pass <code>creators: activeCreators</code></li>
+<li>Updated <code>useMemo</code> dependency array to use <code>activeCreators</code></li>
+<li>Passes <code>activeCreators</code> (array) and <code>handleCreatorToggle</code> to FilterPanel</li>
+</ul>
+<h3 id="4-modified-srccomponentsfilterpaneltsx">4. Modified <code>src/components/FilterPanel.tsx</code></h3>
+<ul>
+<li>Changed prop <code>activeCreator: string | null</code> → <code>activeCreators: string[]</code></li>
+<li>Changed prop <code>onCreatorChange</code> signature to <code>(creatorId: string | null) =&gt; void</code></li>
+<li>Updated <code>hasFilters</code> to check <code>activeCreators.length &gt; 0</code></li>
+<li>Updated <code>activeFilterCount</code> to add <code>activeCreators.length</code> instead of <code>(activeCreator ? 1 : 0)</code></li>
+<li>Updated Creator section <code>activeCount</code> to use <code>activeCreators.length</code></li>
+<li>Updated Chip <code>active</code> check to use <code>activeCreators.includes(creator.id)</code></li>
+<li>Chip <code>onClick</code> now calls <code>onCreatorChange(creator.id)</code> directly (toggle handled by parent)</li>
+<li><code>clearFilters</code> still calls <code>onCreatorChange(null)</code> which the parent interprets as &quot;clear all&quot;</li>
+</ul>
+<h2 id="verification">Verification</h2>
+<ul>
+<li><code>npm run build</code> — succeeded with 0 errors, 1224 static pages generated</li>
+<li>Only 2 creators remain in <code>exercises.json</code>: <code>coachingotf</code> and <code>trainingtall</code></li>
+<li>Austin&#39;s display_name is <code>&quot;Austin Hendrickson (Trainingtall)&quot;</code></li>
+<li>TypeScript types are consistent across all 3 modified files</li>
+<li>Filter logic: empty array = show all, array with values = OR between selected creators</li>
+</ul>
+  </main>
+</body>
+</html>

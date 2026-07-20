@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: https:; style-src 'unsafe-inline'">
+  <meta name="generator" content="otf-docs-parity/v1">
+  <meta name="doc-source" content="docs/superpowers/specs/2026-05-04-multi-creator-ingestion-design.md">
+  <meta name="doc-source-sha256" content="d613d4faf7bb1a8e1fe193181429e1057d48f89a7d67d72415dc274ebd50e142">
+  <title>Multi-Creator Exercise Ingestion Design</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      --background: #ffffff;
+      --foreground: #172033;
+      --muted: #5d6678;
+      --surface: #f5f7fa;
+      --border: #d8dee9;
+      --accent: #b84f10;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #111827;
+        --foreground: #e5e7eb;
+        --muted: #aeb7c6;
+        --surface: #1f2937;
+        --border: #445064;
+        --accent: #ff9b5e;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--background);
+      color: var(--foreground);
+    }
+    main {
+      width: min(100% - 2rem, 72rem);
+      margin: 0 auto;
+      padding: 2.5rem 0 5rem;
+      overflow-x: auto;
+      overflow-wrap: anywhere;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      line-height: 1.25;
+      margin-block: 2rem 0.75rem;
+    }
+    h1 { margin-top: 0; }
+    a { color: var(--accent); text-underline-offset: 0.15em; }
+    a:focus-visible { outline: 0.2rem solid currentColor; outline-offset: 0.2rem; }
+    blockquote {
+      margin-inline: 0;
+      padding: 0.2rem 1rem;
+      color: var(--muted);
+      border-inline-start: 0.25rem solid var(--border);
+    }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    code {
+      padding: 0.1rem 0.3rem;
+      background: var(--surface);
+      border-radius: 0.25rem;
+    }
+    pre {
+      padding: 1rem;
+      overflow-x: auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+    }
+    pre code { padding: 0; background: transparent; }
+    table {
+      width: 100%;
+      margin-block: 1rem;
+      border-collapse: collapse;
+    }
+    th, td { padding: 0.5rem 0.75rem; border: 1px solid var(--border); text-align: start; }
+    th { background: var(--surface); }
+    img { max-width: 100%; height: auto; }
+    hr { border: 0; border-top: 1px solid var(--border); }
+    .plain-text { white-space: pre-wrap; }
+    .task-list-item { list-style: none; }
+    input[type="checkbox"] { margin-inline: -1.25rem 0.5rem; }
+  </style>
+</head>
+<body>
+  <main>
+<h1 id="multi-creator-exercise-ingestion-design">Multi-Creator Exercise Ingestion Design</h1>
+<p><strong>Goal:</strong> Add videos from Coach Austin, Coach Fajardo, Brooke Rooney, Luster Training, and Coach Garin while preserving source attribution and letting users filter by creator.</p>
+<p><strong>Approved scope:</strong> Ingest all available Instagram posts/reels from the requested profiles that pass the current exercise-demo standards. Do not require a curated URL list.</p>
+<p><strong>Creators in scope:</strong></p>
+<ul>
+<li>Austin Hendrickson / Coach Austin: <code>trainingtall</code></li>
+<li>David Fajardo / Coach Fajardo: <code>coach.fajardo</code></li>
+<li>Brooke Rooney: <code>brookerooney</code></li>
+<li>Coach Chris / Luster Training: <code>lustertraining</code></li>
+<li>Garin White / Coach Garin: <code>coachgarin</code></li>
+<li>Existing source preserved as Coach Rudy: <code>coachingotf</code></li>
+</ul>
+<h2 id="architecture">Architecture</h2>
+<p>Creator attribution belongs on each video because one grouped exercise can contain videos from multiple creators. The final grouped JSON keeps the current exercise-level shape and extends each video with a <code>creator</code> object. Creator filters and display labels are derived from <code>exercise.videos</code>, so no duplicated group-level creator list is required.</p>
+<p>The data pipeline keeps the current standards: raw posts are scraped, <code>enrich_local.py</code> classifies exercise demos, <code>merge_and_filter.py</code> removes non-demo posts, and <code>group_exercises.py</code> merges accepted videos into exercise groups. Multi-creator ingestion must preserve creator metadata through every stage.</p>
+<h2 id="data-model">Data Model</h2>
+<p>Each final video includes:</p>
+<pre><code class="language-ts">creator: {
+  id: string;
+  display_name: string;
+  handle: string;
+  profile_url: string;
+}
+</code></pre>
+<p><code>id</code> is a stable lowercase identifier for filtering. <code>handle</code> excludes the leading <code>@</code>. <code>profile_url</code> points to the creator profile. Existing videos are backfilled as <code>coachingotf</code>.</p>
+<h2 id="frontend-behavior">Frontend Behavior</h2>
+<p>The home page copy reports the number of creators instead of implying every video belongs to one account. Users can filter by creator using the existing filter panel pattern. Search should match creator names and handles. Exercise cards show a compact creator summary without nested links. Detail pages and individual video embeds show the creator next to platform attribution.</p>
+<p>Hardcoded Coach Rudy-only copy in layout metadata, footer, home page, detail metadata, and README is replaced with multi-creator language.</p>
+<h2 id="ingestion-behavior">Ingestion Behavior</h2>
+<p>Instagram scraping accepts a profile list. The login account remains separate from target creator profiles. Scraped raw video records include creator metadata before enrichment so the later pipeline can preserve provenance.</p>
+<p>For the requested creators, ingestion should attempt full-profile scraping, then keep only posts that pass the existing <code>is_exercise_demo</code> enrichment/filtering path. Generated data changes must include a review report with counts by creator, accepted/rejected totals when available, and representative rejects or classification concerns.</p>
+<h2 id="accountability-workflow">Accountability Workflow</h2>
+<p>Work is split into PR-sized branches. Each implementation task has:</p>
+<ul>
+<li>An implementer handoff file in <code>docs/superpowers/handoffs/</code>.</li>
+<li>A spec review section confirming the task matched this design.</li>
+<li>A code quality review section with issues and resolution notes.</li>
+<li>Verification commands and outcomes.</li>
+</ul>
+<p>Fresh subagents implement each task. Separate reviewer agents review spec compliance first, then code quality. Open findings must be fixed and re-reviewed before the task is considered complete.</p>
+<h2 id="pr-slices">PR Slices</h2>
+<ol>
+<li><strong>Creator attribution and filtering:</strong> Add schema, current-data backfill, UI attribution, creator search/filtering, and documentation.</li>
+<li><strong>Multi-profile scraper plumbing:</strong> Parameterize Instagram targets and preserve creator metadata through raw/enriched/flat/grouped pipeline outputs.</li>
+<li><strong>Creator data imports:</strong> Scrape requested profiles, run enrichment/filtering/grouping, review accepted data, and commit generated JSON plus report.</li>
+<li><strong>Final polish:</strong> Update README/process docs, verify production build, and clean up any residual lint or accessibility issues in touched surfaces.</li>
+</ol>
+<h2 id="risks">Risks</h2>
+<p>Instagram scraping is session- and rate-limit-sensitive. The current classifier is tuned around existing captions, so new creators may have different caption styles. Generated thumbnails from Instagram can expire, so UI should not depend on thumbnails as the only access path. The current repo also has unrelated local edits in another checkout; all PR work must happen in isolated worktrees.</p>
+<h2 id="self-review">Self-Review</h2>
+<ul>
+<li>Placeholder scan: no placeholders remain.</li>
+<li>Scope check: focused on multi-creator Instagram ingestion, attribution, and filtering.</li>
+<li>Ambiguity check: “current standards” means the existing enrichment/filtering pipeline, not manual curation.</li>
+<li>Consistency check: creator attribution is per-video throughout raw, enriched, grouped, and UI layers.</li>
+</ul>
+  </main>
+</body>
+</html>

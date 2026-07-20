@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: https:; style-src 'unsafe-inline'">
+  <meta name="generator" content="otf-docs-parity/v1">
+  <meta name="doc-source" content="docs/superpowers/handoffs/task-04-creator-data-import.md">
+  <meta name="doc-source-sha256" content="1bcda50eb5806de7bb9447aa0ce092bbef4b143570a8a5943b37cdaee738658e">
+  <title>Task 04: Creator Data Import</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      --background: #ffffff;
+      --foreground: #172033;
+      --muted: #5d6678;
+      --surface: #f5f7fa;
+      --border: #d8dee9;
+      --accent: #b84f10;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #111827;
+        --foreground: #e5e7eb;
+        --muted: #aeb7c6;
+        --surface: #1f2937;
+        --border: #445064;
+        --accent: #ff9b5e;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--background);
+      color: var(--foreground);
+    }
+    main {
+      width: min(100% - 2rem, 72rem);
+      margin: 0 auto;
+      padding: 2.5rem 0 5rem;
+      overflow-x: auto;
+      overflow-wrap: anywhere;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      line-height: 1.25;
+      margin-block: 2rem 0.75rem;
+    }
+    h1 { margin-top: 0; }
+    a { color: var(--accent); text-underline-offset: 0.15em; }
+    a:focus-visible { outline: 0.2rem solid currentColor; outline-offset: 0.2rem; }
+    blockquote {
+      margin-inline: 0;
+      padding: 0.2rem 1rem;
+      color: var(--muted);
+      border-inline-start: 0.25rem solid var(--border);
+    }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    code {
+      padding: 0.1rem 0.3rem;
+      background: var(--surface);
+      border-radius: 0.25rem;
+    }
+    pre {
+      padding: 1rem;
+      overflow-x: auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+    }
+    pre code { padding: 0; background: transparent; }
+    table {
+      width: 100%;
+      margin-block: 1rem;
+      border-collapse: collapse;
+    }
+    th, td { padding: 0.5rem 0.75rem; border: 1px solid var(--border); text-align: start; }
+    th { background: var(--surface); }
+    img { max-width: 100%; height: auto; }
+    hr { border: 0; border-top: 1px solid var(--border); }
+    .plain-text { white-space: pre-wrap; }
+    .task-list-item { list-style: none; }
+    input[type="checkbox"] { margin-inline: -1.25rem 0.5rem; }
+  </style>
+</head>
+<body>
+  <main>
+<h1 id="task-04-creator-data-import">Task 04: Creator Data Import</h1>
+<p>Status: DONE</p>
+<h2 id="scope">Scope</h2>
+<p>Import all available Instagram reels from the approved creator list that pass the current exercise-demo standards, then regenerate the local exercise data.</p>
+<p>Approved creators:</p>
+<table>
+<thead>
+<tr>
+<th>Creator</th>
+<th>Instagram handle</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Austin Hendrickson / Coach Austin</td>
+<td><code>trainingtall</code></td>
+</tr>
+<tr>
+<td>David Fajardo / Coach Fajardo</td>
+<td><code>coach.fajardo</code></td>
+</tr>
+<tr>
+<td>Brooke Rooney</td>
+<td><code>brookerooney</code></td>
+</tr>
+<tr>
+<td>Coach Chris / Luster Training</td>
+<td><code>lustertraining</code></td>
+</tr>
+<tr>
+<td>Garin White / Coach Garin</td>
+<td><code>coachgarin</code></td>
+</tr>
+</tbody></table>
+<p>This task depends on:</p>
+<ul>
+<li>Task 01: creator metadata schema/backfill</li>
+<li>Task 02: creator attribution UI and creator filter</li>
+<li>Task 03: multi-profile Instagram scrape pipeline</li>
+</ul>
+<h2 id="agent-handoffs">Agent Handoffs</h2>
+<p>Detailed handoffs for this import are split by responsibility:</p>
+<table>
+<thead>
+<tr>
+<th>Handoff</th>
+<th>Status</th>
+<th>Responsibility</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>task-04a-live-scrape-fallback.md</code></td>
+<td>DONE</td>
+<td>Add Instagram web API fallback when Instaloader profile resolution fails.</td>
+</tr>
+<tr>
+<td><code>task-04b-corrections-scope.md</code></td>
+<td>DONE</td>
+<td>Keep legacy correction heuristics scoped to <code>coachingotf</code> only.</td>
+</tr>
+<tr>
+<td><code>task-04c-new-creator-quality-guard.md</code></td>
+<td>DONE</td>
+<td>Add stricter import-quality guard for non-legacy Instagram creators.</td>
+</tr>
+</tbody></table>
+<p>Each handoff records the root cause, file ownership, verification, and review concerns for that slice.</p>
+<h2 id="live-scrape-result">Live Scrape Result</h2>
+<p>The live scrape used an existing Instaloader session for <code>vizhal007</code>. Instaloader profile resolution failed for the new target handles, so the script used the web API fallback documented in Task 04A.</p>
+<p>Fresh reels collected:</p>
+<table>
+<thead>
+<tr>
+<th>Handle</th>
+<th align="right">Raw reels collected</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>trainingtall</code></td>
+<td align="right">300</td>
+<td>Hit the 25-page safety cap.</td>
+</tr>
+<tr>
+<td><code>coach.fajardo</code></td>
+<td align="right">299</td>
+<td>Hit the 25-page safety cap.</td>
+</tr>
+<tr>
+<td><code>brookerooney</code></td>
+<td align="right">79</td>
+<td>Completed available fallback pages.</td>
+</tr>
+<tr>
+<td><code>lustertraining</code></td>
+<td align="right">71</td>
+<td>Completed available fallback pages.</td>
+</tr>
+<tr>
+<td><code>coachgarin</code></td>
+<td align="right">93</td>
+<td>Completed available fallback pages.</td>
+</tr>
+<tr>
+<td>Total new Instagram reels</td>
+<td align="right">842</td>
+<td>Merged with existing raw data.</td>
+</tr>
+</tbody></table>
+<p>Merged raw inputs:</p>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th align="right">Count</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Existing legacy <code>coachingotf</code> Instagram records</td>
+<td align="right">1,195</td>
+</tr>
+<tr>
+<td>New Instagram creator records</td>
+<td align="right">842</td>
+</tr>
+<tr>
+<td>TikTok raw records</td>
+<td align="right">848</td>
+</tr>
+<tr>
+<td>Total raw records entering enrichment</td>
+<td align="right">2,885</td>
+</tr>
+</tbody></table>
+<h2 id="import-standards">Import Standards</h2>
+<p>The import keeps the existing standards and adds guardrails needed for multi-creator data:</p>
+<ul>
+<li>Every accepted video must retain creator metadata: <code>id</code>, <code>display_name</code>, <code>handle</code>, and <code>profile_url</code>.</li>
+<li>Legacy <code>coachingotf</code> Instagram correction rules remain available only for legacy/missing-creator <code>coachingotf</code> data.</li>
+<li>New Instagram creators must pass the stricter import guard before keyword-based demo classification can accept them.</li>
+<li>Obvious promos, class announcements, lifestyle/event posts, nutrition/product posts, sports gameplay, generic advice, and hashtag-only fitness-adjacent captions are rejected.</li>
+<li>Real instructional/demo captions from new creators are preserved, including TrainingTall examples with contextual event, pregnancy, travel, or colloquial language when exercise instruction is clear.</li>
+</ul>
+<h2 id="regenerated-data">Regenerated Data</h2>
+<p>Final regeneration command:</p>
+<pre><code class="language-bash">python3 scripts/enrich_local.py &gt; /tmp/otf-enrich-final5.log
+python3 scripts/apply_corrections.py &gt; /tmp/otf-corrections-final5.log
+python3 scripts/merge_and_filter.py &gt; /tmp/otf-merge-final5.log
+python3 scripts/group_exercises.py &gt; /tmp/otf-group-final5.log
+</code></pre>
+<p>Pipeline output:</p>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Enrichment before corrections</td>
+<td>1,621 exercise demos</td>
+</tr>
+<tr>
+<td>Legacy correction reclassifications</td>
+<td>359</td>
+</tr>
+<tr>
+<td>Confirmed non-demos</td>
+<td>51</td>
+</tr>
+<tr>
+<td>Final videos</td>
+<td>1,980</td>
+</tr>
+<tr>
+<td>Final grouped exercises</td>
+<td>1,236</td>
+</tr>
+<tr>
+<td>Exercises with multiple videos</td>
+<td>468</td>
+</tr>
+</tbody></table>
+<p>Accepted video counts by creator:</p>
+<table>
+<thead>
+<tr>
+<th>Creator id</th>
+<th align="right">Accepted videos</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>coachingotf</code></td>
+<td align="right">1,747</td>
+</tr>
+<tr>
+<td><code>trainingtall</code></td>
+<td align="right">206</td>
+</tr>
+<tr>
+<td><code>lustertraining</code></td>
+<td align="right">15</td>
+</tr>
+<tr>
+<td><code>brookerooney</code></td>
+<td align="right">6</td>
+</tr>
+<tr>
+<td><code>coach.fajardo</code></td>
+<td align="right">6</td>
+</tr>
+<tr>
+<td><code>coachgarin</code></td>
+<td align="right">0</td>
+</tr>
+</tbody></table>
+<p><code>coachgarin</code> scraped successfully, but all sampled and generated-audit candidates were filtered as studio promos, benchmark/class announcements, recaps, or otherwise non-directory posts under the current standards.</p>
+<h2 id="review-outcome">Review Outcome</h2>
+<p>Subagent review approved the final import after the strict quality gate:</p>
+<ul>
+<li>Schema audit passed.</li>
+<li>Missing creator metadata: 0.</li>
+<li>Duplicate video IDs: 0.</li>
+<li>Known reject matrix absent from final data.</li>
+<li>Known accept TrainingTall tutorials present in final data.</li>
+<li>All 27 non-TrainingTall accepted entries were reviewed as plausible demos.</li>
+<li>Sampled TrainingTall accepted entries had no clear non-demo false positives.</li>
+<li><code>npm run lint</code> passed in review with only pre-existing Next.js <code>&lt;img&gt;</code> warnings.</li>
+</ul>
+<h2 id="residual-notes">Residual Notes</h2>
+<ul>
+<li>The Instagram fallback uses a private web API and may need maintenance if Instagram changes headers, cookies, paging, or rate limits.</li>
+<li><code>trainingtall</code> and <code>coach.fajardo</code> reached the 25-page safety cap. The import therefore covers all reels available within the current scraper limit, not necessarily every historical reel on those profiles.</li>
+<li>Raw scrape and enrichment scratch files are not part of the PR; the committed artifact is the regenerated app data plus pipeline code.</li>
+</ul>
+<h2 id="final-verification">Final Verification</h2>
+<p>Status: PASSED in parent session before commit and PR.</p>
+<p>Commands:</p>
+<pre><code class="language-bash">python3 -m py_compile scripts/scrape_instagram.py scripts/enrich_local.py scripts/apply_corrections.py scripts/merge_and_filter.py scripts/group_exercises.py
+./node_modules/.bin/tsc --noEmit
+npm run lint
+NEXT_TELEMETRY_DISABLED=1 npm run build
+git diff --check
+</code></pre>
+<p>Data audit result:</p>
+<ul>
+<li>Exercises: 1,236.</li>
+<li>Videos: 1,980.</li>
+<li>Missing creator metadata: 0.</li>
+<li>Duplicate video IDs: 0.</li>
+<li>Known reject matrix: absent.</li>
+<li>Known accept TrainingTall tutorials: present.</li>
+</ul>
+<p><code>npm run lint</code> exited 0 with the existing <code>&lt;img&gt;</code> warnings in <code>ExerciseCard.tsx</code> and <code>InstagramEmbed.tsx</code>.</p>
+  </main>
+</body>
+</html>

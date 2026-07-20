@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: https:; style-src 'unsafe-inline'">
+  <meta name="generator" content="otf-docs-parity/v1">
+  <meta name="doc-source" content="otf-exercise-directory-plan.md">
+  <meta name="doc-source-sha256" content="d378b2580c8f9cc1f675a0bf0896c0c0dc9d9c30c6fb77c65f159fc29db2440c">
+  <title>OTF Exercise Directory — Claude Code Agentic Plan</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      --background: #ffffff;
+      --foreground: #172033;
+      --muted: #5d6678;
+      --surface: #f5f7fa;
+      --border: #d8dee9;
+      --accent: #b84f10;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #111827;
+        --foreground: #e5e7eb;
+        --muted: #aeb7c6;
+        --surface: #1f2937;
+        --border: #445064;
+        --accent: #ff9b5e;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--background);
+      color: var(--foreground);
+    }
+    main {
+      width: min(100% - 2rem, 72rem);
+      margin: 0 auto;
+      padding: 2.5rem 0 5rem;
+      overflow-x: auto;
+      overflow-wrap: anywhere;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      line-height: 1.25;
+      margin-block: 2rem 0.75rem;
+    }
+    h1 { margin-top: 0; }
+    a { color: var(--accent); text-underline-offset: 0.15em; }
+    a:focus-visible { outline: 0.2rem solid currentColor; outline-offset: 0.2rem; }
+    blockquote {
+      margin-inline: 0;
+      padding: 0.2rem 1rem;
+      color: var(--muted);
+      border-inline-start: 0.25rem solid var(--border);
+    }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    code {
+      padding: 0.1rem 0.3rem;
+      background: var(--surface);
+      border-radius: 0.25rem;
+    }
+    pre {
+      padding: 1rem;
+      overflow-x: auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+    }
+    pre code { padding: 0; background: transparent; }
+    table {
+      width: 100%;
+      margin-block: 1rem;
+      border-collapse: collapse;
+    }
+    th, td { padding: 0.5rem 0.75rem; border: 1px solid var(--border); text-align: start; }
+    th { background: var(--surface); }
+    img { max-width: 100%; height: auto; }
+    hr { border: 0; border-top: 1px solid var(--border); }
+    .plain-text { white-space: pre-wrap; }
+    .task-list-item { list-style: none; }
+    input[type="checkbox"] { margin-inline: -1.25rem 0.5rem; }
+  </style>
+</head>
+<body>
+  <main>
+<h1 id="otf-exercise-directory-claude-code-agentic-plan">OTF Exercise Directory — Claude Code Agentic Plan</h1>
+<h2 id="project-overview">Project Overview</h2>
+<p>Build a searchable web directory of OrangeTheory exercises sourced from Coach Rudy&#39;s TikTok (@coachingotf). The app displays structured exercise metadata with embedded TikTok videos. No video files are hosted — all playback is via TikTok oEmbed.</p>
+<hr>
+<h2 id="phase-1-metadata-extraction-pipeline">Phase 1: Metadata Extraction Pipeline</h2>
+<h3 id="step-11-install-yt-dlp">Step 1.1 — Install yt-dlp</h3>
+<pre><code class="language-bash">pip install yt-dlp
+</code></pre>
+<h3 id="step-12-download-metadata-only-no-video-files">Step 1.2 — Download metadata only (no video files)</h3>
+<pre><code class="language-bash">yt-dlp --skip-download --write-info-json \
+  --output &quot;metadata/%(id)s&quot; \
+  &quot;https://www.tiktok.com/@coachingotf&quot;
+</code></pre>
+<p>This produces one <code>.info.json</code> file per video in <code>./metadata/</code>. Each JSON contains <code>description</code>, <code>webpage_url</code>, <code>id</code>, <code>timestamp</code>, <code>thumbnail</code>, <code>duration</code>, and more.</p>
+<blockquote>
+<p><strong>NOTE:</strong> If yt-dlp can&#39;t bulk-scrape the profile (TikTok sometimes blocks), fall back to:</p>
+<ol>
+<li>Use browser DevTools → Network tab on his TikTok profile while scrolling to capture video list API responses</li>
+<li>Or manually collect video URLs into a <code>urls.txt</code> file (one per line) and run:<pre><code class="language-bash">yt-dlp --skip-download --write-info-json -a urls.txt --output &quot;metadata/%(id)s&quot;
+</code></pre>
+</li>
+<li>Or use a TikTok scraping library like <code>TikTokApi</code> (Python) to get video metadata programmatically</li>
+</ol>
+</blockquote>
+<h3 id="step-13-parse-metadata-into-structured-json">Step 1.3 — Parse metadata into structured JSON</h3>
+<p>Write a Python script: <code>parse_metadata.py</code></p>
+<pre><code class="language-python">import json, glob, os
+
+videos = []
+for filepath in glob.glob(&quot;metadata/*.info.json&quot;):
+    with open(filepath) as f:
+        data = json.load(f)
+    videos.append({
+        &quot;id&quot;: data.get(&quot;id&quot;),
+        &quot;url&quot;: data.get(&quot;webpage_url&quot;),
+        &quot;description&quot;: data.get(&quot;description&quot;, &quot;&quot;),
+        &quot;thumbnail&quot;: data.get(&quot;thumbnail&quot;, &quot;&quot;),
+        &quot;duration&quot;: data.get(&quot;duration&quot;, 0),
+        &quot;timestamp&quot;: data.get(&quot;timestamp&quot;, 0),
+        &quot;upload_date&quot;: data.get(&quot;upload_date&quot;, &quot;&quot;),
+    })
+
+with open(&quot;raw_videos.json&quot;, &quot;w&quot;) as f:
+    json.dump(videos, f, indent=2)
+
+print(f&quot;Parsed {len(videos)} videos&quot;)
+</code></pre>
+<hr>
+<h2 id="phase-2-llm-enrichment">Phase 2: LLM Enrichment</h2>
+<h3 id="step-21-enrich-each-videos-description-using-claude-api">Step 2.1 — Enrich each video&#39;s description using Claude API</h3>
+<p>Write a script: <code>enrich_metadata.py</code></p>
+<p>For each video, send the <code>description</code> field to Claude Haiku and ask it to extract:</p>
+<pre><code class="language-json">{
+  &quot;exercise_name&quot;: &quot;Lateral Raise&quot;,
+  &quot;muscle_groups&quot;: [&quot;shoulders&quot;, &quot;deltoids&quot;],
+  &quot;equipment&quot;: [&quot;dumbbells&quot;],
+  &quot;category&quot;: &quot;upper_body&quot;,
+  &quot;movement_type&quot;: &quot;isolation&quot;,
+  &quot;coaching_cues&quot;: [&quot;Keep elbows slightly bent&quot;, &quot;Don&#39;t swing&quot;],
+  &quot;is_exercise_demo&quot;: true
+}
+</code></pre>
+<p><strong>Prompt template for the API call:</strong></p>
+<pre><code>You are parsing TikTok video descriptions from an OrangeTheory fitness coach.
+Given the description below, extract structured exercise information.
+If the video is NOT an exercise demonstration (e.g., it&#39;s a meme, vlog, or promo), set is_exercise_demo to false and leave other fields empty/null.
+
+Description:
+&quot;{description}&quot;
+
+Respond with ONLY valid JSON, no markdown fences:
+{
+  &quot;exercise_name&quot;: string or null,
+  &quot;muscle_groups&quot;: string[] or [],
+  &quot;equipment&quot;: string[] or [],
+  &quot;category&quot;: &quot;upper_body&quot; | &quot;lower_body&quot; | &quot;core&quot; | &quot;full_body&quot; | &quot;cardio&quot; | &quot;mobility&quot; | &quot;other&quot;,
+  &quot;movement_type&quot;: &quot;compound&quot; | &quot;isolation&quot; | &quot;cardio&quot; | &quot;stretch&quot; | &quot;other&quot;,
+  &quot;coaching_cues&quot;: string[] or [],
+  &quot;is_exercise_demo&quot;: boolean
+}
+</code></pre>
+<p><strong>Use claude-haiku-4-5-20251001 via the Anthropic API.</strong> Batch all 500 calls with a small delay (0.2s) to stay under rate limits. Estimated cost: ~$0.30–0.50 total.</p>
+<h3 id="step-22-merge-enriched-data">Step 2.2 — Merge enriched data</h3>
+<p>Combine <code>raw_videos.json</code> with LLM outputs into <code>exercises.json</code>:</p>
+<pre><code class="language-json">[
+  {
+    &quot;id&quot;: &quot;7312345678&quot;,
+    &quot;url&quot;: &quot;https://www.tiktok.com/@coachingotf/video/7312345678&quot;,
+    &quot;thumbnail&quot;: &quot;https://...&quot;,
+    &quot;upload_date&quot;: &quot;20250115&quot;,
+    &quot;exercise_name&quot;: &quot;Lateral Raise&quot;,
+    &quot;muscle_groups&quot;: [&quot;shoulders&quot;],
+    &quot;equipment&quot;: [&quot;dumbbells&quot;],
+    &quot;category&quot;: &quot;upper_body&quot;,
+    &quot;movement_type&quot;: &quot;isolation&quot;,
+    &quot;coaching_cues&quot;: [&quot;Keep elbows slightly bent&quot;, &quot;Don&#39;t swing&quot;],
+    &quot;is_exercise_demo&quot;: true
+  }
+]
+</code></pre>
+<p>Filter out entries where <code>is_exercise_demo</code> is false. Save as <code>exercises.json</code>.</p>
+<h3 id="step-23-manual-review-pass">Step 2.3 — Manual review pass</h3>
+<p>Print a summary table of all extracted exercise names for quick human review. Flag any that look wrong or duplicated. The user (Vishal) will eyeball this before proceeding.</p>
+<hr>
+<h2 id="phase-3-build-the-frontend">Phase 3: Build the Frontend</h2>
+<h3 id="tech-stack">Tech Stack</h3>
+<ul>
+<li><strong>Framework:</strong> Next.js (App Router) or plain React via Vite</li>
+<li><strong>Styling:</strong> Tailwind CSS</li>
+<li><strong>Data:</strong> Static JSON import (<code>exercises.json</code> bundled at build time)</li>
+<li><strong>Video embeds:</strong> TikTok oEmbed via <code>&lt;blockquote&gt;</code> + script tag, or iframe</li>
+<li><strong>Search:</strong> Client-side fuzzy search (use <code>fuse.js</code>)</li>
+<li><strong>Hosting:</strong> Vercel (free tier)</li>
+</ul>
+<h3 id="step-31-initialize-project">Step 3.1 — Initialize project</h3>
+<pre><code class="language-bash">npx create-next-app@latest otf-exercise-directory --typescript --tailwind --app --src-dir
+cd otf-exercise-directory
+npm install fuse.js
+</code></pre>
+<p>Copy <code>exercises.json</code> into <code>src/data/exercises.json</code>.</p>
+<h3 id="step-32-build-core-components">Step 3.2 — Build core components</h3>
+<h4 id="layout-pages">Layout &amp; Pages</h4>
+<pre><code>src/
+  app/
+    page.tsx          — Main directory page with search + filters
+    exercise/[id]/
+      page.tsx        — Individual exercise detail page with TikTok embed
+  components/
+    SearchBar.tsx     — Text input with debounced fuzzy search
+    FilterPanel.tsx   — Filter by category, muscle group, equipment
+    ExerciseCard.tsx  — Thumbnail + name + tags, links to detail page
+    ExerciseGrid.tsx  — Responsive grid of ExerciseCards
+    TikTokEmbed.tsx   — Embeds a TikTok video given a URL
+  data/
+    exercises.json
+  lib/
+    search.ts         — Fuse.js configuration and search logic
+</code></pre>
+<h4 id="tiktokembed-component">TikTokEmbed component</h4>
+<p>Use TikTok&#39;s oEmbed. Two options:</p>
+<p><strong>Option A — blockquote method (recommended):</strong></p>
+<pre><code class="language-tsx">&quot;use client&quot;;
+import { useEffect, useRef } from &quot;react&quot;;
+
+export default function TikTokEmbed({ url }: { url: string }) {
+  const containerRef = useRef&lt;HTMLDivElement&gt;(null);
+
+  useEffect(() =&gt; {
+    // Load TikTok embed script
+    const script = document.createElement(&quot;script&quot;);
+    script.src = &quot;https://www.tiktok.com/embed.js&quot;;
+    script.async = true;
+    document.body.appendChild(script);
+    return () =&gt; { document.body.removeChild(script); };
+  }, []);
+
+  return (
+    &lt;div ref={containerRef}&gt;
+      &lt;blockquote
+        className=&quot;tiktok-embed&quot;
+        cite={url}
+        data-video-id={url.split(&quot;/video/&quot;)[1]}
+      &gt;
+        &lt;a href={url}&gt;View on TikTok&lt;/a&gt;
+      &lt;/blockquote&gt;
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+<p><strong>Option B — oEmbed API fetch (for thumbnails/previews without full embed):</strong></p>
+<pre><code>GET https://www.tiktok.com/oembed?url={video_url}
+</code></pre>
+<p>Returns JSON with <code>thumbnail_url</code>, <code>title</code>, <code>html</code> (embed code).</p>
+<h4 id="search-implementation">Search implementation</h4>
+<pre><code class="language-ts">import Fuse from &quot;fuse.js&quot;;
+import exercises from &quot;@/data/exercises.json&quot;;
+
+const fuse = new Fuse(exercises, {
+  keys: [
+    { name: &quot;exercise_name&quot;, weight: 2 },
+    { name: &quot;muscle_groups&quot;, weight: 1.5 },
+    { name: &quot;equipment&quot;, weight: 1 },
+    { name: &quot;coaching_cues&quot;, weight: 0.5 },
+  ],
+  threshold: 0.3,
+});
+
+export function searchExercises(query: string) {
+  if (!query.trim()) return exercises;
+  return fuse.search(query).map((r) =&gt; r.item);
+}
+</code></pre>
+<h3 id="step-33-uiux-requirements">Step 3.3 — UI/UX requirements</h3>
+<ul>
+<li><strong>Dark mode by default</strong> (consistent with Vishal&#39;s preference)</li>
+<li><strong>Mobile-first responsive</strong> layout</li>
+<li>Sticky search bar at top</li>
+<li>Filter chips for: category (upper body, lower body, core, full body, cardio, mobility), equipment, muscle group</li>
+<li>Exercise cards show: thumbnail, exercise name, category badge, muscle group tags</li>
+<li>Detail page shows: full TikTok embed, exercise name, all metadata, coaching cues as a bulleted list</li>
+<li>&quot;Back to directory&quot; navigation</li>
+<li>Footer: &quot;Videos by Coach Rudy on TikTok. This is an unofficial fan directory.&quot;</li>
+</ul>
+<h3 id="step-34-seo-metadata-optional-but-nice">Step 3.4 — SEO &amp; metadata (optional but nice)</h3>
+<ul>
+<li>Dynamic <code>&lt;title&gt;</code> and <code>&lt;meta description&gt;</code> per exercise page</li>
+<li>Open Graph tags so exercises are shareable</li>
+<li>Sitemap generation from exercises.json</li>
+</ul>
+<hr>
+<h2 id="phase-4-data-refresh-strategy">Phase 4: Data Refresh Strategy</h2>
+<p>Since Coach Rudy posts new videos regularly, plan for periodic updates:</p>
+<ol>
+<li>Re-run yt-dlp metadata scrape monthly</li>
+<li>Diff against existing <code>exercises.json</code> to find new videos</li>
+<li>Run LLM enrichment on new entries only</li>
+<li>Merge and redeploy</li>
+</ol>
+<p>Write a <code>refresh.sh</code> script that automates steps 1–3. The user triggers it manually and redeploys.</p>
+<hr>
+<h2 id="file-deliverables">File Deliverables</h2>
+<p>After all phases, the project directory should contain:</p>
+<pre><code>otf-exercise-directory/
+├── scripts/
+│   ├── parse_metadata.py
+│   ├── enrich_metadata.py
+│   ├── merge_and_filter.py
+│   └── refresh.sh
+├── metadata/              (gitignored, raw yt-dlp output)
+├── src/
+│   ├── app/
+│   ├── components/
+│   ├── data/
+│   │   └── exercises.json
+│   └── lib/
+├── package.json
+├── tailwind.config.ts
+├── next.config.js
+├── tsconfig.json
+└── README.md
+</code></pre>
+<hr>
+<h2 id="cost-summary">Cost Summary</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Cost</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Claude Haiku API (500 descriptions)</td>
+<td>~$0.30–0.50</td>
+</tr>
+<tr>
+<td>Vercel hosting (free tier)</td>
+<td>$0</td>
+</tr>
+<tr>
+<td>Domain name (optional)</td>
+<td>$10–15/year</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td><strong>$0.50 – $15</strong></td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="important-notes">Important Notes</h2>
+<ul>
+<li><strong>Legal:</strong> This is an unofficial directory. Include clear attribution to Coach Rudy. If he requests removal, comply immediately. Consider reaching out to him proactively — he might love it and promote it.</li>
+<li><strong>TikTok embed reliability:</strong> TikTok embeds can be slow or break if TikTok changes their embed API. The fallback is a direct link + thumbnail.</li>
+<li><strong>yt-dlp TikTok scraping:</strong> TikTok aggressively blocks scrapers. If yt-dlp fails, the user may need to use a browser extension or manual collection. The pipeline handles both — it just needs a <code>urls.txt</code> or <code>metadata/*.info.json</code> files as input.</li>
+</ul>
+  </main>
+</body>
+</html>

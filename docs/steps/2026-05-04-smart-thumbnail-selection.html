@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: https:; style-src 'unsafe-inline'">
+  <meta name="generator" content="otf-docs-parity/v1">
+  <meta name="doc-source" content="docs/steps/2026-05-04-smart-thumbnail-selection.md">
+  <meta name="doc-source-sha256" content="a95ca28419f461f9705ae1e7f889a5728dd4c87c3fb4fb4c4ce15542f2105a0f">
+  <title>Smart Thumbnail Selection &amp; Placeholder Overhaul</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      --background: #ffffff;
+      --foreground: #172033;
+      --muted: #5d6678;
+      --surface: #f5f7fa;
+      --border: #d8dee9;
+      --accent: #b84f10;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #111827;
+        --foreground: #e5e7eb;
+        --muted: #aeb7c6;
+        --surface: #1f2937;
+        --border: #445064;
+        --accent: #ff9b5e;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--background);
+      color: var(--foreground);
+    }
+    main {
+      width: min(100% - 2rem, 72rem);
+      margin: 0 auto;
+      padding: 2.5rem 0 5rem;
+      overflow-x: auto;
+      overflow-wrap: anywhere;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      line-height: 1.25;
+      margin-block: 2rem 0.75rem;
+    }
+    h1 { margin-top: 0; }
+    a { color: var(--accent); text-underline-offset: 0.15em; }
+    a:focus-visible { outline: 0.2rem solid currentColor; outline-offset: 0.2rem; }
+    blockquote {
+      margin-inline: 0;
+      padding: 0.2rem 1rem;
+      color: var(--muted);
+      border-inline-start: 0.25rem solid var(--border);
+    }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    code {
+      padding: 0.1rem 0.3rem;
+      background: var(--surface);
+      border-radius: 0.25rem;
+    }
+    pre {
+      padding: 1rem;
+      overflow-x: auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+    }
+    pre code { padding: 0; background: transparent; }
+    table {
+      width: 100%;
+      margin-block: 1rem;
+      border-collapse: collapse;
+    }
+    th, td { padding: 0.5rem 0.75rem; border: 1px solid var(--border); text-align: start; }
+    th { background: var(--surface); }
+    img { max-width: 100%; height: auto; }
+    hr { border: 0; border-top: 1px solid var(--border); }
+    .plain-text { white-space: pre-wrap; }
+    .task-list-item { list-style: none; }
+    input[type="checkbox"] { margin-inline: -1.25rem 0.5rem; }
+  </style>
+</head>
+<body>
+  <main>
+<h1 id="smart-thumbnail-selection-placeholder-overhaul">Smart Thumbnail Selection &amp; Placeholder Overhaul</h1>
+<p><strong>Date:</strong> 2026-05-04
+<strong>Branch:</strong> <code>fix/smart-thumbnail-selection</code></p>
+<h2 id="problem">Problem</h2>
+<p>Three distinct issues caused poor thumbnail display on the exercise grid:</p>
+<ol>
+<li><p><strong>Naive first-video selection (310 exercises):</strong> <code>ExerciseCard</code> always used <code>exercise.videos[0]</code> for the thumbnail. In 310 exercises, <code>videos[0]</code> was a TikTok video with an expired CDN URL, while another video in the array had a perfectly working local <code>/thumbs/</code> file.</p>
+</li>
+<li><p><strong>Instagram logo contamination (154 files, 119 exercises):</strong> 154 thumbnail files in <code>public/thumbs/</code> were byte-identical copies of the Instagram gradient logo (778,568 bytes each, MD5: <code>bbbcf3a6ff0c8bd580103bd13eb268a4</code>). These loaded without <code>onError</code> triggering since they were valid JPEGs — they just showed the Instagram branding instead of the exercise.</p>
+</li>
+<li><p><strong>Goofy stick-figure placeholders:</strong> The previous <code>ExercisePlaceholder</code> component used crude stick-figure SVGs that looked unprofessional and fired too often due to issues #1 and #2.</p>
+</li>
+</ol>
+<h2 id="root-cause-analysis">Root Cause Analysis</h2>
+<table>
+<thead>
+<tr>
+<th>Issue</th>
+<th>Root Cause</th>
+<th>Affected Exercises</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Stick figures showing</td>
+<td><code>videos[0]</code> has expired TikTok CDN URL, other videos have working local thumbs</td>
+<td>310</td>
+</tr>
+<tr>
+<td>Instagram logo showing</td>
+<td>Scraper downloaded Instagram branding page instead of actual thumbnail</td>
+<td>119</td>
+</tr>
+<tr>
+<td>Placeholder too liberal</td>
+<td>No smart thumbnail selection across videos array</td>
+<td>428 total (before fix)</td>
+</tr>
+</tbody></table>
+<h2 id="fix-applied">Fix Applied</h2>
+<h3 id="step-1-data-cleanup-script-scriptsfix-thumbnail-prioritymjs">Step 1: Data cleanup script (<code>scripts/fix-thumbnail-priority.mjs</code>)</h3>
+<ul>
+<li><strong>Detected Instagram logo files</strong> by checking for the known file size (778,568 bytes)</li>
+<li><strong>Deleted 148 logo files</strong> from <code>public/thumbs/</code></li>
+<li><strong>Cleared thumbnail field</strong> to empty string for 148 videos that had logo thumbnails</li>
+<li><strong>Reordered videos</strong> within each exercise so the video with the best thumbnail comes first:<ul>
+<li>Priority 3: Local real thumbnail (<code>/thumbs/...</code>, not Instagram logo)</li>
+<li>Priority 1: Remote CDN URL (may or may not work)</li>
+<li>Priority 0: Empty / Instagram logo</li>
+</ul>
+</li>
+</ul>
+<h3 id="step-2-smart-thumbnail-selection-in-exercisecard">Step 2: Smart thumbnail selection in ExerciseCard</h3>
+<p>Added <code>getBestThumbnail()</code> function that searches ALL videos in an exercise for the best available thumbnail, preferring local files over remote CDN URLs:</p>
+<pre><code class="language-typescript">function getBestThumbnail(exercise: GroupedExercise): string | null {
+  const local = exercise.videos.find(
+    (v) =&gt; v.thumbnail &amp;&amp; v.thumbnail.startsWith(&quot;/&quot;)
+  );
+  if (local) return local.thumbnail;
+  const remote = exercise.videos.find((v) =&gt; !!v.thumbnail);
+  if (remote) return remote.thumbnail;
+  return null;
+}
+</code></pre>
+<h3 id="step-3-placeholder-redesign">Step 3: Placeholder redesign</h3>
+<p>Replaced stick-figure SVGs with a clean, minimal placeholder that shows:</p>
+<ul>
+<li>Category-colored icon in a circle</li>
+<li>Exercise name (line-clamped to 2 lines)</li>
+<li>Muscle groups (first 3, dot-separated)</li>
+</ul>
+<h2 id="beforeafter">Before/After</h2>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Before</th>
+<th>After</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Exercises with working first-video thumbnail</td>
+<td>792 (65%)</td>
+<td>997 (82%)</td>
+</tr>
+<tr>
+<td>Exercises showing Instagram logo</td>
+<td>119</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Exercises needing any fallback</td>
+<td>428 (35%)</td>
+<td>223 (18%)</td>
+</tr>
+<tr>
+<td>Exercises needing placeholder (no thumb at all)</td>
+<td>N/A (broken images)</td>
+<td>66 (5.4%)</td>
+</tr>
+<tr>
+<td>Remote CDN URLs that might work</td>
+<td>0 attempted</td>
+<td>157 tried (onError fallback if they fail)</td>
+</tr>
+</tbody></table>
+<h2 id="verification">Verification</h2>
+<ul>
+<li><code>npm run build</code> — passes, 1224 static pages generated</li>
+<li>Visual check: first 20+ exercises all show real thumbnails</li>
+<li>Search for &quot;3 TIPS I USED FOR my PR&quot; (previously showed Instagram logo) — now shows clean text placeholder</li>
+<li>No Instagram logos visible anywhere</li>
+<li>No stick figure SVGs remaining</li>
+</ul>
+  </main>
+</body>
+</html>
