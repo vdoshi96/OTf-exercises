@@ -125,8 +125,13 @@ export default function TikTokEmbed({
             <span className="relative flex h-16 w-16 items-center justify-center rounded-full border-2 border-orange-500 bg-black/65 pl-1 shadow-2xl backdrop-blur-sm transition group-hover:scale-105 group-hover:bg-orange-500 group-hover:text-black">
               <PlayIcon />
             </span>
-            <span className="absolute bottom-4 left-4 right-4 rounded-md bg-black/70 px-3 py-2 text-sm font-semibold backdrop-blur-sm">
-              Tap to play on TikTok
+            <span className="absolute bottom-4 left-4 right-4 rounded-md bg-black/75 px-3 py-2 backdrop-blur-sm">
+              <span className="block text-sm font-semibold">
+                Tap to play on TikTok
+              </span>
+              <span className="mt-0.5 block text-xs font-medium text-stone-300">
+                Playing loads TikTok’s embedded player
+              </span>
             </span>
           </button>
         )}

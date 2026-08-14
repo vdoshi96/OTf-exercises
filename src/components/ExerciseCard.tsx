@@ -3,59 +3,52 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { CATEGORY_LABELS, type GroupedExercise } from "@/lib/types";
-import { getExerciseCreators } from "@/lib/search";
+import type {
+  DirectoryItemSummary,
+  DirectoryQuery,
+  GroupedExercise,
+} from "@/lib/types";
+import { directoryDetailHref } from "@/lib/query";
 import ExercisePlaceholder from "./ExercisePlaceholder";
 
-function getLocalThumbnail(exercise: GroupedExercise): string | null {
-  for (const v of exercise.videos) {
-    if (v.thumbnail && v.thumbnail.startsWith("/")) return v.thumbnail;
-  }
-  return null;
-}
-
 function summarizeList(items: string[], limit: number): string {
-  if (items.length === 0) return "Bodyweight";
+  if (items.length === 0) return "Equipment not specified";
   if (items.length <= limit) return items.join(", ");
 
   return `${items.slice(0, limit).join(", ")} +${items.length - limit}`;
 }
 
 interface ExerciseCardProps {
-  exercise: GroupedExercise;
+  item: DirectoryItemSummary;
+  query: DirectoryQuery;
   eager?: boolean;
 }
 
 export default function ExerciseCard({
-  exercise,
+  item,
+  query,
   eager = false,
 }: ExerciseCardProps) {
-  const categoryLabel =
-    CATEGORY_LABELS[exercise.category] || exercise.category;
-
-  const thumbnail = getLocalThumbnail(exercise);
   const [thumbnailError, setThumbnailError] = useState(false);
-  const videoCount = exercise.videos.length;
-  const sources = new Set(exercise.videos.map((v) => v.source));
-  const creators = getExerciseCreators(exercise);
+  const sources = new Set(item.sources);
   const creatorSummary =
-    creators.length === 0
+    item.creators.length === 0
       ? "Creator pending"
-      : creators.length === 1
-        ? creators[0].display_name
-        : `${creators.length} creators`;
+      : item.creators.length === 1
+        ? item.creators[0].display_name
+        : `${item.creators.length} creators`;
 
   return (
     <Link
-      href={`/exercise/${exercise.id}`}
+      href={directoryDetailHref(query, item.id)}
       data-testid="exercise-card"
       className="group flex h-full min-h-36 flex-row overflow-hidden rounded-lg border border-white/15 bg-[#101111] shadow-xl shadow-black/20 transition duration-200 hover:border-orange-500/50 hover:shadow-orange-950/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-400 sm:flex-col sm:hover:-translate-y-1"
     >
       <div className="relative w-[40%] max-w-40 shrink-0 overflow-hidden bg-[#151616] sm:aspect-[16/11] sm:w-full sm:max-w-none">
-        {thumbnail && !thumbnailError ? (
+        {item.thumbnail && !thumbnailError ? (
           <Image
-            src={thumbnail}
-            alt={exercise.exercise_name}
+            src={item.thumbnail}
+            alt={item.title}
             fill
             sizes="(max-width: 639px) 40vw, (min-width: 1280px) 25vw, (min-width: 1024px) 33vw, 50vw"
             loading={eager ? "eager" : "lazy"}
@@ -64,9 +57,13 @@ export default function ExerciseCard({
           />
         ) : (
           <ExercisePlaceholder
-            category={exercise.category}
-            exerciseName={exercise.exercise_name}
-            muscleGroups={exercise.muscle_groups}
+            category={
+              item.kind === "exercise"
+                ? (item.classification as GroupedExercise["category"])
+                : "other"
+            }
+            exerciseName={item.title}
+            muscleGroups={item.muscleGroups}
             eager={eager}
           />
         )}
@@ -75,13 +72,13 @@ export default function ExerciseCard({
 
         <div className="absolute left-2 top-2 flex flex-wrap gap-2 sm:left-3 sm:top-3">
           <span className="rounded-md border border-orange-500/40 bg-black/70 px-2 py-1 text-[10px] font-bold uppercase text-orange-400 shadow-sm shadow-black/30 backdrop-blur-sm sm:px-2.5 sm:text-xs">
-            {categoryLabel}
+            {item.classificationLabel}
           </span>
         </div>
 
         <div className="absolute right-2 top-2 hidden sm:right-3 sm:top-3 sm:block">
           <span className="rounded-md border border-white/15 bg-black/70 px-2 py-1 text-[10px] font-bold uppercase text-stone-100 backdrop-blur-sm sm:px-2.5 sm:text-xs">
-            {videoCount} video{videoCount === 1 ? "" : "s"}
+            {item.videoCount} video{item.videoCount === 1 ? "" : "s"}
           </span>
         </div>
 
@@ -127,12 +124,17 @@ export default function ExerciseCard({
       <div className="flex min-w-0 flex-1 flex-col gap-2 p-3 sm:gap-3 sm:p-4">
         <div>
           <h3 className="line-clamp-3 text-base font-bold leading-tight text-stone-50 transition group-hover:text-orange-200 sm:line-clamp-2 sm:text-xl">
-            {exercise.exercise_name}
+            {item.title}
           </h3>
+          {item.matchedBy.length > 0 && (
+            <p className="mt-1 line-clamp-1 text-[11px] font-semibold text-[var(--signal)] sm:text-xs">
+              Matched: {item.matchedBy.join(", ")}
+            </p>
+          )}
         </div>
 
         <div className="flex flex-wrap gap-1 sm:gap-1.5">
-          {exercise.muscle_groups.slice(0, 3).map((mg, index) => (
+          {item.muscleGroups.slice(0, 3).map((mg, index) => (
             <span
               key={mg}
               className={`rounded-md border border-white/10 bg-[#181919] px-2 py-1 text-[10px] font-medium text-stone-300 sm:px-2.5 sm:py-1.5 sm:text-xs ${
@@ -142,9 +144,9 @@ export default function ExerciseCard({
               {mg}
             </span>
           ))}
-          {exercise.muscle_groups.length > 3 && (
+          {item.muscleGroups.length > 3 && (
             <span className="rounded-md border border-white/10 bg-[#181919] px-2 py-1 text-[10px] font-medium text-stone-500 sm:px-2.5 sm:py-1.5 sm:text-xs">
-              +{exercise.muscle_groups.length - 3}
+              +{item.muscleGroups.length - 3}
             </span>
           )}
         </div>
@@ -164,7 +166,9 @@ export default function ExerciseCard({
               d="M6 12h12M8 8v8m8-8v8M4 10v4m16-4v4"
             />
           </svg>
-          {summarizeList(exercise.equipment, 2)}
+          {item.kind === "coaching"
+            ? "Coaching resource"
+            : summarizeList(item.equipment, 2)}
         </p>
       </div>
     </Link>

@@ -140,7 +140,7 @@ def group_exercises(flat_exercises: list[dict]) -> list[dict]:
             })
 
         grouped.append({
-            "id": slugify(name),
+            "id": first.get("catalog_group_id") or slugify(name),
             "exercise_name": name,
             "category": first.get("category", "other"),
             "muscle_groups": all_muscle_groups,

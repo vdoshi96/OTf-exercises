@@ -30,6 +30,10 @@ test("maps documentation sources to same-directory HTML counterparts", () => {
   assert.equal(counterpartPath("LICENSE"), "LICENSE.html");
   assert.equal(isDocumentationSource("CODEX_HANDOFF"), true);
   assert.equal(isDocumentationSource("Dockerfile"), false);
+  assert.equal(
+    isDocumentationSource("data/catalog-baseline-video-ids.txt"),
+    false,
+  );
 });
 
 test("renders GFM structure and preserves or rewrites relative targets", () => {

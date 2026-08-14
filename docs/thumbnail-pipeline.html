@@ -6,7 +6,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: https:; style-src 'unsafe-inline'">
   <meta name="generator" content="otf-docs-parity/v1">
   <meta name="doc-source" content="docs/thumbnail-pipeline.md">
-  <meta name="doc-source-sha256" content="d2b034e43970fa8e49e310376032f194f3d3a392a3aa4cf96376883c27d09e55">
+  <meta name="doc-source-sha256" content="6390fbda393dcfdd4a7eb0150437512ffb47c7d002b3de89ad9d867fd778feb8">
   <title>Thumbnail Pipeline</title>
   <style>
     :root {
@@ -87,7 +87,7 @@
 <body>
   <main>
 <h1 id="thumbnail-pipeline">Thumbnail Pipeline</h1>
-<p>The catalogue stores durable local thumbnail paths. A video thumbnail must be
+<p>The exercise and coaching catalogs store durable local thumbnail paths. A video thumbnail must be
 either a validated <code>/thumbs/...</code> asset or the shared
 <code>/thumbs/fallback-exercise.jpg</code>; remote CDN URLs and blank image states are not
 valid release output.</p>
@@ -120,10 +120,10 @@ refresh workflow and the legacy platform-specific entry points.</p>
 existence by itself is not considered a cache hit.</p>
 <p>For an unavailable post, the pipeline assigns
 <code>public/thumbs/fallback-exercise.jpg</code>. This is a deterministic 640x960,
-quality-72 progressive JPEG generated from the centered
-<code>public/otf-logo.svg</code> on <code>#111111</code>. The fallback is a presentation safeguard,
-not a permanent cache hit: the pipeline retries source recovery on every later
-run.</p>
+quality-72 progressive JPEG generated from <code>public/otf-logo.svg</code> on <code>#111111</code>
+with a visible orange <code>UNOFFICIAL FAN DIRECTORY</code> panel. The fallback is a
+presentation and transparency safeguard, not a permanent cache hit: the
+pipeline retries source recovery on every later run.</p>
 <h2 id="integrity-guarantees">Integrity guarantees</h2>
 <p>Each remote candidate is handled as follows:</p>
 <ol>
@@ -142,11 +142,15 @@ path. A failed candidate never replaces a valid local asset.</li>
 <li>Replace an unrecoverable remote or blank reference with the durable fallback
 and record the failure in the JSON report.</li>
 </ol>
-<p>The catalogue itself is also written atomically. Before committing it, the
-worker verifies that no other refresh process changed the source file while
+<p>Both public catalogs are written atomically. Before committing either one, the
+worker verifies that no other refresh process changed its source file while
 downloads were running; if it did, the worker exits rather than overwriting the
 newer data.</p>
-<p>The pipeline does not delete orphaned images or reorder video arrays.</p>
+<p>Before processing public records, the pipeline removes only canonical image
+files whose video IDs have durable <code>exclude</code> decisions in
+<code>data/catalog-curation.json</code>. Other orphaned images are left untouched, and
+video arrays are never reordered. The report records the narrowly pruned
+filenames in <code>excluded_thumbnails_pruned</code>.</p>
 <h2 id="commands">Commands</h2>
 <pre><code class="language-bash"># Normal post-refresh run; writes images, catalogue refs, and QA report
 node scripts/ensure-thumbnails.mjs
@@ -167,10 +171,11 @@ node scripts/ensure-thumbnails.mjs --source tiktok --limit 10
 # Fixture/automation paths
 node scripts/ensure-thumbnails.mjs \
   --catalog /tmp/exercises.json \
+  --coaching-catalog /tmp/coaching.json \
   --thumbs-dir /tmp/thumbs \
   --report /tmp/thumbnail-report.json
 </code></pre>
-<p>Other supported controls are <code>--concurrency</code>, <code>--between-items-ms</code>,
+<p>Other supported controls are <code>--coaching-catalog</code>, <code>--concurrency</code>, <code>--between-items-ms</code>,
 <code>--attempts</code>, <code>--timeout-ms</code>, and <code>--no-report</code>. Run
 <code>node scripts/ensure-thumbnails.mjs --help</code> for the complete CLI reference.</p>
 <p><code>scripts/download_instagram_thumbnails.mjs</code> and
@@ -180,10 +185,12 @@ contain separate download logic. Filtered runs do not overwrite the canonical
 full-run QA report; pass an explicit different <code>--report</code> path when a focused
 run needs its own artifact.</p>
 <h2 id="report-and-release-checks">Report and release checks</h2>
-<p>Normal runs write <code>docs/qa/latest/thumbnail-report.json</code>. It includes before and
-after coverage, per-platform statuses, fallback-generation provenance, options,
-and per-video failure reasons. A dry run writes no report unless the caller
-chooses a separate automation around the returned output.</p>
+<p>Normal runs write <code>docs/qa/latest/thumbnail-report.json</code>. The canonical report
+covers every public exercise and coaching video together. It includes before
+and after coverage, catalog membership, per-platform statuses,
+fallback-generation provenance, options, and per-video failure reasons. A dry
+run writes no report unless the caller chooses a separate automation around the
+returned output.</p>
 <p>Run the focused suite after changing this worker:</p>
 <pre><code class="language-bash">node --test tests/thumbnail-pipeline.test.mjs
 </code></pre>
@@ -194,6 +201,7 @@ chooses a separate automation around the returned output.</p>
 <li>every referenced local file is present and decodable;</li>
 <li>no known Instagram error-logo hash;</li>
 <li>every fallback assignment has a corresponding report entry;</li>
+<li>no curation-proven excluded thumbnail remains under <code>public/thumbs</code>;</li>
 <li>the app build and mobile visual checks pass.</li>
 </ul>
   </main>

@@ -12,6 +12,12 @@ import os
 import re
 
 ENRICHED_FILE = os.path.join(os.path.dirname(__file__), "..", "enriched_videos.json")
+CATALOG_FILE = os.path.join(
+    os.path.dirname(__file__), "..", "src", "data", "exercises.json"
+)
+CURATION_FILE = os.path.join(
+    os.path.dirname(__file__), "..", "data", "catalog-curation.json"
+)
 
 TRUE_NON_DEMO_PATTERNS = [
     r"(?i)transformation\s+challenge",
@@ -118,7 +124,7 @@ EQUIPMENT_KEYWORDS = {
     "foam roller": ["foam roll", "foam roller"],
     "barbell": ["barbell"],
     "kettlebell": ["kettlebell", "kb"],
-    "bodyweight": [],
+    "bodyweight": ["bodyweight", "body weight", "no equipment"],
 }
 
 
@@ -130,17 +136,33 @@ def classify_extra(desc: str) -> dict | None:
     return None
 
 
+def contains_equipment_keyword(description: str, keyword: str) -> bool:
+    """Match a word or phrase without treating it as part of a larger word."""
+    return bool(
+        re.search(
+            rf"(?<![a-z0-9]){re.escape(keyword.lower())}(?![a-z0-9])",
+            description.lower(),
+        )
+    )
+
+
 def extract_equipment(desc: str) -> list[str]:
-    desc_lower = desc.lower()
     found = []
     for equip, keywords in EQUIPMENT_KEYWORDS.items():
-        if equip == "bodyweight":
-            continue
         for kw in keywords:
-            if kw in desc_lower:
+            if contains_equipment_keyword(desc, kw):
                 found.append(equip)
                 break
-    return found if found else ["bodyweight"]
+    # Unknown equipment stays unknown. Only explicit wording above may produce
+    # a bodyweight tag.
+    return found
+
+
+def slugify(name: str) -> str:
+    slug = name.lower().strip()
+    slug = re.sub(r"[^a-z0-9\s-]", "", slug)
+    slug = re.sub(r"[\s-]+", "-", slug).strip("-")
+    return slug[:80] or "unknown"
 
 
 def is_true_non_demo(desc: str) -> bool:
@@ -179,9 +201,68 @@ def main():
     with open(ENRICHED_FILE) as f:
         data = json.load(f)
 
+    with open(CURATION_FILE) as f:
+        curation = json.load(f)
+    with open(CATALOG_FILE) as f:
+        current_catalog = json.load(f)
+    decisions = curation.get("decisions", {})
+    exercise_metadata = curation.get("exercise_metadata", {})
+    reviewed_coaching_cues = curation.get("reviewed_coaching_cues", {})
+    current_group_by_video_id = {
+        str(video.get("id") or ""): group["id"]
+        for group in current_catalog
+        for video in group.get("videos", [])
+    }
+    curated_video_ids = set()
+    curated_exercises = 0
+    curated_non_exercises = 0
+
+    # Durable video-ID review decisions override caption heuristics. This keeps
+    # a full legacy regeneration aligned with the public exercise/coaching
+    # split instead of recreating the old Other/no-muscle rows.
+    for video in data:
+        video_id = str(video.get("id") or "")
+        decision = decisions.get(video_id)
+        if not decision:
+            continue
+        curated_video_ids.add(video_id)
+        if decision["decision"] != "exercise":
+            video["enrichment"] = {
+                "exercise_name": None,
+                "muscle_groups": [],
+                "equipment": [],
+                "category": "other",
+                "movement_type": "other",
+                "coaching_cues": [],
+                "is_exercise_demo": False,
+                "curation_decision": decision["decision"],
+            }
+            curated_non_exercises += 1
+            continue
+
+        destination_id = decision["destination_id"]
+        metadata = exercise_metadata.get(destination_id)
+        if not metadata:
+            raise ValueError(
+                f"Exercise curation for {video_id} references missing metadata {destination_id}"
+            )
+        video["enrichment"] = {
+            "exercise_name": metadata["exercise_name"],
+            "muscle_groups": list(metadata["muscle_groups"]),
+            "equipment": list(metadata["equipment"]),
+            "category": metadata["category"],
+            "movement_type": metadata["movement_type"],
+            "coaching_cues": list(reviewed_coaching_cues.get(destination_id, [])),
+            "is_exercise_demo": True,
+            "curation_decision": "exercise",
+            "catalog_group_id": destination_id,
+        }
+        curated_exercises += 1
+
     ig_non_demos = [
         v for v in data
         if is_legacy_coachingotf_instagram_record(v)
+        and str(v.get("id") or "") not in curated_video_ids
         and not v.get("enrichment", {}).get("is_exercise_demo")
     ]
 
@@ -221,6 +302,52 @@ def main():
             }
         reclassified += 1
 
+    # Reconcile reviewed group-level metadata across the complete legacy
+    # corpus, then remove unreviewed inferred Bodyweight and caption-extracted
+    # cues. Current video locations preserve stable group IDs when a reviewed
+    # title changes; unknown equipment remains honestly empty.
+    for video in data:
+        enrichment = video.get("enrichment", {})
+        if not enrichment.get("is_exercise_demo"):
+            continue
+
+        video_id = str(video.get("id") or "")
+        decision = decisions.get(video_id)
+        destination_id = (
+            decision.get("destination_id")
+            if decision and decision.get("decision") == "exercise"
+            else current_group_by_video_id.get(video_id)
+        )
+        destination_id = destination_id or slugify(
+            str(enrichment.get("exercise_name") or "")
+        )
+        metadata = exercise_metadata.get(destination_id)
+
+        if metadata:
+            enrichment.update(
+                {
+                    "exercise_name": metadata["exercise_name"],
+                    "muscle_groups": list(metadata["muscle_groups"]),
+                    "equipment": list(metadata["equipment"]),
+                    "category": metadata["category"],
+                    "movement_type": metadata["movement_type"],
+                    "catalog_group_id": destination_id,
+                }
+            )
+        else:
+            equipment = list(enrichment.get("equipment", []))
+            title = str(enrichment.get("exercise_name") or "")
+            if (
+                "bodyweight" in equipment
+                and not re.search(r"(?i)body[ -]?weight|no equipment", title)
+            ):
+                equipment = [item for item in equipment if item != "bodyweight"]
+            enrichment["equipment"] = equipment
+
+        enrichment["coaching_cues"] = list(
+            reviewed_coaching_cues.get(destination_id, [])
+        )
+
     with open(ENRICHED_FILE, "w") as f:
         json.dump(data, f, indent=2)
 
@@ -228,6 +355,8 @@ def main():
     print(f"Corrections applied:")
     print(f"  Reclassified as exercise demos: {reclassified}")
     print(f"  Confirmed non-demos: {kept_non_demo}")
+    print(f"  Curated exercise videos: {curated_exercises}")
+    print(f"  Curated coaching/excluded videos: {curated_non_exercises}")
     print(f"  Total exercise demos now: {demos}")
 
 

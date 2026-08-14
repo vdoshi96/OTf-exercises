@@ -1,18 +1,95 @@
-import Fuse, { type IFuseOptions } from "fuse.js";
-import type { Creator, GroupedExercise } from "./types";
+import Fuse, { type FuseResult, type IFuseOptions } from "fuse.js";
+import type { CoachingResource, Creator, GroupedExercise } from "./types";
+
+export interface SearchResult<T> {
+  item: T;
+  matchedBy: string[];
+}
+
+const MATCH_LABELS: Record<string, string> = {
+  exercise_name: "Title",
+  title: "Title",
+  category: "Category",
+  movement_type: "Movement type",
+  muscle_groups: "Muscle group",
+  equipment: "Equipment",
+  "videos.source": "Source",
+  "videos.creator.display_name": "Creator",
+  "videos.creator.handle": "Creator",
+  "videos.description": "Video description",
+  coaching_cues: "Coaching cue",
+  topic: "Topic",
+  summary: "Summary",
+};
 
 const fuseOptions: IFuseOptions<GroupedExercise> = {
   keys: [
     { name: "exercise_name", weight: 2 },
+    { name: "category", weight: 1.8 },
+    { name: "movement_type", weight: 1.5 },
     { name: "muscle_groups", weight: 1.5 },
     { name: "equipment", weight: 1 },
+    { name: "videos.source", weight: 0.9 },
     { name: "videos.creator.display_name", weight: 1 },
     { name: "videos.creator.handle", weight: 1 },
+    { name: "videos.description", weight: 0.35 },
     { name: "coaching_cues", weight: 0.5 },
   ],
   threshold: 0.3,
   includeScore: true,
+  includeMatches: true,
 };
+
+const coachingFuseOptions: IFuseOptions<CoachingResource> = {
+  keys: [
+    { name: "title", weight: 2 },
+    { name: "topic", weight: 1.5 },
+    { name: "summary", weight: 1 },
+    { name: "videos.creator.display_name", weight: 1 },
+    { name: "videos.creator.handle", weight: 1 },
+    { name: "videos.source", weight: 0.9 },
+    { name: "videos.description", weight: 0.35 },
+  ],
+  threshold: 0.3,
+  includeScore: true,
+  includeMatches: true,
+};
+
+const CATEGORY_ALIASES: Record<string, GroupedExercise["category"]> = {
+  cardio: "cardio",
+  core: "core",
+  fullbody: "full_body",
+  lowerbody: "lower_body",
+  mobility: "mobility",
+  other: "other",
+  upperbody: "upper_body",
+};
+
+const SOURCE_ALIASES: Record<string, GroupedExercise["videos"][number]["source"]> = {
+  instagram: "instagram",
+  tiktok: "tiktok",
+};
+
+const EQUIPMENT_ALIASES: Record<string, string> = {
+  rower: "rower",
+};
+
+function normalizeAlias(value: string): string {
+  return value.toLocaleLowerCase("en-US").replace(/[^a-z0-9]+/g, "");
+}
+
+function matchLabels<T>(result: FuseResult<T>): string[] {
+  const labels = new Set<string>();
+
+  for (const match of result.matches ?? []) {
+    if (!match.key) continue;
+    const label = MATCH_LABELS[match.key];
+    if (label) labels.add(label);
+  }
+
+  labels.delete("Title");
+  return Array.from(labels);
+}
 
 export function createSearchIndex(
   exercises: GroupedExercise[]
@@ -27,6 +104,96 @@ export function searchExercises(
 ): GroupedExercise[] {
   if (!query.trim()) return exercises;
   return fuse.search(query).map((r) => r.item);
+}
+
+export function searchExercisesWithMatches(
+  fuse: Fuse<GroupedExercise>,
+  exercises: GroupedExercise[],
+  query: string
+): SearchResult<GroupedExercise>[] {
+  if (!query.trim()) {
+    return exercises.map((item) => ({ item, matchedBy: [] }));
+  }
+
+  const fuseResults = fuse.search(query);
+  const byId = new Map(
+    fuseResults.map((result) => [
+      result.item.id,
+      { item: result.item, matchedBy: matchLabels(result) },
+    ])
+  );
+  const normalizedQuery = normalizeAlias(query);
+  const exactCategory = CATEGORY_ALIASES[normalizedQuery];
+  const exactSource = SOURCE_ALIASES[normalizedQuery];
+  const exactEquipment = EQUIPMENT_ALIASES[normalizedQuery];
+
+  if (!exactCategory && !exactSource && !exactEquipment) {
+    return Array.from(byId.values());
+  }
+
+  const exactMatches = exercises
+    .filter(
+      (exercise) =>
+        exercise.category === exactCategory ||
+        exercise.equipment.includes(exactEquipment ?? "") ||
+        exercise.videos.some((video) => video.source === exactSource),
+    )
+    .map((item) => {
+      const matched = byId.get(item.id);
+      byId.delete(item.id);
+      const matchedBy = new Set(matched?.matchedBy ?? []);
+      if (item.category === exactCategory) matchedBy.add("Category");
+      if (item.equipment.includes(exactEquipment ?? "")) {
+        matchedBy.add("Equipment");
+      }
+      if (item.videos.some((video) => video.source === exactSource)) {
+        matchedBy.add("Source");
+      }
+      return { item, matchedBy: Array.from(matchedBy) };
+    });
+
+  return [...exactMatches, ...byId.values()];
+}
+
+export function createCoachingSearchIndex(
+  resources: CoachingResource[]
+): Fuse<CoachingResource> {
+  return new Fuse(resources, coachingFuseOptions);
+}
+
+export function searchCoachingWithMatches(
+  fuse: Fuse<CoachingResource>,
+  resources: CoachingResource[],
+  query: string
+): SearchResult<CoachingResource>[] {
+  if (!query.trim()) {
+    return resources.map((item) => ({ item, matchedBy: [] }));
+  }
+
+  const fuseResults = fuse.search(query);
+  const byId = new Map(
+    fuseResults.map((result) => [
+      result.item.id,
+      { item: result.item, matchedBy: matchLabels(result) },
+    ]),
+  );
+  const exactSource = SOURCE_ALIASES[normalizeAlias(query)];
+  if (!exactSource) return Array.from(byId.values());
+
+  const sourceMatches = resources
+    .filter((resource) =>
+      resource.videos.some((video) => video.source === exactSource),
+    )
+    .map((item) => {
+      const matched = byId.get(item.id);
+      byId.delete(item.id);
+      return {
+        item,
+        matchedBy: Array.from(new Set([...(matched?.matchedBy ?? []), "Source"])),
+      };
+    });
+
+  return [...sourceMatches, ...byId.values()];
 }
 
 export function getExerciseCreators(exercise: GroupedExercise): Creator[] {

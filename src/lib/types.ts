@@ -37,6 +37,122 @@ export interface GroupedExercise {
   videos: Video[];
 }
 
+export type DirectorySection = "exercise" | "coaching";
+
+export type CoachingTopic =
+  | "movement-technique"
+  | "class-delivery"
+  | "programming"
+  | "safety-and-modifications";
+
+export interface CoachingResource {
+  id: string;
+  title: string;
+  topic: CoachingTopic;
+  summary: string;
+  related_exercise_ids: string[];
+  videos: Video[];
+}
+
+export type LegacyExerciseRouteOutcome = "redirect" | "split" | "removed";
+
+export interface LegacyExerciseRouteTarget {
+  kind: DirectorySection;
+  id: string;
+  title: string;
+  path: string;
+  video_ids: string[];
+}
+
+export interface LegacyExerciseRouteExclusion {
+  video_id: string;
+  reason: string;
+}
+
+export interface LegacyExerciseRoute {
+  legacy_title: string;
+  outcome: LegacyExerciseRouteOutcome;
+  targets: LegacyExerciseRouteTarget[];
+  excluded: LegacyExerciseRouteExclusion[];
+}
+
+export interface LegacyExerciseRouteLedger {
+  version: 1;
+  baseline_commit: string;
+  baseline_routes_sha256: string;
+  stats: {
+    baseline_routes: number;
+    current_exercise_routes: number;
+    preserved_current_routes: number;
+    legacy_routes: number;
+    redirect_routes: number;
+    split_recovery_routes: number;
+    removed_recovery_routes: number;
+  };
+  routes: Record<string, LegacyExerciseRoute>;
+}
+
+export interface DirectoryQuery {
+  section: DirectorySection;
+  q: string;
+  categories: string[];
+  muscles: string[];
+  equipment: string[];
+  sources: string[];
+  creators: string[];
+  topics: string[];
+  page: number;
+}
+
+export interface DirectoryItemSummary {
+  id: string;
+  kind: DirectorySection;
+  title: string;
+  classification: string;
+  classificationLabel: string;
+  muscleGroups: string[];
+  equipment: string[];
+  thumbnail: string | null;
+  videoCount: number;
+  sources: Video["source"][];
+  creators: DirectoryCreatorSummary[];
+  matchedBy: string[];
+}
+
+export type DirectoryCreatorSummary = Pick<Creator, "id" | "display_name">;
+
+export interface DirectoryFilterOption {
+  value: string;
+  label: string;
+}
+
+export interface DirectoryFilterOptions {
+  categories: DirectoryFilterOption[];
+  muscles: DirectoryFilterOption[];
+  equipment: DirectoryFilterOption[];
+  sources: DirectoryFilterOption[];
+  creators: DirectoryCreatorSummary[];
+  topics: DirectoryFilterOption[];
+}
+
+export interface DirectoryStats {
+  items: number;
+  videos: number;
+  creators: number;
+}
+
+export interface DirectoryResponse {
+  items: DirectoryItemSummary[];
+  accumulated: boolean;
+  total: number;
+  page: number;
+  pageSize: number;
+  hasMore: boolean;
+  query: DirectoryQuery;
+  filterOptions: DirectoryFilterOptions;
+  stats: DirectoryStats;
+}
+
 export const CATEGORY_LABELS: Record<string, string> = {
   upper_body: "Upper Body",
   lower_body: "Lower Body",

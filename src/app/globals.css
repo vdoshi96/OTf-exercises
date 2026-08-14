@@ -83,3 +83,36 @@ body {
 .animate-filter-panel {
   animation: filter-panel-in 160ms ease-out;
 }
+
+.search-input::-webkit-search-cancel-button,
+.search-input::-webkit-search-decoration {
+  appearance: none;
+  -webkit-appearance: none;
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+  }
+
+  .animate-filter-panel {
+    animation: none;
+  }
+
+  [class*="hover:-translate"],
+  [class*="group-hover:scale"],
+  [class*="rotate-180"] {
+    transform: none !important;
+  }
+}

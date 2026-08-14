@@ -9,11 +9,13 @@ import {
   FALLBACK_URL,
   REPO_ROOT,
   canonicalThumbnailForVideo,
+  ensureFallbackThumbnail,
   fetchWithRetry,
   instagramShortcodeFromUrl,
   normalizeImage,
   ogImageFromHtml,
   platformWrapperArguments,
+  pruneExcludedThumbnails,
   readResponseBodyWithLimit,
   runThumbnailPipeline,
   sha256,
@@ -64,6 +66,63 @@ test("extracts stable platform identifiers and filenames", () => {
       localUrl: "/thumbs/tiktok-123456789.jpg",
     },
   );
+});
+
+test("prunes only curation-proven excluded thumbnails", async (t) => {
+  const thumbsDir = await temporaryDirectory(t);
+  const excludedInstagram = path.join(thumbsDir, "EXCLUDED.jpg");
+  const excludedTikTok = path.join(thumbsDir, "tiktok-123456789.jpg");
+  const publicThumbnail = path.join(thumbsDir, "KEEP.jpg");
+  await Promise.all([
+    writeFile(excludedInstagram, await jpeg()),
+    writeFile(excludedTikTok, await jpeg()),
+    writeFile(publicThumbnail, await jpeg()),
+  ]);
+
+  const pruned = await pruneExcludedThumbnails({
+    curation: {
+      decisions: {
+        ig_EXCLUDED: { decision: "exclude", reason: "event" },
+        123456789: { decision: "exclude", reason: "unusable" },
+        ig_KEEP: { decision: "exercise", destination_id: "keep" },
+      },
+    },
+    thumbsDir,
+  });
+
+  assert.deepEqual(pruned, ["EXCLUDED.jpg", "tiktok-123456789.jpg"]);
+  await assert.rejects(stat(excludedInstagram), { code: "ENOENT" });
+  await assert.rejects(stat(excludedTikTok), { code: "ENOENT" });
+  assert.equal((await stat(publicThumbnail)).isFile(), true);
+});
+
+test("forced fallback regeneration adds the unofficial identity panel", async (t) => {
+  const root = await temporaryDirectory(t);
+  const fallbackPath = path.join(root, "fallback-exercise.jpg");
+
+  const first = await ensureFallbackThumbnail({
+    fallbackPath,
+    force: true,
+    logoPath: path.join(REPO_ROOT, "public", "otf-logo.svg"),
+  });
+  const second = await ensureFallbackThumbnail({
+    fallbackPath,
+    force: true,
+    logoPath: path.join(REPO_ROOT, "public", "otf-logo.svg"),
+  });
+
+  assert.equal(first.generated, true);
+  assert.equal(second.generated, true);
+  const metadata = await sharp(fallbackPath).metadata();
+  assert.equal(metadata.width, 640);
+  assert.equal(metadata.height, 960);
+
+  const panelPixel = await sharp(fallbackPath)
+    .extract({ left: 60, top: 680, width: 1, height: 1 })
+    .raw()
+    .toBuffer();
+  assert.ok(panelPixel[0] > 180, "unofficial panel should retain its orange fill");
+  assert.ok(panelPixel[1] < 140, "unofficial panel should remain visually distinct");
 });
 
 test("parses og:image regardless of attribute order and decodes entities", () => {
@@ -267,6 +326,64 @@ test("platform wrappers suppress the canonical report unless given a custom repo
       "/tmp/tiktok-report.json",
     ],
   );
+});
+
+test("canonical runs account for exercise and coaching thumbnails together", async (t) => {
+  const root = await temporaryDirectory(t);
+  const catalogPath = path.join(root, "exercises.json");
+  const coachingPath = path.join(root, "coaching.json");
+  const thumbsDir = path.join(root, "thumbs");
+  await mkdir(thumbsDir);
+  await writeFile(path.join(thumbsDir, "exercise.jpg"), await jpeg());
+  await writeFile(path.join(thumbsDir, "coaching.jpg"), await jpeg());
+  await writeFile(
+    catalogPath,
+    `${JSON.stringify([
+      {
+        id: "exercise",
+        videos: [
+          {
+            id: "ig_EXERCISE",
+            source: "instagram",
+            thumbnail: "/thumbs/exercise.jpg",
+            url: "https://www.instagram.com/reel/EXERCISE/",
+          },
+        ],
+      },
+    ])}\n`,
+  );
+  await writeFile(
+    coachingPath,
+    `${JSON.stringify([
+      {
+        id: "coaching",
+        videos: [
+          {
+            id: "ig_COACHING",
+            source: "instagram",
+            thumbnail: "/thumbs/coaching.jpg",
+            url: "https://www.instagram.com/reel/COACHING/",
+          },
+        ],
+      },
+    ])}\n`,
+  );
+
+  const report = await runThumbnailPipeline({
+    catalogPath,
+    coachingPath,
+    logoPath: path.join(REPO_ROOT, "public", "otf-logo.svg"),
+    reportPath: null,
+    skipDownload: true,
+    thumbsDir,
+  });
+
+  assert.equal(report.after.total, 2);
+  assert.deepEqual(
+    report.catalogs.map(({ section }) => section),
+    ["exercise", "coaching"],
+  );
+  assert.equal(report.statuses["local-valid"], 2);
 });
 
 test("downloads both platforms, preserves valid locals, and assigns the durable fallback", async (t) => {
