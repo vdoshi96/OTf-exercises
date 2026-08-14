@@ -2,63 +2,84 @@
   "after": {
     "empty": 0,
     "fallback": 1,
-    "local": 2071,
+    "local": 2037,
     "remote": 0,
-    "total": 2072
+    "total": 2038
   },
   "before": {
     "empty": 0,
     "fallback": 1,
-    "local": 2030,
-    "remote": 41,
-    "total": 2072
+    "local": 2037,
+    "remote": 0,
+    "total": 2038
   },
   "by_source": {
     "instagram": {
-      "local-valid": 1427,
-      "downloaded": 41
+      "local-valid": 1442
     },
     "tiktok": {
-      "local-valid": 603,
+      "local-valid": 595,
       "fallback": 1
     }
   },
   "catalog": "src/data/exercises.json",
-  "catalog_changed": true,
+  "catalogs": [
+    {
+      "catalog": "src/data/exercises.json",
+      "catalog_changed": false,
+      "section": "exercise"
+    },
+    {
+      "catalog": "src/data/coaching.json",
+      "catalog_changed": false,
+      "section": "coaching"
+    }
+  ],
+  "catalog_changed": false,
   "completed_without_fallbacks": false,
   "dry_run": false,
   "failures": [
     {
       "errors": [
-        "source-resolution: request failed after 1 attempt(s): HTTP 400"
+        "download skipped; durable fallback retained"
       ],
       "exercise_id": "single-arm-high-row",
+      "section": "exercise",
       "source": "tiktok",
       "video_id": "7254008823747300650",
       "video_url": "https://www.tiktok.com/@coachingotf/video/7254008823747300650"
     }
   ],
+  "excluded_thumbnails_pruned": [
+    "CyWwC7bv53n.jpg",
+    "DNyFTVAWpZ5.jpg",
+    "DXf0mlRDRxg.jpg",
+    "tiktok-7233396198764285227.jpg",
+    "tiktok-7236075135176887595.jpg",
+    "tiktok-7242352981364985131.jpg",
+    "tiktok-7242511073369181482.jpg",
+    "tiktok-7278130764720409898.jpg"
+  ],
   "fallback": {
     "generated": false,
-    "generation": "640x960 JPEG, dark #111111 background, centered public/otf-logo.svg, quality 72 mozjpeg",
+    "generation": "640x960 JPEG, dark #111111 background, public/otf-logo.svg, visible UNOFFICIAL FAN DIRECTORY label, quality 72 mozjpeg",
     "path": "/thumbs/fallback-exercise.jpg",
     "reused": true
   },
-  "generated_at": "2026-08-14T15:13:23.980Z",
+  "generated_at": "2026-08-14T18:59:46.382Z",
   "options": {
     "attempts": 3,
     "between_items_ms": 200,
     "concurrency": 4,
     "force": false,
     "limit": null,
-    "skip_download": false,
+    "skip_download": true,
     "source": null,
     "timeout_ms": 15000
   },
-  "processed": 2072,
+  "processed": 2038,
   "statuses": {
-    "local-valid": 2030,
-    "downloaded": 41,
+    "local-valid": 2037,
     "fallback": 1
   }
 }

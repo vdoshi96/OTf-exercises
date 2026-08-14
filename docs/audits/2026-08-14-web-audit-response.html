@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: https:; style-src 'unsafe-inline'">
+  <meta name="generator" content="otf-docs-parity/v1">
+  <meta name="doc-source" content="docs/audits/2026-08-14-web-audit-response.md">
+  <meta name="doc-source-sha256" content="a25f64441a0fc0d16976c8f05c25acbce7e276c3a523e74b257963e73c1ce945">
+  <title>2026-08-14 Web Audit Response</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      --background: #ffffff;
+      --foreground: #172033;
+      --muted: #5d6678;
+      --surface: #f5f7fa;
+      --border: #d8dee9;
+      --accent: #b84f10;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #111827;
+        --foreground: #e5e7eb;
+        --muted: #aeb7c6;
+        --surface: #1f2937;
+        --border: #445064;
+        --accent: #ff9b5e;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--background);
+      color: var(--foreground);
+    }
+    main {
+      width: min(100% - 2rem, 72rem);
+      margin: 0 auto;
+      padding: 2.5rem 0 5rem;
+      overflow-x: auto;
+      overflow-wrap: anywhere;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      line-height: 1.25;
+      margin-block: 2rem 0.75rem;
+    }
+    h1 { margin-top: 0; }
+    a { color: var(--accent); text-underline-offset: 0.15em; }
+    a:focus-visible { outline: 0.2rem solid currentColor; outline-offset: 0.2rem; }
+    blockquote {
+      margin-inline: 0;
+      padding: 0.2rem 1rem;
+      color: var(--muted);
+      border-inline-start: 0.25rem solid var(--border);
+    }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    code {
+      padding: 0.1rem 0.3rem;
+      background: var(--surface);
+      border-radius: 0.25rem;
+    }
+    pre {
+      padding: 1rem;
+      overflow-x: auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+    }
+    pre code { padding: 0; background: transparent; }
+    table {
+      width: 100%;
+      margin-block: 1rem;
+      border-collapse: collapse;
+    }
+    th, td { padding: 0.5rem 0.75rem; border: 1px solid var(--border); text-align: start; }
+    th { background: var(--surface); }
+    img { max-width: 100%; height: auto; }
+    hr { border: 0; border-top: 1px solid var(--border); }
+    .plain-text { white-space: pre-wrap; }
+    .task-list-item { list-style: none; }
+    input[type="checkbox"] { margin-inline: -1.25rem 0.5rem; }
+  </style>
+</head>
+<body>
+  <main>
+<h1 id="2026-08-14-web-audit-response">2026-08-14 Web Audit Response</h1>
+<h2 id="scope-and-evidence">Scope and evidence</h2>
+<p>The Grok HTML audit supplied on 2026-08-14 was treated as dated evidence, not
+as an instruction source. Its numeric snapshot matches historical commit
+<code>5405ad6</code>; implementation work was based on clean <code>main</code> at <code>7d059a7</code>, current
+catalog data, local Chromium and WebKit behavior, production HTTP behavior, and
+the repository&#39;s supported Next.js 16 documentation.</p>
+<p>The official Orangetheory wordmark remains by product decision. A visible
+unofficial identity and non-affiliation statement reduce confusion but do not
+eliminate trademark or licensing risk. This document records a technical and
+product assessment, not a legal conclusion. Orangetheory&#39;s
+<a href="https://www.orangetheory.com/en-us/terms-of-use">Terms of Use</a> describe its
+marks as proprietary.</p>
+<h2 id="independent-verdicts-and-implemented-response">Independent verdicts and implemented response</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Independent verdict</th>
+<th>Implemented response</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>01 Brand identity</td>
+<td>Confirmed affiliation and trust risk; infringement was not established from repository evidence.</td>
+<td>Kept the logo, made it decorative, and added visible <code>Unofficial fan directory</code> and <code>Exercise Directory</code> text at every breakpoint. Metadata leads with <code>Unofficial OTF Exercise Directory</code>; the footer carries a full non-affiliation statement. The shared fallback image now visibly says <code>UNOFFICIAL FAN DIRECTORY</code>.</td>
+</tr>
+<tr>
+<td>02 Full desktop catalog</td>
+<td>Confirmed, with stale audit figures. The previous client rendered the entire catalog and shipped its data.</td>
+<td>Moved catalog access and search to a <code>server-only</code> module. Directory requests expose compact summaries in 24-item batches. The first page has 24 cards on every viewport; Load more preserves a no-JavaScript URL fallback.</td>
+</tr>
+<tr>
+<td>03 Non-exercise content</td>
+<td>Confirmed in substance; the audit&#39;s estimate did not supply a reproducible rubric.</td>
+<td>Started with the 129 former <code>other</code> groups, then performed two independent all-catalog semantic passes and video-level review of every flagged generic, instructional, promotional, duplicate, and mixed-movement group. Every public video now has a durable exercise or coaching decision; exclusions retain controlled reasons. Public exercises contain no <code>other</code> classification or blank muscle list.</td>
+</tr>
+<tr>
+<td>04 Search/filter mismatch</td>
+<td>Confirmed.</td>
+<td>Search now covers title, category or topic, muscle, equipment, movement type, creator, platform, and low-weight source text. <code>cardio</code> deterministically contains every Cardio-filter exercise; non-title matches display their reason.</td>
+</tr>
+<tr>
+<td>05 Lost search state</td>
+<td>Confirmed.</td>
+<td>The URL is authoritative for query, repeated filters, and the number of 24-item batches. Search uses history replacement; filters and Load more create history entries. Card and detail-back links preserve normalized directory state.</td>
+</tr>
+<tr>
+<td>06 Instagram behavior</td>
+<td>The outbound behavior was real; calling it a broken player was subjective.</td>
+<td>Instagram remains outbound. Player-style controls were replaced by an external-link treatment and explicit <code>Open original on Instagram</code> copy.</td>
+</tr>
+<tr>
+<td>07 TikTok and privacy</td>
+<td>Partly confirmed as a transparency gap; categorical cookie or tracking claims were not established.</td>
+<td>TikTok remains click-gated, with a pre-activation disclosure and original-link fallback. The iframe retains <code>referrerPolicy=&quot;strict-origin-when-cross-origin&quot;</code> because the automated player test cannot establish real cross-browser playback under <code>no-referrer</code>; no sandbox was added. <code>/privacy</code> explains local previews, outbound Instagram, activated TikTok, and Vercel Web Analytics.</td>
+</tr>
+<tr>
+<td>08 Exercise facts</td>
+<td>Mixed, with a high data-quality risk. Missing cues were incomplete rather than necessarily wrong; one clean was demonstrably mis-tagged.</td>
+<td>Routed the options-oriented clean source to coaching, removed implicit Bodyweight fallback from both ingestion paths, reviewed every public classification and destination, and recorded exact exercise metadata in the curation ledger. Explicitly loaded titles receive evidence-backed equipment or a documented review exception; empty equipment remains honest only when evidence is inconclusive. Cues remain optional and only ledger-reviewed cues may publish. <code>Core</code> remains valid as both a category and muscle, with namespaced filter labels.</td>
+</tr>
+<tr>
+<td>09 Headers and SEO</td>
+<td>Mixed. Hardening headers and robots were missing, HSTS and sitemap were already present, and public-document CORS was not independently a vulnerability.</td>
+<td>Added enforced CSP, <code>nosniff</code>, strict-origin referrer policy, anti-framing controls, and a restrictive permissions policy. TikTok frames are allowed only when the request slug is a catalog-backed current exercise or coaching detail; missing detail URLs and every list, policy, and recovery response deny child frames. Added robots metadata and expanded the sitemap to every canonical public directory, policy, exercise, and coaching route.</td>
+</tr>
+<tr>
+<td>10 Clear controls and navigation</td>
+<td>Confirmed; reduced motion was the material accessibility gap.</td>
+<td>Preserved semantic <code>type=&quot;search&quot;</code>, hid WebKit&#39;s native cancel affordance, and retained one authored clear button. Navigation marks exercise details as Directory and coaching details as Coaching. Reduced-motion CSS disables smooth scrolling, animations, hover transforms, and long transitions.</td>
+</tr>
+<tr>
+<td>11 Title and filter layout</td>
+<td>Confirmed with viewport qualifications.</td>
+<td>Compacted the detail hero, removed duplicate pre-video metadata, and capped title size with <code>clamp()</code>. The longest title exposes its first media control within a 1280x900 viewport. Closed mobile filters have no full-width tray chrome and wrap cleanly at 320 px.</td>
+</tr>
+<tr>
+<td>12 Generic 404</td>
+<td>Confirmed.</td>
+<td>Added a branded true-404 recovery page with exercise and coaching links plus a plain GET search form using <code>q</code>.</td>
+</tr>
+</tbody></table>
+<h2 id="public-contracts">Public contracts</h2>
+<ul>
+<li><code>/</code> is the exercise directory; <code>/coaching</code> is a separate reviewed coaching
+directory. Detail routes are <code>/exercise/[id]</code> and <code>/coaching/[id]</code>.</li>
+<li>Every exercise slug in the reviewed <code>7d059a7</code> baseline has an explicit
+disposition. Current slugs render normally; a single reviewed destination
+receives a permanent redirect; split legacy groups render a noindex chooser;
+fully excluded groups render a noindex recovery page. Unknown slugs remain
+true 404 responses. Normalized directory state survives redirects and
+chooser links without leaking incompatible section filters.</li>
+<li>Exercise query keys are <code>q</code>, repeated <code>category</code>, <code>muscle</code>, <code>equipment</code>,
+<code>source</code>, and <code>creator</code>, plus <code>page</code>. Coaching uses <code>q</code>, repeated <code>topic</code>,
+<code>source</code>, and <code>creator</code>, plus <code>page</code>.</li>
+<li>Queries are whitespace-normalized and capped at 100 characters. Repeated
+values are deduplicated, unknown filter values are discarded, and pages are
+clamped to available results.</li>
+<li><code>page</code> is the requested 24-item batch count, not an item offset. The server
+emits at most one bounded 24-item window; JavaScript reconstructs accumulated
+batches, while no-JavaScript navigation advances through bounded windows.</li>
+<li><code>GET /api/directory?section=exercise|coaching&amp;...</code> returns compact public card
+summaries, result and page metadata, normalized query state, filter options,
+and directory statistics. It never returns the full catalog records.</li>
+<li><code>data/catalog-curation.json</code> is the video-ID-keyed decision ledger.
+Decisions are <code>exercise</code>, <code>coaching</code>, or <code>exclude</code>; every exclusion has a
+reason. <code>src/data/coaching.json</code> uses controlled topics:
+<code>movement-technique</code>, <code>class-delivery</code>, <code>programming</code>, and
+<code>safety-and-modifications</code>.</li>
+</ul>
+<h2 id="catalog-disposition">Catalog disposition</h2>
+<p>The pre-remediation public source scope contained 1,309 groups and 2,072
+videos. The reviewed public and audit-only disposition is:</p>
+<table>
+<thead>
+<tr>
+<th>Destination</th>
+<th align="right">Records</th>
+<th align="right">Videos</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Public exercise directory</td>
+<td align="right">765</td>
+<td align="right">1,383</td>
+</tr>
+<tr>
+<td>Public coaching directory</td>
+<td align="right">515</td>
+<td align="right">655</td>
+</tr>
+<tr>
+<td>Exclusions from the 2,072-video public baseline</td>
+<td align="right">34 decisions</td>
+<td align="right">34</td>
+</tr>
+<tr>
+<td><strong>Accounted original public baseline</strong></td>
+<td align="right"></td>
+<td align="right"><strong>2,072</strong></td>
+</tr>
+<tr>
+<td>Additional migrated legacy-refresh exclusions</td>
+<td align="right">9 decisions</td>
+<td align="right">9</td>
+</tr>
+<tr>
+<td><strong>Durable decision ledger</strong></td>
+<td align="right"><strong>2,081 decisions</strong></td>
+<td align="right"><strong>2,081</strong></td>
+</tr>
+</tbody></table>
+<p>Across the full ledger, the 43 exclusions comprise 18 events, 12 unusable
+sources, six promotions, four milestones, and three personal posts. They remain
+auditable in curation but are absent from public catalogs and public canonical
+thumbnail assets.</p>
+<h2 id="integrity-and-refresh-behavior">Integrity and refresh behavior</h2>
+<p>The incremental importer never publishes or rejects a newly observed video from
+heuristics alone. Unresolved candidates persist in a video-ID-keyed review
+queue without blocking unrelated reviewed work; source checkpoints advance only
+after every scanned candidate is public, excluded, or durably queued. Curation
+reconciliation can move existing videos between sections, merge destinations,
+repair metadata, or exclude them, and it reapplies destination metadata
+independently so later regeneration cannot restore a superseded legacy value.</p>
+<p>Apply mode holds one stable repository lock through the source transaction,
+thumbnail work, and integrity gate. A transaction journal and same-directory
+staging files provide crash recovery across exercise, coaching, queue, report,
+and state replacements. Dry runs fail closed when recovery is pending and never
+write. The legacy override maps are empty and integrity-rejected if reused.</p>
+<p>Every public video has one matching curation decision; every public exercise
+and coaching destination has exact reviewed metadata. Exercise muscle lists are
+nonempty, Bodyweight requires explicit reviewed provenance, published cues must
+match the reviewed cue ledger, and explicit-load titles must have reviewed
+equipment or a controlled evidence note.</p>
+<p>Historical route integrity is deterministic and release-gated. The immutable
+baseline projection contains all 1,309 prior slugs and 2,072 prior public video
+IDs. Of those slugs, 714 remain canonical, 546 permanently redirect, 18 use a
+reviewed split chooser, and 31 use reviewed-removal recovery. The derived route
+ledger must match current curation exactly before a build can pass.</p>
+<p>The thumbnail worker covers both public catalogs in one canonical run. It
+reports 2,037 exact local thumbnails and one explicit local fallback across
+2,038 public videos, with no remote or empty references. It narrowly prunes
+only assets proven excluded by curation; the fallback itself carries the
+unofficial label.</p>
+<h2 id="verification-contract">Verification contract</h2>
+<p>Release verification covers:</p>
+<ul>
+<li>catalog, refresh, directory-query, thumbnail, documentation, security,
+lint, type, and production-build checks;</li>
+<li>Chromium and WebKit at 1280x900, 390x844, and 320x844, plus Chromium
+reduced-motion behavior and JavaScript-disabled paging;</li>
+<li>24/48 paging, search/filter parity, URL Back/Forward/refresh/share state,
+stale-response and click-during-loading safety, single search clear, branding,
+section-aware navigation, longest-title layout, mobile filtering, coaching
+separation, historical redirects/recovery, privacy, media request gates,
+custom 404 recovery, security headers, robots, and exact sitemap membership;</li>
+<li>absence of full-catalog sentinels in the home response and client chunks;</li>
+<li>no Instagram or TikTok request before user action, plus TikTok player
+activation and iframe loading, focus, fullscreen allowance, fallback link,
+referrer policy, and route CSP. The intercepted automated player does not
+establish live third-party playback or actual fullscreen operation.</li>
+</ul>
+  </main>
+</body>
+</html>

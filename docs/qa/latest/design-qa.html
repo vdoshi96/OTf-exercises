@@ -6,8 +6,8 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: https:; style-src 'unsafe-inline'">
   <meta name="generator" content="otf-docs-parity/v1">
   <meta name="doc-source" content="docs/qa/latest/design-qa.md">
-  <meta name="doc-source-sha256" content="0cd8e03f9cc1f68570b90a876d04e425b1c58fc7f1fd096a2da48897b1a46a87">
-  <title>Design QA — 2026-08-14 creator refresh</title>
+  <meta name="doc-source-sha256" content="de8e6dc0129fb21259e715b43668dff89e063a2e40e9de385c2157880dc5fcbe">
+  <title>Design QA — 2026-08-14 web audit remediation</title>
   <style>
     :root {
       color-scheme: light dark;
@@ -86,83 +86,145 @@
 </head>
 <body>
   <main>
-<h1 id="design-qa-2026-08-14-creator-refresh">Design QA — 2026-08-14 creator refresh</h1>
+<h1 id="design-qa-2026-08-14-web-audit-remediation">Design QA — 2026-08-14 web audit remediation</h1>
 <p><strong>Final result: PASSED</strong></p>
 <h2 id="scope">Scope</h2>
-<p>This refresh preserves the existing visual design and interaction model while
-adding the latest reviewed creator videos. QA focused on catalog completeness,
-new-video presentation, local thumbnail coverage, responsive behavior, filter
-interactions, detail routes, and video activation.</p>
-<h2 id="mobile-comparisons">Mobile comparisons</h2>
-<p>The historical 375 × 812 baseline captures remain included for design context.
-The current implementation evidence uses a 390 × 844 CSS viewport; the browser
-suite also covers a 320px overflow viewport.</p>
-<table>
-<thead>
-<tr>
-<th>State</th>
-<th>Historical baseline</th>
-<th>Current implementation</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Directory</td>
-<td><img src="baseline-directory-mobile.png" alt="Baseline mobile directory"></td>
-<td><img src="mobile-directory-390x844.png" alt="Current mobile directory"></td>
-</tr>
-<tr>
-<td>Filters open</td>
-<td><img src="baseline-filters-mobile.png" alt="Baseline inline filters"></td>
-<td><img src="mobile-filters-390x844.png" alt="Current filter bottom sheet"></td>
-</tr>
-<tr>
-<td>Exercise detail</td>
-<td><img src="baseline-detail-mobile.png" alt="Baseline mobile detail"></td>
-<td><img src="mobile-detail-390x844.png" alt="Current refreshed detail"></td>
-</tr>
-</tbody></table>
-<h2 id="additional-evidence">Additional evidence</h2>
+<p>This is the newest QA record for the web-audit remediation. It covers the
+unofficial identity, reviewed exercise/coaching separation, bounded server
+paging, URL state, historical exercise links, mobile filtering, compact detail
+layout, outbound Instagram treatment, click-gated TikTok, privacy and recovery
+routes, reduced motion, catalog-backed security policy, robots, and exact
+sitemap coverage.</p>
+<p>The screenshots below are the retained newest evidence set, captured from the
+same final local production build used by the passing Chromium and WebKit
+matrix. Each image was visually inspected after capture; older completed-run
+evidence was removed.</p>
+<h2 id="annotated-visual-evidence">Annotated visual evidence</h2>
+<h3 id="1-desktop-exercise-directory-1280-900">1. Desktop exercise directory — 1280 × 900</h3>
+<p><img src="desktop-directory-1280x900.png" alt="Desktop exercise directory"></p>
+<p>Annotations:</p>
+<ol>
+<li>The retained official logo is immediately paired with the visible
+<code>UNOFFICIAL FAN DIRECTORY</code> identity.</li>
+<li>The hero reports the reviewed public scope: 765 exercises and 1,383 videos.</li>
+<li>The closed filter control occupies only its useful toolbar area.</li>
+<li><code>Showing 24 of 765</code> makes the universal 24-item first batch explicit.</li>
+<li>Four compact cards fit across the first desktop row without rendering the
+full catalog.</li>
+</ol>
+<h3 id="2-mobile-exercise-directory-390-844">2. Mobile exercise directory — 390 × 844</h3>
+<p><img src="mobile-directory-390x844.png" alt="Mobile exercise directory"></p>
+<p>Annotations:</p>
+<ol>
+<li>Both <code>Unofficial fan directory</code> and <code>Exercise Directory</code> remain visible at
+the mobile breakpoint.</li>
+<li>Search retains semantic mobile sizing while the authored Filters button
+shrinks to content and wraps below it.</li>
+<li>The first batch count remains 24, matching desktop.</li>
+<li>Cards use a compact horizontal presentation with local previews and reviewed
+equipment labels or an honest unspecified state.</li>
+</ol>
+<h3 id="3-mobile-filter-dialog-390-844">3. Mobile filter dialog — 390 × 844</h3>
+<p><img src="mobile-filters-390x844.png" alt="Mobile filter dialog"></p>
+<p>Annotations:</p>
+<ol>
+<li>The closed page has no full-width filter tray; a modal bottom sheet appears
+only after activation.</li>
+<li>Category, muscle, equipment, source, and creator dimensions remain separate.</li>
+<li>Controls meet the mobile touch-target and focus-return checks.</li>
+<li>Clear and result actions stay visible above the safe-area inset.</li>
+</ol>
+<h3 id="4-longest-exercise-title-390-844">4. Longest exercise title — 390 × 844</h3>
+<p><img src="mobile-longest-detail-390x844.png" alt="Longest-title exercise detail"></p>
+<p>Annotations:</p>
+<ol>
+<li>Responsive <code>clamp()</code> sizing remains legible without horizontal overflow.</li>
+<li>Duplicate pre-video metadata is absent from the hero.</li>
+<li>The Video library and first source control appear within the initial mobile
+viewport, before secondary metadata in DOM and visual order.</li>
+<li>Instagram is identified as a source and links outward rather than mimicking
+an inline player.</li>
+</ol>
+<h3 id="5-separate-coaching-directory-390-844">5. Separate coaching directory — 390 × 844</h3>
+<p><img src="mobile-coaching-390x844.png" alt="Mobile coaching directory"></p>
+<p>Annotations:</p>
+<ol>
+<li>The active Coaching tab and <code>SEPARATE FROM THE EXERCISE DIRECTORY</code> label make
+the content boundary explicit.</li>
+<li>The page reports 515 reviewed resources and 655 videos.</li>
+<li>Coaching cards expose controlled topics and never invent exercise muscles or
+equipment.</li>
+<li>Coaching search and filtering use the same 24-item URL-backed paging model.</li>
+</ol>
+<h2 id="catalog-and-integrity-findings">Catalog and integrity findings</h2>
 <ul>
-<li><a href="desktop-directory-1280x900.png">Desktop directory</a></li>
-<li><a href="mobile-tiktok-active-390x844.png">Activated mobile TikTok player</a></li>
-<li><a href="thumbnail-report.json">Thumbnail coverage report</a></li>
-</ul>
-<h2 id="refresh-findings">Refresh findings</h2>
-<ul>
-<li>All 43 discovered posts were reviewed: 41 exercise videos were accepted and
-2 non-exercise posts were rejected.</li>
-<li>The catalog increased from 1,286 to 1,309 exercise groups and from 2,031 to
-2,072 videos. New posts were assigned to existing groups where the movement
-matched and retained as distinct exercises where appropriate.</li>
-<li>All 41 new thumbnails were recovered locally. The complete catalog has 2,071
-exact local thumbnails and one pre-existing explicit local fallback, with no
-remote or empty thumbnail references.</li>
-<li>A full HTTP crawl returned valid content for all 1,310 sitemap URLs and all
-2,072 unique thumbnail URLs.</li>
-<li>The refreshed directory counts, filters, result cards, and new exercise
-detail page render correctly at desktop and mobile sizes. No horizontal
-overflow was found at 390px or 320px.</li>
-<li>TikTok activation inserts the responsive player and retains the original-post
-link. The live third-party iframe emitted TikTok-owned policy and media
-warnings in the test browser; first-party app behavior and the isolated embed
-integration checks passed.</li>
+<li>Two independent all-catalog semantic passes plus targeted thumbnail review
+produced one durable decision for every public video: 1,383 exercise, 655
+coaching, and 43 controlled exclusions. The ledger contains 2,081 decisions
+because it also preserves nine preexisting legacy-refresh exclusions outside
+the 2,072-video public baseline.</li>
+<li>Every one of the 765 exercise groups and 515 coaching resources has exact
+reviewed destination metadata. Public exercises have no <code>other</code> category,
+blank muscle list, duplicate normalized title, or unreviewed cue.</li>
+<li>Implicit Bodyweight fallback is gone. Weighted-title contradictions were
+reviewed from local evidence; the final detector has only three controlled
+<code>support-only-is-complete</code> exceptions (two bench-supported movements and one
+BOSU-as-load movement).</li>
+<li>Exercises, coaching, and 34 baseline exclusions account for all 2,072
+original public video IDs. Nine additional historical refresh exclusions are
+now migrated into the same controlled ledger.</li>
+<li>Public media has 2,037 exact local thumbnails plus one explicit local
+fallback, with no remote or empty references. The fallback visibly says
+<code>UNOFFICIAL FAN DIRECTORY</code>; excluded canonical assets are not shipped.</li>
+<li>All 1,309 baseline exercise slugs remain resolved: 714 are still canonical,
+546 permanently redirect, 18 render split choosers, and 31 render
+reviewed-removal recovery pages. Unknown slugs remain true 404s.</li>
+<li>The unresolved review queue and all legacy override maps are empty. The
+refresh journal is idle and the stable lock covers importer, thumbnail, and
+integrity work.</li>
 </ul>
 <h2 id="automated-verification">Automated verification</h2>
+<p>All release checks passed:</p>
 <ul>
-<li>Catalog, data, thumbnail, documentation, type, and lint checks: passed</li>
-<li>Next.js production build with the documented Webpack fallback: passed</li>
-<li>Static output generated: 1,314 pages, including all 1,309 exercise routes</li>
-<li>Chromium desktop 1280 × 900: passed</li>
-<li>Chromium mobile 390 × 844: passed</li>
-<li>Chromium mobile 320 × 844: passed</li>
-<li>WebKit mobile 390 × 844: passed</li>
-<li>Catalog routes in sitemap: 1,309 of 1,309</li>
-<li>First-party browser console, page, request, and HTTP failure checks: passed</li>
+<li>Refresh and transaction tests: 26 passed.</li>
+<li>Directory query and search tests: 9 passed.</li>
+<li>Security and trust-copy tests: 5 passed.</li>
+<li>Thumbnail tests: 15 passed.</li>
+<li>Catalog plus historical-route tests: 11 passed; the live integrity gate
+reports 765 exercise groups, 515 coaching resources, 43 exclusions, and 2,038
+unique public thumbnails.</li>
+<li>Deterministic historical-route regeneration/check: passed for 595 mapped
+legacy slugs.</li>
+<li>Documentation tests: 9 passed; canonical HTML parity passed for all 26
+project-owned documentation sources.</li>
+<li>Default lint, TypeScript, Python syntax, shell syntax, and diff checks passed.</li>
+<li>The Next.js 16.3.0 Webpack production build compiled and typechecked 1,884
+static pages. The canonical Turbopack worker could not bind its local CSS
+helper in this managed host sandbox (<code>EPERM</code>); this was an environment limit,
+not an application compile failure.</li>
+<li>Chromium and WebKit passed at 1280×900, 390×844, and 320×844; Chromium also
+passed the reduced-motion and JavaScript-disabled variants.</li>
+<li>Browser assertions passed for 24/48 paging; Cardio search/filter parity;
+alias and match-reason behavior;
+malformed/repeated URL canonicalization; Back, Forward, refresh, share, and
+detail-back restoration; rapid-input stale-response protection; click-during-
+loading URL authority; Load more focus; one authored search clear; active
+navigation; longest-title layout; filter-dialog focus/touch targets;
+historical redirect/split/removal routes; custom true 404; privacy; media
+request gates; and absence of full-catalog home/client sentinels.</li>
+<li>JavaScript-disabled assertions passed for second-to-last and terminal paging
+in both sections plus hostile <code>page=100</code> HTML, DOM, and standalone RSC bounds.</li>
+<li>HTTP assertions passed for home, current and missing details, legacy outcomes,
+coaching, privacy, robots, the exact 1,283-URL canonical sitemap, and default
+<code>frame-src &#39;none&#39;</code> on every missing/recovery response.</li>
 </ul>
-<p>The managed test environment prevents the default Turbopack CSS worker from
-binding its local port. The supported <code>next build --webpack</code> production path
-completed successfully, so this is recorded as an environment limitation rather
-than an application failure.</p>
+<h2 id="bounded-media-claim">Bounded media claim</h2>
+<p>Automated TikTok checks use a locally intercepted player document to verify the
+activation gate, one outbound player request, iframe attributes, focus,
+responsiveness, strict-origin referrer policy, and fullscreen permission in
+both engines. They do not prove third-party playback or actual fullscreen
+operation, so this QA record makes no such claim. Instagram is verified as an
+explicit outbound action with no pre-activation third-party request.</p>
   </main>
 </body>
 </html>

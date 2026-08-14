@@ -30,6 +30,7 @@ const DOCUMENTATION_EXTENSIONS = new Set([
   ...PLAIN_TEXT_EXTENSIONS,
   ...STRUCTURED_UNSUPPORTED_EXTENSIONS,
 ]);
+const MACHINE_DATA_PATHS = new Set(["data/catalog-baseline-video-ids.txt"]);
 const EXTENSIONLESS_DOCUMENTATION = /^(?:AGENTS|ARCHITECTURE|AUTHORS|CHANGELOG|CHANGES|CLAUDE|CODE_OF_CONDUCT|CODEX_HANDOFF|CONTRIBUTING|CONTRIBUTORS|COPYING|DEVELOPMENT|FAQ|GOVERNANCE|HANDBOOK|HISTORY|INSTALL|LICEN[CS]E|MAINTAINERS|MIGRATING|NOTICE|ONBOARDING|PLAYBOOK|README|RELEASE_NOTES|ROADMAP|RUNBOOK|SECURITY|STYLEGUIDE|SUPPORT|TODO|TROUBLESHOOTING|UPGRADING)(?:[-_].*)?$/i;
 
 const STYLE = `
@@ -143,6 +144,8 @@ function gitPaths(
 }
 
 export function isDocumentationSource(relativePath) {
+  if (MACHINE_DATA_PATHS.has(relativePath)) return false;
+
   const basename = path.posix.basename(relativePath);
   const extension = path.posix.extname(basename).toLowerCase();
 

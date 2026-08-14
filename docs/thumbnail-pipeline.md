@@ -1,6 +1,6 @@
 # Thumbnail Pipeline
 
-The catalogue stores durable local thumbnail paths. A video thumbnail must be
+The exercise and coaching catalogs store durable local thumbnail paths. A video thumbnail must be
 either a validated `/thumbs/...` asset or the shared
 `/thumbs/fallback-exercise.jpg`; remote CDN URLs and blank image states are not
 valid release output.
@@ -20,10 +20,10 @@ existence by itself is not considered a cache hit.
 
 For an unavailable post, the pipeline assigns
 `public/thumbs/fallback-exercise.jpg`. This is a deterministic 640x960,
-quality-72 progressive JPEG generated from the centered
-`public/otf-logo.svg` on `#111111`. The fallback is a presentation safeguard,
-not a permanent cache hit: the pipeline retries source recovery on every later
-run.
+quality-72 progressive JPEG generated from `public/otf-logo.svg` on `#111111`
+with a visible orange `UNOFFICIAL FAN DIRECTORY` panel. The fallback is a
+presentation and transparency safeguard, not a permanent cache hit: the
+pipeline retries source recovery on every later run.
 
 ## Integrity guarantees
 
@@ -44,12 +44,16 @@ Each remote candidate is handled as follows:
 5. Replace an unrecoverable remote or blank reference with the durable fallback
    and record the failure in the JSON report.
 
-The catalogue itself is also written atomically. Before committing it, the
-worker verifies that no other refresh process changed the source file while
+Both public catalogs are written atomically. Before committing either one, the
+worker verifies that no other refresh process changed its source file while
 downloads were running; if it did, the worker exits rather than overwriting the
 newer data.
 
-The pipeline does not delete orphaned images or reorder video arrays.
+Before processing public records, the pipeline removes only canonical image
+files whose video IDs have durable `exclude` decisions in
+`data/catalog-curation.json`. Other orphaned images are left untouched, and
+video arrays are never reordered. The report records the narrowly pruned
+filenames in `excluded_thumbnails_pruned`.
 
 ## Commands
 
@@ -73,11 +77,12 @@ node scripts/ensure-thumbnails.mjs --source tiktok --limit 10
 # Fixture/automation paths
 node scripts/ensure-thumbnails.mjs \
   --catalog /tmp/exercises.json \
+  --coaching-catalog /tmp/coaching.json \
   --thumbs-dir /tmp/thumbs \
   --report /tmp/thumbnail-report.json
 ```
 
-Other supported controls are `--concurrency`, `--between-items-ms`,
+Other supported controls are `--coaching-catalog`, `--concurrency`, `--between-items-ms`,
 `--attempts`, `--timeout-ms`, and `--no-report`. Run
 `node scripts/ensure-thumbnails.mjs --help` for the complete CLI reference.
 
@@ -90,10 +95,12 @@ run needs its own artifact.
 
 ## Report and release checks
 
-Normal runs write `docs/qa/latest/thumbnail-report.json`. It includes before and
-after coverage, per-platform statuses, fallback-generation provenance, options,
-and per-video failure reasons. A dry run writes no report unless the caller
-chooses a separate automation around the returned output.
+Normal runs write `docs/qa/latest/thumbnail-report.json`. The canonical report
+covers every public exercise and coaching video together. It includes before
+and after coverage, catalog membership, per-platform statuses,
+fallback-generation provenance, options, and per-video failure reasons. A dry
+run writes no report unless the caller chooses a separate automation around the
+returned output.
 
 Run the focused suite after changing this worker:
 
@@ -108,4 +115,5 @@ Before release, verify the report and catalogue show:
 - every referenced local file is present and decodable;
 - no known Instagram error-logo hash;
 - every fallback assignment has a corresponding report entry;
+- no curation-proven excluded thumbnail remains under `public/thumbs`;
 - the app build and mobile visual checks pass.

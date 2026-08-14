@@ -1,42 +1,39 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-
 interface SearchBarProps {
-  onSearch: (query: string) => void;
+  value: string;
+  onChange: (query: string) => void;
+  onSubmit: () => void;
+  onClear: () => void;
   resultCount: number;
   totalCount: number;
+  isLoading?: boolean;
+  itemNoun: string;
 }
 
 export default function SearchBar({
-  onSearch,
+  value,
+  onChange,
+  onSubmit,
+  onClear,
   resultCount,
   totalCount,
+  isLoading = false,
+  itemNoun,
 }: SearchBarProps) {
-  const [value, setValue] = useState("");
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
-
-  useEffect(() => {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
-      onSearch(value);
-    }, 200);
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-    };
-  }, [value, onSearch]);
-
+  const searchLabel = `Search ${itemNoun}`;
   return (
     <form
       className="w-full"
       role="search"
+      aria-busy={isLoading}
       onSubmit={(event) => {
         event.preventDefault();
-        onSearch(value);
+        onSubmit();
       }}
     >
       <label htmlFor="exercise-search" className="sr-only">
-        Search exercises
+        {searchLabel}
       </label>
       <div className="relative flex min-h-12 overflow-hidden rounded-lg border border-white/15 bg-[#111313]/90 shadow-2xl shadow-black/30 transition focus-within:border-orange-400 focus-within:ring-2 focus-within:ring-orange-500/30 sm:min-h-14">
         <svg
@@ -57,16 +54,16 @@ export default function SearchBar({
           id="exercise-search"
           type="search"
           value={value}
-          onChange={(e) => setValue(e.target.value)}
-          placeholder="Search exercises…"
-          className="min-w-0 flex-1 bg-transparent py-3 pl-11 pr-11 text-base font-medium text-stone-50 outline-none placeholder:text-stone-500 sm:py-4 sm:pl-14 sm:text-lg"
+          onChange={(event) => onChange(event.target.value)}
+          placeholder="Search directory…"
+          className="search-input min-w-0 flex-1 bg-transparent py-3 pl-11 pr-12 text-base font-medium text-stone-50 outline-none placeholder:text-stone-500 sm:py-4 sm:pl-14 sm:pr-44 sm:text-lg"
         />
         {value && (
           <button
             type="button"
             aria-label="Clear search"
-            onClick={() => setValue("")}
-            className="absolute right-32 top-1/2 -translate-y-1/2 rounded-md p-1 text-stone-500 transition hover:bg-white/10 hover:text-orange-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 max-sm:right-4"
+            onClick={onClear}
+            className="absolute right-32 top-1/2 flex min-h-11 min-w-11 -translate-y-1/2 items-center justify-center rounded-md text-stone-500 transition hover:bg-white/10 hover:text-orange-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 max-sm:right-1"
           >
             <svg
               aria-hidden="true"
@@ -94,7 +91,7 @@ export default function SearchBar({
       <p className="sr-only" aria-live="polite">
         {value
           ? `${resultCount} result${resultCount !== 1 ? "s" : ""} found`
-          : `${totalCount} exercises`}
+          : `${totalCount} ${itemNoun}`}
       </p>
     </form>
   );

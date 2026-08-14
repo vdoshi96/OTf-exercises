@@ -1,16 +1,37 @@
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import exercises from "@/data/exercises.json";
-import type { GroupedExercise } from "@/lib/types";
+import legacyExerciseRoutesJson from "@/data/legacy-exercise-routes.json";
+import type {
+  DirectoryQuery,
+  DirectorySection,
+  GroupedExercise,
+  LegacyExerciseRoute,
+  LegacyExerciseRouteLedger,
+  LegacyExerciseRouteTarget,
+} from "@/lib/types";
 import { CATEGORY_LABELS } from "@/lib/types";
 import { getExerciseCreators } from "@/lib/search";
+import { getDirectoryResponse } from "@/lib/directory";
+import {
+  directoryDetailHref,
+  directoryPageHref,
+  parseDirectoryQuery,
+  type DirectorySearchParams,
+} from "@/lib/query";
+import { DirectoryBackLink } from "@/components/SiteNav";
 import VideoEmbed from "@/components/VideoEmbed";
 
 const allExercises = exercises as GroupedExercise[];
+const legacyExerciseRouteLedger =
+  legacyExerciseRoutesJson as LegacyExerciseRouteLedger;
+const legacyExerciseRoutes = legacyExerciseRouteLedger.routes;
 
 interface PageProps {
   params: Promise<{ id: string }>;
+  searchParams: Promise<DirectorySearchParams>;
 }
 
 function formatCreatorHandle(handle: string) {
@@ -21,8 +42,103 @@ function formatValue(value: string) {
   return value.replace(/_/g, " ");
 }
 
-export async function generateStaticParams() {
-  return allExercises.map((ex) => ({ id: ex.id }));
+export function generateStaticParams() {
+  return [
+    ...allExercises.map((exercise) => exercise.id),
+    ...Object.keys(legacyExerciseRoutes),
+  ].map((id) => ({ id }));
+}
+
+function normalizedDirectoryQuery(
+  searchParams: DirectorySearchParams,
+  section: DirectorySection,
+): DirectoryQuery {
+  const requested = parseDirectoryQuery(searchParams, section);
+  return getDirectoryResponse(requested, requested.page, "window").query;
+}
+
+function targetHref(
+  target: LegacyExerciseRouteTarget,
+  queries: Record<DirectorySection, DirectoryQuery>,
+) {
+  return directoryDetailHref(queries[target.kind], target.id);
+}
+
+function LegacyExerciseRecovery({
+  route,
+  queries,
+}: {
+  route: LegacyExerciseRoute;
+  queries: Record<DirectorySection, DirectoryQuery>;
+}) {
+  const exerciseDirectoryHref =
+    directoryPageHref("/", queries.exercise) + "#directory";
+  const coachingDirectoryHref =
+    directoryPageHref("/coaching", queries.coaching) + "#directory";
+  const wasSplit = route.outcome === "split";
+
+  return (
+    <div className="mx-auto flex min-h-[60vh] max-w-4xl items-center px-4 py-12 sm:px-6 lg:px-8">
+      <div className="w-full rounded-lg border border-white/10 bg-[#101111]/85 p-6 shadow-2xl shadow-black/20 sm:p-10">
+        <p className="text-sm font-bold uppercase tracking-[0.14em] text-orange-500">
+          Reviewed legacy listing
+        </p>
+        <h1 className="font-display display-tight mt-2 text-4xl font-semibold text-stone-50 sm:text-5xl">
+          {route.legacy_title}
+        </h1>
+        <p className="mt-4 max-w-3xl leading-7 text-stone-300">
+          {wasSplit
+            ? "This former listing covered more than one movement or coaching topic. It has been separated into the reviewed destinations below."
+            : "This former listing is no longer published as an exercise after review. Browse the current exercise and coaching directories instead."}
+        </p>
+
+        {wasSplit ? (
+          <section aria-labelledby="legacy-destinations" className="mt-8">
+            <h2
+              id="legacy-destinations"
+              className="font-display display-tight text-2xl font-semibold text-stone-50"
+            >
+              Reviewed destinations
+            </h2>
+            <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+              {route.targets.map((target) => (
+                <li key={`${target.kind}:${target.id}`}>
+                  <Link
+                    href={targetHref(target, queries)}
+                    className="block h-full rounded-md border border-white/10 bg-[#181919] p-4 transition hover:border-orange-500/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-400"
+                  >
+                    <span className="text-xs font-bold uppercase tracking-[0.1em] text-orange-400">
+                      {target.kind === "exercise"
+                        ? "Exercise"
+                        : "Coaching resource"}
+                    </span>
+                    <span className="mt-1 block font-semibold text-stone-100">
+                      {target.title}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+
+        <div className="mt-7 flex flex-wrap gap-x-5 gap-y-2">
+          <Link
+            href={exerciseDirectoryHref}
+            className="inline-flex min-h-11 items-center rounded-md text-sm font-semibold text-orange-300 underline decoration-orange-500/50 underline-offset-4 transition hover:text-orange-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-400"
+          >
+            Browse current exercises
+          </Link>
+          <Link
+            href={coachingDirectoryHref}
+            className="inline-flex min-h-11 items-center rounded-md text-sm font-semibold text-orange-300 underline decoration-orange-500/50 underline-offset-4 transition hover:text-orange-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-400"
+          >
+            Browse coaching resources
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export async function generateMetadata({
@@ -30,15 +146,36 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const { id } = await params;
   const exercise = allExercises.find((ex) => ex.id === id);
-  if (!exercise) return { title: "Exercise Not Found" };
+  if (!exercise) {
+    const legacyRoute = legacyExerciseRoutes[id];
+    if (!legacyRoute) return { title: "Exercise Not Found" };
+    const redirectTarget =
+      legacyRoute.outcome === "redirect" ? legacyRoute.targets[0] : undefined;
+    return {
+      title: redirectTarget?.title ?? legacyRoute.legacy_title,
+      description:
+        legacyRoute.outcome === "split"
+          ? "This former exercise listing has been separated into reviewed exercise and coaching destinations."
+          : legacyRoute.outcome === "removed"
+            ? "This former exercise listing is no longer published after catalog review."
+            : `This former exercise URL now points to ${redirectTarget?.title}.`,
+      robots: { index: false, follow: true },
+      ...(redirectTarget
+        ? { alternates: { canonical: redirectTarget.path } }
+        : {}),
+    };
+  }
 
-  const muscleList = exercise.muscle_groups.join(", ");
+  const muscleList =
+    exercise.muscle_groups.length > 0
+      ? exercise.muscle_groups.join(", ")
+      : "muscle groups not yet specified";
   const videoCount = exercise.videos.length;
   return {
     title: exercise.exercise_name,
-    description: `${exercise.exercise_name} — ${CATEGORY_LABELS[exercise.category] || exercise.category} exercise targeting ${muscleList}. ${videoCount} video demo${videoCount > 1 ? "s" : ""} in the OTF Exercise Directory.`,
+    description: `${exercise.exercise_name} — ${CATEGORY_LABELS[exercise.category] || exercise.category} exercise targeting ${muscleList}. ${videoCount} video demo${videoCount > 1 ? "s" : ""} in the unofficial OTF Exercise Directory.`,
     openGraph: {
-      title: `${exercise.exercise_name} | OTF Exercise Directory`,
+      title: `Unofficial OTF Exercise Directory | ${exercise.exercise_name}`,
       description: `${exercise.exercise_name} targeting ${muscleList}. Watch ${videoCount} video demo${videoCount > 1 ? "s" : ""} in this unofficial fan directory.`,
       ...(exercise.videos[0]?.thumbnail
         ? { images: [exercise.videos[0].thumbnail] }
@@ -47,99 +184,66 @@ export async function generateMetadata({
   };
 }
 
-export default async function ExerciseDetailPage({ params }: PageProps) {
+export default async function ExerciseDetailPage({
+  params,
+  searchParams,
+}: PageProps) {
   const { id } = await params;
   const exercise = allExercises.find((ex) => ex.id === id);
 
-  if (!exercise) notFound();
+  if (!exercise) {
+    const legacyRoute = legacyExerciseRoutes[id];
+    if (!legacyRoute) notFound();
+
+    const rawSearchParams = await searchParams;
+    if (legacyRoute.outcome === "redirect") {
+      const target = legacyRoute.targets[0];
+      const query = normalizedDirectoryQuery(rawSearchParams, target.kind);
+      permanentRedirect(directoryDetailHref(query, target.id));
+    }
+
+    const queries = {
+      exercise: normalizedDirectoryQuery(rawSearchParams, "exercise"),
+      coaching: normalizedDirectoryQuery(rawSearchParams, "coaching"),
+    };
+    return <LegacyExerciseRecovery route={legacyRoute} queries={queries} />;
+  }
 
   const categoryLabel =
     CATEGORY_LABELS[exercise.category] || exercise.category;
   const creators = getExerciseCreators(exercise);
   const sourceCount = new Set(exercise.videos.map((video) => video.source))
     .size;
-  const muscleSummary = exercise.muscle_groups.join(", ");
-  const equipmentSummary =
-    exercise.equipment.length > 0
-      ? exercise.equipment.join(", ")
-      : "Bodyweight";
-  const creatorSummary =
-    creators.length > 0
-      ? `${creators.length} creator${creators.length === 1 ? "" : "s"}`
-      : "Creator pending";
+  const backLinkClassName =
+    "mb-3 inline-flex min-h-11 items-center gap-2 rounded-md text-sm font-semibold text-orange-400 transition hover:text-orange-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-400 sm:mb-4 sm:min-h-0";
 
   return (
-    <div className="mx-auto max-w-[92rem] px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9">
-      <Link
-        href="/"
-        className="mb-5 inline-flex min-h-11 items-center gap-2 rounded-md text-sm font-semibold text-orange-400 transition hover:text-orange-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-400 sm:mb-8 sm:min-h-0"
+    <div className="mx-auto max-w-[92rem] px-4 py-4 sm:px-6 sm:py-5 lg:px-8 lg:py-6">
+      <Suspense
+        fallback={
+          <Link href="/#directory" className={backLinkClassName}>
+            Back to directory
+          </Link>
+        }
       >
-        <svg
-          aria-hidden="true"
-          className="h-4 w-4"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M15 19l-7-7 7-7"
-          />
-        </svg>
-        Back to directory
-      </Link>
+        <DirectoryBackLink className={backLinkClassName} />
+      </Suspense>
 
-      <section className="mb-6 grid gap-5 border-b border-white/10 pb-6 sm:mb-8 sm:gap-8 sm:pb-8 lg:grid-cols-[minmax(0,0.82fr)_minmax(520px,1fr)] lg:items-end">
+      <section className="mb-5 max-w-5xl border-b border-white/10 pb-5 sm:mb-6 sm:pb-6">
         <div>
           <span className="inline-block rounded-md text-sm font-bold uppercase text-orange-500">
             {categoryLabel}
           </span>
-          <h1 className="font-display display-tight mt-2 text-4xl font-semibold leading-[0.94] text-stone-50 sm:mt-3 sm:text-7xl sm:leading-[0.92] lg:text-8xl">
+          <h1 className="font-display display-tight mt-1 text-[clamp(2rem,4.2vw,3.5rem)] font-semibold leading-[0.98] text-stone-50 sm:mt-2">
             {exercise.exercise_name}
           </h1>
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-stone-300 sm:mt-4 sm:text-base sm:leading-7">
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-stone-300 sm:mt-3 sm:text-base sm:leading-7">
             {exercise.videos.length} video
             {exercise.videos.length > 1 ? "s" : ""} with creator attribution,
             movement metadata, and coaching context.
           </p>
         </div>
 
-        <div className="hidden gap-4 rounded-lg border border-white/10 bg-[#101111]/80 p-5 sm:grid sm:grid-cols-4">
-          <div className="border-white/10 sm:border-r sm:pr-4">
-            <p className="text-xs font-bold uppercase text-stone-500">
-              Movement Type
-            </p>
-            <p className="mt-2 text-sm font-semibold capitalize text-stone-100">
-              {formatValue(exercise.movement_type)}
-            </p>
-          </div>
-          <div className="border-white/10 sm:border-r sm:pr-4">
-            <p className="text-xs font-bold uppercase text-stone-500">
-              Muscle Groups
-            </p>
-            <p className="mt-2 text-sm font-semibold text-stone-100">
-              {muscleSummary}
-            </p>
-          </div>
-          <div className="border-white/10 sm:border-r sm:pr-4">
-            <p className="text-xs font-bold uppercase text-stone-500">
-              Equipment
-            </p>
-            <p className="mt-2 text-sm font-semibold text-stone-100">
-              {equipmentSummary}
-            </p>
-          </div>
-          <div>
-            <p className="text-xs font-bold uppercase text-stone-500">
-              Creators
-            </p>
-            <p className="mt-2 text-sm font-semibold text-stone-100">
-              {creatorSummary}
-            </p>
-          </div>
-        </div>
       </section>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px] xl:grid-cols-[minmax(0,1fr)_420px]">
@@ -225,7 +329,7 @@ export default async function ExerciseDetailPage({ params }: PageProps) {
                     ))
                   ) : (
                     <span className="rounded-md border border-white/10 bg-[#181919] px-2.5 py-1.5 text-xs font-medium text-stone-400">
-                      Bodyweight
+                      Equipment not specified
                     </span>
                   )}
                 </dd>

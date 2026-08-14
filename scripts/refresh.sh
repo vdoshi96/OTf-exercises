@@ -15,17 +15,9 @@ done
 cd "$PROJECT_DIR"
 
 echo "=== OTF Exercise Directory — Safe Incremental Refresh ==="
-python3 "$SCRIPT_DIR/refresh_incremental.py" "$@"
+python3 "$SCRIPT_DIR/run_refresh_workflow.py" "$@"
 
-if [[ "$APPLY" == true ]]; then
-  echo ""
-  echo "Self-hosting and validating thumbnails..."
-  node "$SCRIPT_DIR/ensure-thumbnails.mjs"
-
-  echo ""
-  echo "Checking catalog integrity..."
-  node "$SCRIPT_DIR/check_catalog_integrity.mjs" --latest-thumbnail-report
-else
+if [[ "$APPLY" == false ]]; then
   echo ""
   echo "No tracked files were changed. Re-run with --apply after reviewing the dry run."
 fi

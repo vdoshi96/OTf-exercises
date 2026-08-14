@@ -6,8 +6,8 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: https:; style-src 'unsafe-inline'">
   <meta name="generator" content="otf-docs-parity/v1">
   <meta name="doc-source" content="README.md">
-  <meta name="doc-source-sha256" content="955fbce6278bb78e85d8520615202ec917404b598183c37d0258888d55105306">
-  <title>OTF Exercise Directory</title>
+  <meta name="doc-source-sha256" content="e907f91b6ad01c406425d54b9614242dc5a0ff64e8af7d8da68233e0445ff977">
+  <title>Unofficial OTF Exercise Directory</title>
   <style>
     :root {
       color-scheme: light dark;
@@ -86,19 +86,35 @@
 </head>
 <body>
   <main>
-<h1 id="otf-exercise-directory">OTF Exercise Directory</h1>
-<p>A searchable, unofficial fan directory of OrangeTheory Fitness exercise demos from multiple creators and source platforms.</p>
-<p>Browse 2,072 exercise demonstrations across 1,309 grouped exercises, filterable by muscle group, equipment, category, platform, and creator. Each exercise links to the original source video.</p>
+<h1 id="unofficial-otf-exercise-directory">Unofficial OTF Exercise Directory</h1>
+<p>A searchable, unofficial fan directory of Orangetheory Fitness exercise demos
+and reviewed coaching resources from multiple creators and source platforms.</p>
+<p>Browse 1,383 demonstrations across 765 grouped exercises, or explore 655
+videos across 515 separately classified coaching resources. Exercise results
+can be searched or filtered by category, muscle group, equipment, platform, and
+creator; coaching results use reviewed topics instead of pretending to have
+exercise metadata.</p>
+<p>All 1,309 exercise slugs published by the reviewed <code>7d059a7</code> baseline remain
+resolvable: 714 are still canonical, 546 permanently redirect to one reviewed
+destination, 18 open a reviewed split-destination chooser, and 31 open a
+reviewed-removal recovery page. Unknown slugs remain true 404 responses.</p>
 <blockquote>
-<p><strong>Disclaimer:</strong> This is an unofficial fan directory. All video content belongs to its original creators and source platforms.</p>
+<p><strong>Disclaimer:</strong> This is an unofficial fan-made directory. It is not
+affiliated with, endorsed by, or operated by Orangetheory Fitness.
+Orangetheory, OTF, and related logos are trademarks of their owners. Video
+content belongs to its original creators and source platforms.</p>
 </blockquote>
 <h2 id="tech-stack">Tech Stack</h2>
 <ul>
 <li><strong>Framework:</strong> Next.js 16 (App Router)</li>
 <li><strong>Styling:</strong> Tailwind CSS 4</li>
-<li><strong>Search:</strong> Fuse.js (client-side fuzzy search)</li>
+<li><strong>Search:</strong> Fuse.js in a server-only directory module with URL-backed filters</li>
 <li><strong>Video Playback:</strong> Tap-to-play TikTok players and linked Instagram previews</li>
-<li><strong>Data:</strong> Static JSON bundled at build time (1,309 grouped exercises / 2,072 demos)</li>
+<li><strong>Data:</strong> Static reviewed exercise and coaching JSON, exposed to the client as
+compact 24-item summaries</li>
+<li><strong>Privacy and hardening:</strong> Click-gated third-party media, a public privacy
+explanation, route-aware CSP, anti-framing, MIME, referrer, and permissions
+headers</li>
 </ul>
 <h2 id="getting-started">Getting Started</h2>
 <pre><code class="language-bash">npm install
@@ -112,22 +128,31 @@ rate-limited scans do not alter the catalogue or advance source state.</p>
 <pre><code class="language-bash"># Check source completeness and candidate totals first; this writes nothing.
 npm run refresh
 
-# After item-level review is recorded in refresh-overrides.json, apply the
-# reviewed delta, backfill thumbnails, and run strict integrity checks.
+# After item-level review is recorded, apply the reviewed delta, backfill
+# thumbnails across both public catalogs, and run strict integrity checks.
 npm run refresh:apply
 </code></pre>
-<p>Per-source checkpoints live in <code>data/refresh-state.json</code>. Reviewed include,
-reject, title, and exact-group decisions live in
-<code>data/refresh-overrides.json</code>. Each applied run writes provenance and counts to
-<code>data/refresh-report.json</code>.</p>
+<p>Per-source checkpoints live in <code>data/refresh-state.json</code>. Durable video-ID
+classifications, reviewed destination metadata, equipment-review exceptions,
+and controlled exclusion reasons live in <code>data/catalog-curation.json</code>.
+Unresolved source candidates persist in <code>data/catalog-review-queue.json</code> until
+a human records a decision; the legacy override maps are retired and must stay
+empty. The complete apply workflow holds one repository lock across catalog,
+thumbnail, and integrity work, and uses <code>data/refresh-transaction.json</code> for
+crash-safe multi-file recovery.</p>
+<p><code>data/refresh-report.json</code> is intentionally the last historical applied-source
+report (<code>2026-08-14T15:13:18Z</code>, schema v1). The next reviewed apply will replace
+it with the current queue-aware schema; documentation does not misrepresent a
+curation-only migration as a new creator-source scan.</p>
 <h3 id="durable-thumbnails">Durable thumbnails</h3>
 <p>Instagram and TikTok CDN URLs expire, so release data never references them
-directly. <code>scripts/ensure-thumbnails.mjs</code> recovers each platform&#39;s current
-preview, validates and normalizes it with Sharp, then stores it under
-<code>public/thumbs/</code>. Unavailable posts receive a durable local fallback and an
-explicit failure entry in <code>docs/qa/latest/thumbnail-report.json</code> so the UI never
-shows a broken image. See <a href="docs/thumbnail-pipeline.html">the thumbnail pipeline</a>
-for recovery order, validation, and troubleshooting commands.</p>
+directly. <code>scripts/ensure-thumbnails.mjs</code> covers both public catalogs, recovers
+each platform&#39;s current preview, validates and normalizes it with Sharp, then
+stores it under <code>public/thumbs/</code>. Unavailable posts receive a durable local
+fallback visibly labelled <code>UNOFFICIAL FAN DIRECTORY</code> and an explicit failure
+entry in <code>docs/qa/latest/thumbnail-report.json</code>. See
+<a href="docs/thumbnail-pipeline.html">the thumbnail pipeline</a> for recovery order,
+validation, and troubleshooting commands.</p>
 <h2 id="documentation-parity">Documentation parity</h2>
 <p>Project-owned prose documentation is maintained in source form and generated as
 same-directory HTML counterparts. Stage a newly created source document first so
@@ -142,36 +167,54 @@ check. The same check runs automatically before every production build.</p>
 │   ├── parse_metadata.py       # Parse yt-dlp .info.json files
 │   ├── enrich_local.py         # Local pattern-based enrichment
 │   ├── refresh_incremental.py  # Fail-closed creator source importer
-│   ├── ensure-thumbnails.mjs   # Shared IG/TikTok local thumbnail worker
+│   ├── run_refresh_workflow.py # Whole-workflow lock + validation owner
+│   ├── generate-legacy-exercise-routes.mjs # Historical URL ledger
+│   ├── ensure-thumbnails.mjs   # Exercise + coaching thumbnail worker
 │   └── refresh.sh              # Dry-run/apply orchestration
 ├── data/
+│   ├── catalog-curation.json   # Auditable video-level decisions
+│   ├── catalog-baseline-exercise-routes.json # Immutable old URL scope
+│   ├── catalog-review-queue.json # Durable unresolved-source queue
 │   ├── refresh-state.json      # Last successful source checkpoints
-│   ├── refresh-overrides.json  # Reviewed classification decisions
-│   └── refresh-report.json     # Latest applied content provenance
+│   ├── refresh-overrides.json  # Retired legacy maps; required empty
+│   ├── refresh-transaction.json # Crash-recovery journal; required idle
+│   ├── refresh.lock            # Stable whole-workflow process lock
+│   └── refresh-report.json     # Last applied source-scan provenance
 ├── src/
 │   ├── app/
-│   │   ├── page.tsx            # Main directory with search + filters
+│   │   ├── page.tsx            # Server-rendered exercise directory
+│   │   ├── api/directory/      # Compact paged directory API
+│   │   ├── coaching/           # Coaching index and detail routes
+│   │   ├── privacy/            # Media and analytics transparency
 │   │   ├── exercise/[id]/
 │   │   │   └── page.tsx        # Exercise detail page + video embeds
-│   │   ├── layout.tsx          # Root layout with header/footer
+│   │   ├── robots.ts           # Crawl policy and sitemap pointer
+│   │   ├── not-found.tsx       # Branded recovery route
+│   │   ├── layout.tsx          # Unofficial identity, nav, and footer
 │   │   └── globals.css
 │   ├── components/
-│   │   ├── SearchBar.tsx       # Debounced fuzzy search
+│   │   ├── SearchBar.tsx       # Debounced URL-backed search
 │   │   ├── FilterPanel.tsx     # Category/muscle/equipment/creator filters
 │   │   ├── ExerciseCard.tsx    # Exercise card with tags
 │   │   ├── ExerciseGrid.tsx    # Responsive card grid
 │   │   ├── TikTokEmbed.tsx     # Tap-to-play TikTok player
-│   │   └── InstagramEmbed.tsx  # Instagram video embed
+│   │   └── InstagramEmbed.tsx  # Explicit outbound Instagram preview
 │   ├── data/
-│   │   └── exercises.json      # 1,309 grouped exercises
+│   │   ├── exercises.json      # 765 reviewed grouped exercises
+│   │   ├── coaching.json       # 515 reviewed coaching resources
+│   │   └── legacy-exercise-routes.json # Redirect/recovery outcomes
 │   └── lib/
-│       ├── search.ts           # Fuse.js search logic
+│       ├── directory.ts        # Server-only filtering and summaries
+│       ├── query.ts            # Normalized public URL contract
+│       ├── search.ts           # Multi-field Fuse.js search logic
 │       └── types.ts            # TypeScript types + constants
 ├── tests/                      # Import, thumbnail, and browser checks
 └── package.json
 </code></pre>
 <h2 id="deployment">Deployment</h2>
-<p>See <a href="hosting-guide.html">hosting-guide.md</a> for step-by-step Vercel deployment instructions.</p>
+<p>See <a href="hosting-guide.html">hosting-guide.md</a> for the release and Vercel verification
+workflow. The independent claim assessment and implemented remediation are in
+<a href="docs/audits/2026-08-14-web-audit-response.html">the 2026-08-14 audit response</a>.</p>
   </main>
 </body>
 </html>

@@ -37,6 +37,17 @@ export const DEFAULT_CATALOG_PATH = path.join(
   "data",
   "exercises.json",
 );
+export const DEFAULT_COACHING_CATALOG_PATH = path.join(
+  REPO_ROOT,
+  "src",
+  "data",
+  "coaching.json",
+);
+export const DEFAULT_CURATION_PATH = path.join(
+  REPO_ROOT,
+  "data",
+  "catalog-curation.json",
+);
 export const DEFAULT_THUMBS_DIR = path.join(REPO_ROOT, "public", "thumbs");
 export const DEFAULT_REPORT_PATH = path.join(
   REPO_ROOT,
@@ -117,6 +128,41 @@ export function canonicalThumbnailForVideo(video) {
   }
 
   return null;
+}
+
+export function canonicalThumbnailFilenameForExcludedVideoId(videoId) {
+  const instagram = /^ig_([A-Za-z0-9_-]+)$/.exec(String(videoId ?? ""));
+  if (instagram) return `${instagram[1]}.jpg`;
+
+  const tiktok = /^(?:tt_)?(\d+)$/.exec(String(videoId ?? ""));
+  if (tiktok) return `tiktok-${tiktok[1]}.jpg`;
+
+  return null;
+}
+
+export async function pruneExcludedThumbnails({
+  curation,
+  dryRun = false,
+  thumbsDir = DEFAULT_THUMBS_DIR,
+}) {
+  const pruned = [];
+  for (const [videoId, decision] of Object.entries(curation?.decisions ?? {})) {
+    if (decision?.decision !== "exclude") continue;
+    const filename = canonicalThumbnailFilenameForExcludedVideoId(videoId);
+    if (!filename) {
+      throw new Error(`cannot derive excluded thumbnail filename for ${videoId}`);
+    }
+    const target = path.join(thumbsDir, filename);
+    try {
+      await access(target);
+    } catch (error) {
+      if (error?.code === "ENOENT") continue;
+      throw error;
+    }
+    pruned.push(filename);
+    if (!dryRun) await rm(target);
+  }
+  return pruned.sort();
 }
 
 function decodeHtmlEntities(value) {
@@ -484,13 +530,14 @@ async function downloadCandidate(candidate, video, requestOptions) {
 export async function ensureFallbackThumbnail({
   dryRun = false,
   fallbackPath = path.join(DEFAULT_THUMBS_DIR, FALLBACK_FILENAME),
+  force = false,
   logoPath = path.join(REPO_ROOT, "public", "otf-logo.svg"),
 } = {}) {
   const existing = await validateLocalThumbnail(
     FALLBACK_URL,
     path.dirname(fallbackPath),
   );
-  if (existing.valid) {
+  if (existing.valid && !force) {
     return { generated: false, reused: true, ...existing };
   }
 
@@ -499,6 +546,18 @@ export async function ensureFallbackThumbnail({
     .resize({ width: 460, withoutEnlargement: false })
     .png()
     .toBuffer();
+  const unofficialLabel = Buffer.from(`
+    <svg width="560" height="150" xmlns="http://www.w3.org/2000/svg">
+      <rect x="2" y="2" width="556" height="146" rx="18"
+        fill="#f15a24" stroke="#ffb089" stroke-width="4" />
+      <text x="280" y="62" text-anchor="middle"
+        font-family="Arial, Helvetica, sans-serif" font-size="34"
+        font-weight="800" letter-spacing="3" fill="#111111">UNOFFICIAL</text>
+      <text x="280" y="110" text-anchor="middle"
+        font-family="Arial, Helvetica, sans-serif" font-size="28"
+        font-weight="700" letter-spacing="2" fill="#111111">FAN DIRECTORY</text>
+    </svg>
+  `);
   const buffer = await sharp({
     create: {
       background: "#111111",
@@ -507,7 +566,10 @@ export async function ensureFallbackThumbnail({
       width: 640,
     },
   })
-    .composite([{ input: logo, gravity: "center" }])
+    .composite([
+      { input: logo, left: 90, top: 270 },
+      { input: unofficialLabel, left: 40, top: 650 },
+    ])
     .jpeg({ quality: NORMALIZED_JPEG_QUALITY, mozjpeg: true })
     .toBuffer();
   const validation = await validateImageBuffer(buffer);
@@ -673,7 +735,9 @@ export async function runThumbnailPipeline({
   attempts = DEFAULT_ATTEMPTS,
   betweenItemsMs = DEFAULT_BETWEEN_ITEMS_MS,
   catalogPath = DEFAULT_CATALOG_PATH,
+  coachingPath,
   concurrency = DEFAULT_CONCURRENCY,
+  curationPath,
   dryRun = false,
   fetchImpl = fetch,
   force = false,
@@ -703,23 +767,67 @@ export async function runThumbnailPipeline({
   // may write an explicitly different report, but must never replace it.
   if (source && reportPath === DEFAULT_REPORT_PATH) reportPath = null;
 
-  if (!dryRun) await mkdir(thumbsDir, { recursive: true });
-  const originalCatalog = await readFile(catalogPath, "utf8");
-  const exercises = JSON.parse(originalCatalog);
-  if (!Array.isArray(exercises)) throw new Error("catalogue root must be an array");
+  const resolvedCatalogPath = path.resolve(catalogPath);
+  const resolvedCoachingPath =
+    coachingPath === undefined
+      ? resolvedCatalogPath === path.resolve(DEFAULT_CATALOG_PATH)
+        ? DEFAULT_COACHING_CATALOG_PATH
+        : null
+      : coachingPath
+        ? path.resolve(coachingPath)
+        : null;
+  const resolvedCurationPath =
+    curationPath === undefined
+      ? resolvedCatalogPath === path.resolve(DEFAULT_CATALOG_PATH)
+        ? DEFAULT_CURATION_PATH
+        : null
+      : curationPath
+        ? path.resolve(curationPath)
+        : null;
 
-  const before = countThumbnailKinds(exercises);
+  if (!dryRun) await mkdir(thumbsDir, { recursive: true });
+  const curation = resolvedCurationPath
+    ? JSON.parse(await readFile(resolvedCurationPath, "utf8"))
+    : null;
+  const excludedThumbnailsPruned = curation
+    ? await pruneExcludedThumbnails({ curation, dryRun, thumbsDir })
+    : [];
+  const catalogEntries = await Promise.all(
+    [
+      { path: resolvedCatalogPath, section: "exercise" },
+      ...(resolvedCoachingPath
+        ? [{ path: resolvedCoachingPath, section: "coaching" }]
+        : []),
+    ].map(async (entry) => {
+      const original = await readFile(entry.path, "utf8");
+      const resources = JSON.parse(original);
+      if (!Array.isArray(resources)) {
+        throw new Error(`${entry.section} catalogue root must be an array`);
+      }
+      return { ...entry, original, resources };
+    }),
+  );
+  const publicResources = catalogEntries.flatMap((entry) => entry.resources);
+
+  const before = countThumbnailKinds(publicResources);
   const fallback = await ensureFallbackThumbnail({
     dryRun,
     fallbackPath: path.join(thumbsDir, FALLBACK_FILENAME),
+    force,
     logoPath,
   });
 
   const records = [];
-  for (const exercise of exercises) {
-    for (const video of exercise.videos ?? []) {
-      if (source && video.source !== source) continue;
-      records.push({ exerciseId: exercise.id, video });
+  for (const entry of catalogEntries) {
+    for (const resource of entry.resources) {
+      for (const video of resource.videos ?? []) {
+        if (source && video.source !== source) continue;
+        records.push({
+          resourceId: resource.id,
+          section: entry.section,
+          video,
+        });
+      }
     }
   }
   const selected = Number.isFinite(limit) ? records.slice(0, limit) : records;
@@ -751,7 +859,12 @@ export async function runThumbnailPipeline({
       if (completed % 25 === 0 || completed === selected.length) {
         console.log(`[thumbs] ${completed}/${selected.length}`);
       }
-      return { exerciseId: record.exerciseId, video: record.video, ...result };
+      return {
+        resourceId: record.resourceId,
+        section: record.section,
+        video: record.video,
+        ...result,
+      };
     },
   );
 
@@ -767,7 +880,10 @@ export async function runThumbnailPipeline({
     if (result.errors?.length) {
       failures.push({
         errors: result.errors,
-        exercise_id: result.exerciseId,
+        ...(result.section === "exercise"
+          ? { exercise_id: result.resourceId }
+          : { coaching_id: result.resourceId }),
+        section: result.section,
         source: sourceName,
         video_id: result.video.id,
         video_url: result.video.url,
@@ -775,32 +891,55 @@ export async function runThumbnailPipeline({
     }
   }
 
-  const after = countThumbnailKinds(exercises);
-  const nextCatalog = `${JSON.stringify(exercises, null, 2)}\n`;
-  const catalogChanged = nextCatalog !== originalCatalog;
+  const after = countThumbnailKinds(publicResources);
+  const catalogReports = catalogEntries.map((entry) => {
+    const next = `${JSON.stringify(entry.resources, null, 2)}\n`;
+    return {
+      changed: next !== entry.original,
+      next,
+      path: entry.path,
+      section: entry.section,
+    };
+  });
+  const catalogChanged = catalogReports.some((entry) => entry.changed);
   if (!dryRun && catalogChanged) {
     // Avoid overwriting a concurrent data-refresh process that completed while
     // thumbnails were downloading.
-    const currentCatalog = await readFile(catalogPath, "utf8");
-    if (currentCatalog !== originalCatalog) {
-      throw new Error("catalogue changed during thumbnail processing; refusing to overwrite it");
+    for (const entry of catalogReports.filter((value) => value.changed)) {
+      const currentCatalog = await readFile(entry.path, "utf8");
+      const original = catalogEntries.find(
+        (value) => value.path === entry.path,
+      )?.original;
+      if (currentCatalog !== original) {
+        throw new Error(
+          `${entry.section} catalogue changed during thumbnail processing; refusing to overwrite it`,
+        );
+      }
     }
-    await atomicWrite(catalogPath, nextCatalog);
+    for (const entry of catalogReports.filter((value) => value.changed)) {
+      await atomicWrite(entry.path, entry.next);
+    }
   }
 
   const report = {
     after,
     before,
     by_source: bySource,
-    catalog: relativeToRepo(catalogPath),
+    catalog: relativeToRepo(resolvedCatalogPath),
+    catalogs: catalogReports.map((entry) => ({
+      catalog: relativeToRepo(entry.path),
+      catalog_changed: entry.changed,
+      section: entry.section,
+    })),
     catalog_changed: catalogChanged,
     completed_without_fallbacks: after.fallback === 0,
     dry_run: dryRun,
     failures,
+    excluded_thumbnails_pruned: excludedThumbnailsPruned,
     fallback: {
       generated: fallback.generated,
       generation:
-        "640x960 JPEG, dark #111111 background, centered public/otf-logo.svg, quality 72 mozjpeg",
+        "640x960 JPEG, dark #111111 background, public/otf-logo.svg, visible UNOFFICIAL FAN DIRECTORY label, quality 72 mozjpeg",
       path: FALLBACK_URL,
       reused: fallback.reused,
     },
@@ -867,6 +1006,10 @@ export function parseCliArguments(args) {
   const dryRun = args.includes("--dry-run");
   const noReport = args.includes("--no-report");
   const reportValue = stringArgument(args, "--report", null);
+  const catalogPath = path.resolve(
+    stringArgument(args, "--catalog", DEFAULT_CATALOG_PATH),
+  );
+  const coachingValue = stringArgument(args, "--coaching-catalog", null);
   return {
     attempts: numericArgument(args, "--attempts", DEFAULT_ATTEMPTS),
     betweenItemsMs: nonnegativeNumericArgument(
@@ -874,9 +1017,12 @@ export function parseCliArguments(args) {
       "--between-items-ms",
       DEFAULT_BETWEEN_ITEMS_MS,
     ),
-    catalogPath: path.resolve(
-      stringArgument(args, "--catalog", DEFAULT_CATALOG_PATH),
-    ),
+    catalogPath,
+    coachingPath: coachingValue
+      ? path.resolve(coachingValue)
+      : catalogPath === path.resolve(DEFAULT_CATALOG_PATH)
+        ? DEFAULT_COACHING_CATALOG_PATH
+        : null,
     concurrency: numericArgument(args, "--concurrency", DEFAULT_CONCURRENCY),
     dryRun,
     force: args.includes("--force"),
@@ -929,6 +1075,7 @@ Options:
   --between-items-ms N  Per-worker pause between videos (default: ${DEFAULT_BETWEEN_ITEMS_MS})
   --timeout-ms N        Timeout per HTTP request (default: ${DEFAULT_TIMEOUT_MS})
   --catalog PATH        Alternate exercise catalogue (useful for tests)
+  --coaching-catalog PATH  Alternate coaching catalogue
   --thumbs-dir PATH     Alternate thumbnail directory
   --report PATH         Alternate JSON report path
   --no-report           Do not write a JSON report

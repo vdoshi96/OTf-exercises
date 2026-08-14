@@ -129,6 +129,7 @@ EQUIPMENT_KEYWORDS = {
     "bosu": ["bosu", "bosu ball"],
     "ab dolly": ["ab dolly", "dolly"],
     "medicine ball": ["medicine ball", "med ball"],
+    "y-bell": ["y-bell", "y bell", "ybell"],
     "mini band": ["mini band", "band"],
     "resistance band": ["band", "mid band", "resistance band"],
     "bodyweight": ["bodyweight", "body weight", "no equipment"],
@@ -527,15 +528,27 @@ def classify_exercise(desc: str) -> dict:
     return {"muscle_groups": [], "category": "other", "movement_type": "other"}
 
 
+def contains_equipment_keyword(description: str, keyword: str) -> bool:
+    """Match a word or phrase without treating it as part of a larger word."""
+    return bool(
+        re.search(
+            rf"(?<![a-z0-9]){re.escape(keyword.lower())}(?![a-z0-9])",
+            description.lower(),
+        )
+    )
+
+
 def extract_equipment(desc: str) -> list[str]:
-    desc_lower = desc.lower()
     found = []
     for equip, keywords in EQUIPMENT_KEYWORDS.items():
         for kw in keywords:
-            if kw in desc_lower:
+            if contains_equipment_keyword(desc, kw):
                 found.append(equip)
                 break
-    return found if found else ["bodyweight"]
+    # A missing keyword means the source did not tell us the equipment. It is
+    # not evidence that the movement is bodyweight. Explicit bodyweight terms
+    # are handled by EQUIPMENT_KEYWORDS above.
+    return found
 
 
 def extract_coaching_cues(desc: str) -> list[str]:
