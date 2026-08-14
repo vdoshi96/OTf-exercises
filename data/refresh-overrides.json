@@ -34,6 +34,12 @@
     },
     "ig_DaWEqe-S_9k": {
       "reason": "calorie-deficit advice rather than an exercise demonstration"
+    },
+    "ig_DbWqFg8gbu1": {
+      "reason": "general mile-time motivation and pacing advice rather than an exercise demonstration"
+    },
+    "ig_DbglzB-PZy-": {
+      "reason": "fat-loss food promotion rather than an exercise demonstration"
     }
   },
   "force_include": {
@@ -245,6 +251,192 @@
       ],
       "movement_type": "compound",
       "coaching_cues": []
+    },
+    "ig_Dbt55rNAYvk": {
+      "exercise_name": "Straight Leg Roll Up",
+      "category": "core",
+      "muscle_groups": [
+        "core",
+        "hip flexors"
+      ],
+      "equipment": [
+        "bodyweight"
+      ],
+      "movement_type": "compound",
+      "coaching_cues": []
+    },
+    "ig_Db12iGytNa1": {
+      "exercise_name": "Half Kneeling High to Low Chop",
+      "category": "core",
+      "muscle_groups": [
+        "core",
+        "obliques",
+        "shoulders"
+      ],
+      "equipment": [
+        "dumbbell"
+      ],
+      "movement_type": "compound",
+      "coaching_cues": []
+    },
+    "ig_Db7AkooNk21": {
+      "exercise_name": "Single Leg Full V-Up",
+      "category": "core",
+      "muscle_groups": [
+        "core",
+        "hip flexors"
+      ],
+      "equipment": [
+        "dumbbell"
+      ],
+      "movement_type": "compound",
+      "coaching_cues": []
+    },
+    "ig_DcALjFwNPrL": {
+      "exercise_name": "Alternating Single Arm High Pull with Power",
+      "category": "full_body",
+      "muscle_groups": [
+        "upper back",
+        "shoulders",
+        "glutes",
+        "legs"
+      ],
+      "equipment": [
+        "dumbbell"
+      ],
+      "movement_type": "compound",
+      "coaching_cues": []
+    },
+    "ig_DbUE0a9lLFY": {
+      "exercise_name": "TRX Bridge Row Setup",
+      "category": "full_body",
+      "muscle_groups": [
+        "back",
+        "glutes",
+        "core"
+      ],
+      "equipment": [
+        "TRX straps"
+      ],
+      "movement_type": "compound",
+      "coaching_cues": []
+    },
+    "ig_DbUlG_ztw2P": {
+      "exercise_name": "Half Kneeling Single Arm High Row",
+      "category": "upper_body",
+      "muscle_groups": [
+        "upper back",
+        "biceps"
+      ],
+      "equipment": [
+        "dumbbell"
+      ],
+      "movement_type": "compound",
+      "coaching_cues": []
+    },
+    "ig_Dbe2ubbtsfo": {
+      "exercise_name": "Low Bench B-Stance Goblet Squat",
+      "category": "lower_body",
+      "muscle_groups": [
+        "quads",
+        "glutes",
+        "core"
+      ],
+      "equipment": [
+        "dumbbell",
+        "bench"
+      ],
+      "movement_type": "compound",
+      "coaching_cues": []
+    },
+    "ig_Dbhf4gMtQVv": {
+      "exercise_name": "Goblet Squat to Hip Extension",
+      "category": "lower_body",
+      "muscle_groups": [
+        "quads",
+        "glutes",
+        "core"
+      ],
+      "equipment": [
+        "dumbbell"
+      ],
+      "movement_type": "compound",
+      "coaching_cues": []
+    },
+    "ig_DbmpG6-NTW6": {
+      "exercise_name": "Lateral Lunge to Single Arm High Pull with Power",
+      "category": "full_body",
+      "muscle_groups": [
+        "quads",
+        "glutes",
+        "adductors",
+        "upper back",
+        "shoulders"
+      ],
+      "equipment": [
+        "dumbbell"
+      ],
+      "movement_type": "compound",
+      "coaching_cues": []
+    },
+    "ig_Dbwy9YGM7FI": {
+      "exercise_name": "Floor Chest Press with Bent Knees",
+      "category": "upper_body",
+      "muscle_groups": [
+        "chest",
+        "triceps",
+        "core"
+      ],
+      "equipment": [
+        "dumbbell"
+      ],
+      "movement_type": "compound",
+      "coaching_cues": []
+    },
+    "ig_DbzCjMAgzA8": {
+      "exercise_name": "BOSU Bridge Hold with Chest Press (Shoulders On)",
+      "category": "upper_body",
+      "muscle_groups": [
+        "chest",
+        "triceps",
+        "glutes",
+        "core"
+      ],
+      "equipment": [
+        "dumbbell",
+        "bosu"
+      ],
+      "movement_type": "compound",
+      "coaching_cues": []
+    },
+    "ig_Db4k1QjgDxt": {
+      "exercise_name": "Mid Band High Plank Alternating Toe Tap to Leg Lift",
+      "category": "core",
+      "muscle_groups": [
+        "core",
+        "shoulders",
+        "glutes"
+      ],
+      "equipment": [
+        "mini band",
+        "resistance band"
+      ],
+      "movement_type": "isolation",
+      "coaching_cues": []
+    },
+    "ig_Db9mAoMtFen": {
+      "exercise_name": "BOSU High Plank Plank Jack to Knee Tuck",
+      "category": "core",
+      "muscle_groups": [
+        "core",
+        "shoulders",
+        "hip flexors"
+      ],
+      "equipment": [
+        "bosu"
+      ],
+      "movement_type": "isolation",
+      "coaching_cues": []
     }
   },
   "append_to_group": {
@@ -257,7 +449,20 @@
     "ig_DamOMbSNnCy": "contralateral-single-arm-reverse-lunge-to-press",
     "ig_DZn8tryB6DT": "split-stance-deadlift",
     "ig_DZ8cKYSBdRO": "snatch",
-    "ig_DZ_BAaJB8HB": "goblet-squat"
+    "ig_DZ_BAaJB8HB": "goblet-squat",
+    "ig_Da_34EQpwnu": "seated-low-row-options-preserving-the-stimulus",
+    "ig_Da6zWeKtoD8": "floor-two-dumbbell-hold-with-straight-leg-raise",
+    "ig_DbChl3YtL2A": "clean-to-front-squat-aka-hang-squat-clean",
+    "ig_DbEmQthgJ1z": "correcting-swingingcurling-in-the-clean",
+    "ig_DbHLdYej4Ig": "sumo-squat",
+    "ig_DbJwvLrjI5Z": "cross-back-lunge",
+    "ig_DbXMKlNN32G": "split-stance-high-row-to-low-row",
+    "ig_DbZkUTqNQ6r": "plank",
+    "ig_DbmDqj0CmOx": "strap-push-up",
+    "ig_DboomckijG_": "hip-hinge-swing",
+    "ig_DbpLc8WR7_7": "tall-kneeling-halo",
+    "ig_DbrNkX0Ate4": "treadmill",
+    "ig_DbtyfVWFY28": "concentration-curl"
   },
   "title_overrides": {
     "ig_DZOv6sUtz6-": "Strap Squat Jump",
@@ -317,6 +522,9 @@
     "ig_DaeCLdbP-ul": "Reverse Lunge Movement Timing",
     "ig_DajjlDMJY5A": "Deadlift Range of Motion",
     "ig_Dat-tkLpkxF": "200m Row Sprint Technique",
-    "ig_DazF4j-p5Oo": "Lateral Step-Up Position"
+    "ig_DazF4j-p5Oo": "Lateral Step-Up Position",
+    "ig_DbCT500Em1x": "Treadmill Speed Progression with Decimal Increments",
+    "ig_DbRfmjEjncE": "Split Squat Foot-Position Setup",
+    "ig_DbSDK_CNCzZ": "Crab Position Setup"
   }
 }

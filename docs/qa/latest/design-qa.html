@@ -6,8 +6,8 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: https:; style-src 'unsafe-inline'">
   <meta name="generator" content="otf-docs-parity/v1">
   <meta name="doc-source" content="docs/qa/latest/design-qa.md">
-  <meta name="doc-source-sha256" content="a0d9fa764d4a626c6daa5c4e74a79761abb7cc6c33f3b769c6c87ef8d6e7baf3">
-  <title>Design QA — 2026-07-16 refresh</title>
+  <meta name="doc-source-sha256" content="0cd8e03f9cc1f68570b90a876d04e425b1c58fc7f1fd096a2da48897b1a46a87">
+  <title>Design QA — 2026-08-14 creator refresh</title>
   <style>
     :root {
       color-scheme: light dark;
@@ -86,39 +86,39 @@
 </head>
 <body>
   <main>
-<h1 id="design-qa-2026-07-16-refresh">Design QA — 2026-07-16 refresh</h1>
+<h1 id="design-qa-2026-08-14-creator-refresh">Design QA — 2026-08-14 creator refresh</h1>
 <p><strong>Final result: PASSED</strong></p>
-<h2 id="source-truth">Source truth</h2>
-<p>The desktop visual language, colors, typography, card hierarchy, and supplied
-mobile baseline screenshots were treated as the source of truth. The mobile
-changes were limited to density, discovery, filters, result rows, detail order,
-and video activation behavior.</p>
+<h2 id="scope">Scope</h2>
+<p>This refresh preserves the existing visual design and interaction model while
+adding the latest reviewed creator videos. QA focused on catalog completeness,
+new-video presentation, local thumbnail coverage, responsive behavior, filter
+interactions, detail routes, and video activation.</p>
 <h2 id="mobile-comparisons">Mobile comparisons</h2>
-<p>All comparison screenshots below use the same 375 × 812 captured content area.
-The production browser suite separately exercises the requested 390 × 844 CSS
-viewport and a 320px overflow viewport.</p>
+<p>The historical 375 × 812 baseline captures remain included for design context.
+The current implementation evidence uses a 390 × 844 CSS viewport; the browser
+suite also covers a 320px overflow viewport.</p>
 <table>
 <thead>
 <tr>
 <th>State</th>
-<th>Baseline</th>
-<th>Final implementation</th>
+<th>Historical baseline</th>
+<th>Current implementation</th>
 </tr>
 </thead>
 <tbody><tr>
 <td>Directory</td>
 <td><img src="baseline-directory-mobile.png" alt="Baseline mobile directory"></td>
-<td><img src="mobile-directory-390x844.png" alt="Final mobile directory"></td>
+<td><img src="mobile-directory-390x844.png" alt="Current mobile directory"></td>
 </tr>
 <tr>
 <td>Filters open</td>
 <td><img src="baseline-filters-mobile.png" alt="Baseline inline filters"></td>
-<td><img src="mobile-filters-390x844.png" alt="Final filter bottom sheet"></td>
+<td><img src="mobile-filters-390x844.png" alt="Current filter bottom sheet"></td>
 </tr>
 <tr>
 <td>Exercise detail</td>
 <td><img src="baseline-detail-mobile.png" alt="Baseline mobile detail"></td>
-<td><img src="mobile-detail-390x844.png" alt="Final mobile detail"></td>
+<td><img src="mobile-detail-390x844.png" alt="Current refreshed detail"></td>
 </tr>
 </tbody></table>
 <h2 id="additional-evidence">Additional evidence</h2>
@@ -127,30 +127,42 @@ viewport and a 320px overflow viewport.</p>
 <li><a href="mobile-tiktok-active-390x844.png">Activated mobile TikTok player</a></li>
 <li><a href="thumbnail-report.json">Thumbnail coverage report</a></li>
 </ul>
-<h2 id="findings-and-fixes">Findings and fixes</h2>
+<h2 id="refresh-findings">Refresh findings</h2>
 <ul>
-<li>The first exercise is now visible in the initial mobile viewport.</li>
-<li>The former 52-chip inline wall is replaced by a native-dialog bottom sheet
-with grouped accordions, sticky actions, 44px targets, Escape handling, and
-trigger focus restoration.</li>
-<li>Mobile cards are compact thumbnail-left rows; 24 are initially visible and
-load-more pagination resets when the result set changes. Desktop retains the
-complete grid without pagination.</li>
-<li>The detail page moves the video library before secondary facts and reduces
-title size and vertical padding on mobile.</li>
-<li>TikTok keeps a local preview until activation, inserts a responsive player,
-moves keyboard focus to it, and preserves the original-post link.</li>
-<li>No horizontal overflow was found at 390px or 320px.</li>
+<li>All 43 discovered posts were reviewed: 41 exercise videos were accepted and
+2 non-exercise posts were rejected.</li>
+<li>The catalog increased from 1,286 to 1,309 exercise groups and from 2,031 to
+2,072 videos. New posts were assigned to existing groups where the movement
+matched and retained as distinct exercises where appropriate.</li>
+<li>All 41 new thumbnails were recovered locally. The complete catalog has 2,071
+exact local thumbnails and one pre-existing explicit local fallback, with no
+remote or empty thumbnail references.</li>
+<li>A full HTTP crawl returned valid content for all 1,310 sitemap URLs and all
+2,072 unique thumbnail URLs.</li>
+<li>The refreshed directory counts, filters, result cards, and new exercise
+detail page render correctly at desktop and mobile sizes. No horizontal
+overflow was found at 390px or 320px.</li>
+<li>TikTok activation inserts the responsive player and retains the original-post
+link. The live third-party iframe emitted TikTok-owned policy and media
+warnings in the test browser; first-party app behavior and the isolated embed
+integration checks passed.</li>
 </ul>
-<h2 id="automated-browser-matrix">Automated browser matrix</h2>
+<h2 id="automated-verification">Automated verification</h2>
 <ul>
+<li>Catalog, data, thumbnail, documentation, type, and lint checks: passed</li>
+<li>Next.js production build with the documented Webpack fallback: passed</li>
+<li>Static output generated: 1,314 pages, including all 1,309 exercise routes</li>
 <li>Chromium desktop 1280 × 900: passed</li>
 <li>Chromium mobile 390 × 844: passed</li>
 <li>Chromium mobile 320 × 844: passed</li>
 <li>WebKit mobile 390 × 844: passed</li>
-<li>Catalog routes in sitemap: 1,287 of 1,287</li>
-<li>Local browser console, page, request, and HTTP failure checks: passed</li>
+<li>Catalog routes in sitemap: 1,309 of 1,309</li>
+<li>First-party browser console, page, request, and HTTP failure checks: passed</li>
 </ul>
+<p>The managed test environment prevents the default Turbopack CSS worker from
+binding its local port. The supported <code>next build --webpack</code> production path
+completed successfully, so this is recorded as an environment limitation rather
+than an application failure.</p>
   </main>
 </body>
 </html>

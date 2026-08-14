@@ -2,24 +2,24 @@
   "after": {
     "empty": 0,
     "fallback": 1,
-    "local": 2030,
+    "local": 2071,
     "remote": 0,
-    "total": 2031
+    "total": 2072
   },
   "before": {
-    "empty": 817,
-    "fallback": 0,
-    "local": 1214,
-    "remote": 0,
-    "total": 2031
+    "empty": 0,
+    "fallback": 1,
+    "local": 2030,
+    "remote": 41,
+    "total": 2072
   },
   "by_source": {
     "instagram": {
-      "local-valid": 1214,
-      "downloaded": 213
+      "local-valid": 1427,
+      "downloaded": 41
     },
     "tiktok": {
-      "downloaded": 603,
+      "local-valid": 603,
       "fallback": 1
     }
   },
@@ -44,7 +44,7 @@
     "path": "/thumbs/fallback-exercise.jpg",
     "reused": true
   },
-  "generated_at": "2026-07-16T23:48:53.343Z",
+  "generated_at": "2026-08-14T15:13:23.980Z",
   "options": {
     "attempts": 3,
     "between_items_ms": 200,
@@ -55,10 +55,10 @@
     "source": null,
     "timeout_ms": 15000
   },
-  "processed": 2031,
+  "processed": 2072,
   "statuses": {
-    "local-valid": 1214,
-    "downloaded": 816,
+    "local-valid": 2030,
+    "downloaded": 41,
     "fallback": 1
   }
 }

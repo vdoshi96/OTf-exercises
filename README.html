@@ -6,7 +6,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: https:; style-src 'unsafe-inline'">
   <meta name="generator" content="otf-docs-parity/v1">
   <meta name="doc-source" content="README.md">
-  <meta name="doc-source-sha256" content="a9a7198449d9b4b0492d7c346b2cc4fda0242bb5b80bdeb12daf458be72c2a4c">
+  <meta name="doc-source-sha256" content="955fbce6278bb78e85d8520615202ec917404b598183c37d0258888d55105306">
   <title>OTF Exercise Directory</title>
   <style>
     :root {
@@ -88,7 +88,7 @@
   <main>
 <h1 id="otf-exercise-directory">OTF Exercise Directory</h1>
 <p>A searchable, unofficial fan directory of OrangeTheory Fitness exercise demos from multiple creators and source platforms.</p>
-<p>Browse 2,031 exercise demonstrations across 1,286 grouped exercises, filterable by muscle group, equipment, category, platform, and creator. Each exercise links to the original source video.</p>
+<p>Browse 2,072 exercise demonstrations across 1,309 grouped exercises, filterable by muscle group, equipment, category, platform, and creator. Each exercise links to the original source video.</p>
 <blockquote>
 <p><strong>Disclaimer:</strong> This is an unofficial fan directory. All video content belongs to its original creators and source platforms.</p>
 </blockquote>
@@ -97,8 +97,8 @@
 <li><strong>Framework:</strong> Next.js 16 (App Router)</li>
 <li><strong>Styling:</strong> Tailwind CSS 4</li>
 <li><strong>Search:</strong> Fuse.js (client-side fuzzy search)</li>
-<li><strong>Video Embeds:</strong> TikTok and Instagram embeds</li>
-<li><strong>Data:</strong> Static JSON bundled at build time (1,286 grouped exercises / 2,031 demos)</li>
+<li><strong>Video Playback:</strong> Tap-to-play TikTok players and linked Instagram previews</li>
+<li><strong>Data:</strong> Static JSON bundled at build time (1,309 grouped exercises / 2,072 demos)</li>
 </ul>
 <h2 id="getting-started">Getting Started</h2>
 <pre><code class="language-bash">npm install
@@ -109,10 +109,11 @@ npm run dev
 <p>The refresh workflow scans Coach Rudy&#39;s tracked Instagram and TikTok feeds plus
 TrainingTall&#39;s Instagram feed. It is incremental and fail-closed: incomplete or
 rate-limited scans do not alter the catalogue or advance source state.</p>
-<pre><code class="language-bash"># Always review the dry run first; this writes nothing.
+<pre><code class="language-bash"># Check source completeness and candidate totals first; this writes nothing.
 npm run refresh
 
-# Apply the reviewed delta, backfill thumbnails, and run strict integrity checks.
+# After item-level review is recorded in refresh-overrides.json, apply the
+# reviewed delta, backfill thumbnails, and run strict integrity checks.
 npm run refresh:apply
 </code></pre>
 <p>Per-source checkpoints live in <code>data/refresh-state.json</code>. Reviewed include,
@@ -162,7 +163,7 @@ check. The same check runs automatically before every production build.</p>
 │   │   ├── TikTokEmbed.tsx     # Tap-to-play TikTok player
 │   │   └── InstagramEmbed.tsx  # Instagram video embed
 │   ├── data/
-│   │   └── exercises.json      # 1,286 grouped exercises
+│   │   └── exercises.json      # 1,309 grouped exercises
 │   └── lib/
 │       ├── search.ts           # Fuse.js search logic
 │       └── types.ts            # TypeScript types + constants

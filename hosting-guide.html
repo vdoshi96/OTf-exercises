@@ -6,7 +6,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: https:; style-src 'unsafe-inline'">
   <meta name="generator" content="otf-docs-parity/v1">
   <meta name="doc-source" content="hosting-guide.md">
-  <meta name="doc-source-sha256" content="d190bafe50322a1c04c70cbe3e92d13b2d89e2d7a9eacc3fd72fbe51ce34a575">
+  <meta name="doc-source-sha256" content="e8b3bbd888b7ddb2cf7fd8befa320646b3b2a65376ae14af0770342c2c2791f2">
   <title>Hosting Guide — OTF Exercise Directory</title>
   <style>
     :root {
@@ -87,161 +87,91 @@
 <body>
   <main>
 <h1 id="hosting-guide-otf-exercise-directory">Hosting Guide — OTF Exercise Directory</h1>
-<p>Step-by-step instructions to deploy the exercise directory to the internet.</p>
-<hr>
-<h2 id="prerequisites">Prerequisites</h2>
-<p>Make sure these are installed on your Mac:</p>
-<pre><code class="language-bash"># Check Node.js (need v20.9+)
-node --version
-
-# If not installed or outdated:
-brew install node
-
-# Check git
-git --version
+<p>The production site is deployed from this repository&#39;s GitHub <code>main</code> branch to
+Vercel:</p>
+<ul>
+<li>Repository: <a href="https://github.com/vdoshi96/OTf-exercises">https://github.com/vdoshi96/OTf-exercises</a></li>
+<li>Production: <a href="https://o-tf-exercises.vercel.app">https://o-tf-exercises.vercel.app</a></li>
+</ul>
+<h2 id="requirements">Requirements</h2>
+<ul>
+<li>Node.js 20.9 or newer</li>
+<li>npm</li>
+<li>Git access to the repository</li>
+<li>Access to the existing Vercel project when deployment inspection or settings
+changes are required</li>
+</ul>
+<p>The app is a Next.js 16 static-data site. Its exercise catalog and local
+thumbnail assets are bundled during the production build.</p>
+<h2 id="release-workflow">Release workflow</h2>
+<p>Start from an up-to-date, clean <code>main</code> branch and create a scoped branch:</p>
+<pre><code class="language-bash">git fetch --prune origin
+git switch main
+git pull --ff-only origin main
+git switch -c vishal/&lt;short-change-name&gt;
 </code></pre>
-<p>You&#39;ll also need:</p>
-<ul>
-<li>A GitHub account (github.com)</li>
-<li>A Vercel account (vercel.com) — sign up with GitHub, it&#39;s free</li>
-</ul>
-<hr>
-<h2 id="step-1-push-the-project-to-github">Step 1: Push the Project to GitHub</h2>
-<p>Once Claude Code finishes building the project:</p>
-<pre><code class="language-bash">cd otf-exercise-directory
-
-# Initialize git repo
-git init
-git add .
-git commit -m &quot;Initial commit: OTF exercise directory&quot;
-
-# Create a repo on GitHub (use GitHub CLI or do it on github.com)
-# If you have GitHub CLI:
-brew install gh
-gh auth login
-gh repo create otf-exercise-directory --public --source=. --push
-
-# If you don&#39;t have GitHub CLI, create the repo on github.com, then:
-git remote add origin https://github.com/YOUR_USERNAME/otf-exercise-directory.git
-git branch -M main
-git push -u origin main
+<p>For a creator-content refresh, preview source completeness before applying any
+data changes:</p>
+<pre><code class="language-bash">npm run refresh
 </code></pre>
-<hr>
-<h2 id="step-2-deploy-to-vercel">Step 2: Deploy to Vercel</h2>
-<h3 id="option-a-via-vercel-dashboard-easiest">Option A: Via Vercel Dashboard (easiest)</h3>
-<ol>
-<li>Go to <a href="https://vercel.com">https://vercel.com</a> and sign in with GitHub</li>
-<li>Click &quot;Add New Project&quot;</li>
-<li>Import your <code>otf-exercise-directory</code> repository</li>
-<li>Vercel auto-detects Next.js — leave all settings as defaults</li>
-<li>Click &quot;Deploy&quot;</li>
-<li>Wait ~60 seconds. You&#39;ll get a live URL like <code>otf-exercise-directory.vercel.app</code></li>
-</ol>
-<h3 id="option-b-via-vercel-cli">Option B: Via Vercel CLI</h3>
-<pre><code class="language-bash"># Install Vercel CLI
-npm install -g vercel
-
-# Deploy from project root
-cd otf-exercise-directory
-vercel
-
-# Follow the prompts:
-# - Link to existing project? No
-# - Project name: otf-exercise-directory
-# - Directory: ./
-# - Override settings? No
-
-# For production deployment:
-vercel --prod
+<p>When the candidate posts have been reviewed and the decisions recorded in
+<code>data/refresh-overrides.json</code>, apply the refresh:</p>
+<pre><code class="language-bash">npm run refresh:apply
 </code></pre>
-<hr>
-<h2 id="step-3-custom-domain-optional-1015year">Step 3: Custom Domain (Optional, ~$10–15/year)</h2>
-<p>If you want a clean URL like <code>otfexercises.com</code>:</p>
-<ol>
-<li><p>Buy a domain from Namecheap, Cloudflare Registrar, or Google Domains</p>
-<ul>
-<li>Cloudflare Registrar is cheapest (at-cost pricing, ~$10/year for .com)</li>
-<li>Go to <a href="https://dash.cloudflare.com">https://dash.cloudflare.com</a> → &quot;Register Domains&quot;</li>
-</ul>
-</li>
-<li><p>In Vercel dashboard:</p>
-<ul>
-<li>Go to your project → Settings → Domains</li>
-<li>Type your domain name and click &quot;Add&quot;</li>
-<li>Vercel gives you DNS records to add</li>
-</ul>
-</li>
-<li><p>In your domain registrar&#39;s DNS settings, add:</p>
-<ul>
-<li><code>A</code> record: <code>76.76.21.21</code></li>
-<li><code>CNAME</code> record for <code>www</code>: <code>cname.vercel-dns.com</code></li>
-</ul>
-</li>
-<li><p>Wait 5–30 minutes for DNS propagation. Vercel auto-provisions HTTPS.</p>
-</li>
-</ol>
-<hr>
-<h2 id="step-4-updating-the-site">Step 4: Updating the Site</h2>
-<p>When you add new exercises or make changes:</p>
-<pre><code class="language-bash">cd otf-exercise-directory
-
-# Make your changes, then:
-git add .
-git commit -m &quot;Add new exercises from March 2026&quot;
-git push origin main
+<p>The apply command updates the catalog and source checkpoints, self-hosts new
+thumbnails, and runs the catalog-integrity gate. Do not advance the source state
+after an incomplete or rate-limited scan.</p>
+<h2 id="required-local-verification">Required local verification</h2>
+<p>Run the complete release checks before publishing:</p>
+<pre><code class="language-bash">npm run test:data
+npm run test:thumbnails
+npm run test:catalog
+npm run test:docs
+npm run docs:check
+npm run lint -- --ignore-pattern .vercel
+npm run typecheck
+npm run build
 </code></pre>
-<p>Vercel automatically redeploys on every push to <code>main</code>. Your site updates within ~60 seconds.</p>
-<hr>
-<h2 id="step-5-monitoring">Step 5: Monitoring</h2>
-<p>Vercel free tier includes:</p>
-<ul>
-<li>100 GB bandwidth/month (more than enough for a static-ish site)</li>
-<li>Serverless function invocations if you add any API routes</li>
-<li>Analytics (basic, under Settings → Analytics)</li>
-</ul>
-<p>Check usage at: <a href="https://vercel.com/dashboard">https://vercel.com/dashboard</a> → your project → Usage</p>
-<p>You won&#39;t hit any limits unless the site goes viral. If it does, Vercel Pro is $20/month with much higher limits.</p>
-<hr>
+<p>Then start the production build locally and run the browser matrix:</p>
+<pre><code class="language-bash">npm start
+BASE_URL=http://localhost:3000 npm run test:e2e
+</code></pre>
+<p>The browser suite covers desktop and mobile Chromium, mobile WebKit, search,
+filters, pagination, detail navigation, local thumbnails, fallback behavior,
+browser errors, and sitemap cardinality.</p>
+<h2 id="publish-and-deploy">Publish and deploy</h2>
+<p>Push the scoped branch, merge it into GitHub <code>main</code>, and update local <code>main</code> to
+the same commit. Vercel deploys the repository&#39;s <code>main</code> branch automatically.
+Remove the completed branch or worktree after the merge.</p>
+<p>After Vercel reports the deployment ready, verify the deployed catalog rather
+than treating deployment status alone as proof:</p>
+<pre><code class="language-bash">BASE_URL=https://o-tf-exercises.vercel.app npm run test:e2e
+</code></pre>
+<p>Also confirm <code>/</code>, representative new exercise routes, their <code>/thumbs/</code> assets,
+and <code>/sitemap.xml</code> return successful responses. The sitemap should contain the
+homepage plus one URL for every exercise group.</p>
+<h2 id="custom-domains-and-project-settings">Custom domains and project settings</h2>
+<p>Manage domains, environment variables, analytics, usage, and deployment logs in
+the existing Vercel project. Follow the DNS records Vercel displays for the
+selected domain; do not rely on hard-coded records or historical pricing in this
+repository.</p>
 <h2 id="troubleshooting">Troubleshooting</h2>
-<p><strong>Build fails on Vercel:</strong>
-Run <code>npm run build</code> locally first to catch errors before pushing.</p>
-<p><strong>TikTok embeds not loading:</strong>
-TikTok players load only after the visitor taps the local preview. If a player is blocked, the permanent &quot;Open original on TikTok&quot; link remains available. Check the browser console and the original post&#39;s availability.</p>
-<p><strong>yt-dlp can&#39;t scrape TikTok:</strong>
-TikTok blocks scrapers frequently. Try updating yt-dlp (<code>pip install -U yt-dlp</code>). If it still fails, manually collect video URLs from his profile page and put them in <code>urls.txt</code>.</p>
-<p><strong>Want to move off Vercel later?</strong>
-Since this is a standard Next.js app, it deploys anywhere: Netlify, Cloudflare Pages, AWS Amplify, or even a $5 VPS with <code>npm run build &amp;&amp; npm start</code>.</p>
-<hr>
-<h2 id="cost-summary">Cost Summary</h2>
-<table>
-<thead>
-<tr>
-<th>Item</th>
-<th>Monthly</th>
-<th>Annual</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Vercel hosting</td>
-<td>$0</td>
-<td>$0</td>
-</tr>
-<tr>
-<td>Domain (optional)</td>
-<td>—</td>
-<td>$10–15</td>
-</tr>
-<tr>
-<td>Cloudflare DNS (if using CF registrar)</td>
-<td>$0</td>
-<td>$0</td>
-</tr>
-<tr>
-<td><strong>Total</strong></td>
-<td><strong>$0</strong></td>
-<td><strong>$0–15</strong></td>
-</tr>
-</tbody></table>
+<h3 id="production-build-fails">Production build fails</h3>
+<p>Run the required local verification commands and inspect the first failing
+boundary. <code>npm run build</code> includes the documentation-parity check.</p>
+<h3 id="a-thumbnail-fails-to-refresh">A thumbnail fails to refresh</h3>
+<p>Run <code>npm run thumbnails</code>, inspect <code>docs/qa/latest/thumbnail-report.json</code>, and
+then run <code>npm run test:catalog</code>. Source platforms can remove posts or change
+metadata endpoints; an unrecoverable source must have an explicit report entry
+and use the durable local fallback.</p>
+<h3 id="a-tiktok-player-is-unavailable">A TikTok player is unavailable</h3>
+<p>TikTok loads only after the visitor activates the local preview. The exercise
+page retains an original-post link when the embedded player is blocked or the
+source post is unavailable.</p>
+<h3 id="a-deployment-is-ready-but-the-app-is-not">A deployment is ready but the app is not</h3>
+<p>Check the production browser suite, route responses, asset responses, sitemap,
+and deployment logs. A ready deployment is not a substitute for rendered-flow
+verification.</p>
   </main>
 </body>
 </html>

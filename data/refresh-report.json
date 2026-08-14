@@ -1,17 +1,10 @@
 {
   "version": 1,
   "mode": "apply",
-  "scan_mode": "same-session-live-cache",
-  "checked_at": "2026-07-16T23:42:15Z",
+  "scan_mode": "live",
+  "checked_at": "2026-08-14T15:13:18Z",
   "source_evidence": {
-    "source": "same-session live scan cache",
-    "instagram_checked_at": "2026-07-16T23:03:16Z",
-    "instagram_counts": {
-      "coachingotf": 42,
-      "trainingtall": 30
-    },
-    "tiktok_checked_at": "2026-07-16T23:41:14Z",
-    "direct_apply_attempt": "Instagram returned HTTP 401 after three retries; the fail-closed attempt wrote no files"
+    "source": "direct live scan"
   },
   "baseline": {
     "production_commit": "43beed930103530fa999226749c3d0fa498c8894",
@@ -22,24 +15,24 @@
     "instagram:coachingotf": {
       "platform": "instagram",
       "handle": "coachingotf",
-      "cutoff_timestamp": 1780629662,
-      "scanned_count": 44,
-      "page_count": 6,
-      "latest_seen_timestamp": 1784203200,
-      "latest_seen_id": "ig_Da1kMrPNmtt",
+      "cutoff_timestamp": 1784203200,
+      "scanned_count": 60,
+      "page_count": 5,
+      "latest_seen_timestamp": 1786672645,
+      "latest_seen_id": "ig_DcALjFwNPrL",
       "stop_reason": "two_consecutive_historical_pages",
-      "candidate_count": 42
+      "candidate_count": 29
     },
     "instagram:trainingtall": {
       "platform": "instagram",
       "handle": "trainingtall",
-      "cutoff_timestamp": 1780629662,
-      "scanned_count": 32,
-      "page_count": 5,
-      "latest_seen_timestamp": 1784116800,
-      "latest_seen_id": "ig_DazF4j-p5Oo",
+      "cutoff_timestamp": 1784116800,
+      "scanned_count": 48,
+      "page_count": 4,
+      "latest_seen_timestamp": 1786055382,
+      "latest_seen_id": "ig_DbtyfVWFY28",
       "stop_reason": "two_consecutive_historical_pages",
-      "candidate_count": 30
+      "candidate_count": 14
     },
     "tiktok:coachingotf": {
       "platform": "tiktok",
@@ -54,18 +47,6 @@
     }
   },
   "counts_before": {
-    "exercise_groups": 1231,
-    "videos": 1966,
-    "videos_by_creator": {
-      "coachingotf": 1748,
-      "trainingtall": 218
-    },
-    "videos_by_platform": {
-      "instagram": 1362,
-      "tiktok": 604
-    }
-  },
-  "counts_after": {
     "exercise_groups": 1286,
     "videos": 2031,
     "videos_by_creator": {
@@ -77,522 +58,332 @@
       "tiktok": 604
     }
   },
-  "candidate_count": 72,
-  "accepted_count": 65,
-  "rejected_count": 7,
+  "counts_after": {
+    "exercise_groups": 1309,
+    "videos": 2072,
+    "videos_by_creator": {
+      "coachingotf": 1818,
+      "trainingtall": 254
+    },
+    "videos_by_platform": {
+      "instagram": 1468,
+      "tiktok": 604
+    }
+  },
+  "candidate_count": 43,
+  "accepted_count": 41,
+  "rejected_count": 2,
   "skipped_count": 0,
   "accepted_by_creator": {
-    "coachingotf": 41,
-    "trainingtall": 24
+    "coachingotf": 29,
+    "trainingtall": 12
   },
   "rejected_by_creator": {
-    "coachingotf": 1,
-    "trainingtall": 6
+    "trainingtall": 2
   },
   "decisions": {
     "accepted": [
       {
-        "id": "ig_DZOv6sUtz6-",
+        "id": "ig_Da4Kz9Dt6v2",
         "creator": "coachingotf",
         "source": "instagram",
-        "exercise_group": "strap-squat-jump",
+        "exercise_group": "seated-overhead-triceps-extension",
         "decision": "classifier_accept_new_group"
       },
       {
-        "id": "ig_DZRDnjXtAar",
+        "id": "ig_Da6zWeKtoD8",
         "creator": "coachingotf",
         "source": "instagram",
-        "exercise_group": "single-arm-chest-press-with-leg-extension",
+        "exercise_group": "floor-two-dumbbell-hold-with-straight-leg-raise",
         "decision": "explicit_append"
       },
       {
-        "id": "ig_DZTnx-Ht77X",
+        "id": "ig_Da9eInYNHeS",
         "creator": "coachingotf",
         "source": "instagram",
-        "exercise_group": "hang-power-clean-to-alternating-single-arm-neutral-grip-push-press",
+        "exercise_group": "chest-fly-to-2x-close-grip-chest-press",
         "decision": "classifier_accept_new_group"
       },
       {
-        "id": "ig_DZTpKpaJKbg",
+        "id": "ig_Da_34EQpwnu",
         "creator": "trainingtall",
         "source": "instagram",
-        "exercise_group": "split-squat-knee-pain-modification",
-        "decision": "manual_force_include_new_group"
-      },
-      {
-        "id": "ig_DZVv6SHAYM6",
-        "creator": "coachingotf",
-        "source": "instagram",
-        "exercise_group": "skiers-swing",
-        "decision": "classifier_accept_new_group"
-      },
-      {
-        "id": "ig_DZWKfY-p78Q",
-        "creator": "trainingtall",
-        "source": "instagram",
-        "exercise_group": "lateral-lunge-goblet-hold",
-        "decision": "manual_force_include_new_group"
-      },
-      {
-        "id": "ig_DZYHFY6gaDY",
-        "creator": "coachingotf",
-        "source": "instagram",
-        "exercise_group": "mid-band-walkout-to-push-up",
-        "decision": "classifier_accept_new_group"
-      },
-      {
-        "id": "ig_DZYf6Y7Bstp",
-        "creator": "trainingtall",
-        "source": "instagram",
-        "exercise_group": "step-down-heel-tap",
-        "decision": "manual_force_include_new_group"
-      },
-      {
-        "id": "ig_DZbEuBihh9d",
-        "creator": "trainingtall",
-        "source": "instagram",
-        "exercise_group": "running-with-shin-splints",
-        "decision": "classifier_accept_new_group"
-      },
-      {
-        "id": "ig_DZbMHoBAm0o",
-        "creator": "coachingotf",
-        "source": "instagram",
-        "exercise_group": "burpee-to-alternating-reverse-lunge",
-        "decision": "classifier_accept_new_group"
-      },
-      {
-        "id": "ig_DZdpj2yBFB9",
-        "creator": "trainingtall",
-        "source": "instagram",
-        "exercise_group": "dumbbell-burpee-setup",
-        "decision": "classifier_accept_new_group"
-      },
-      {
-        "id": "ig_DZd6DGLt0vU",
-        "creator": "coachingotf",
-        "source": "instagram",
-        "exercise_group": "quick-forward-backward-hops",
-        "decision": "manual_force_include_new_group"
-      },
-      {
-        "id": "ig_DZfhOgTA6ZJ",
-        "creator": "coachingotf",
-        "source": "instagram",
-        "exercise_group": "y-bell-squat-to-biceps-curl",
-        "decision": "classifier_accept_new_group"
-      },
-      {
-        "id": "ig_DZjKHodtyDk",
-        "creator": "coachingotf",
-        "source": "instagram",
-        "exercise_group": "alternating-sumo-squat",
-        "decision": "classifier_accept_new_group"
-      },
-      {
-        "id": "ig_DZlrfyqJAW_",
-        "creator": "trainingtall",
-        "source": "instagram",
-        "exercise_group": "deep-squat-mobility-drill",
-        "decision": "manual_force_include_new_group"
-      },
-      {
-        "id": "ig_DZlwZKNAiqM",
-        "creator": "coachingotf",
-        "source": "instagram",
-        "exercise_group": "tall-kneeling-to-contralateral-single-arm-stand",
-        "decision": "classifier_accept_new_group"
-      },
-      {
-        "id": "ig_DZn1qhWgbv-",
-        "creator": "coachingotf",
-        "source": "instagram",
-        "exercise_group": "bridge-hold-with-alternating-walkout",
-        "decision": "manual_force_include_new_group"
-      },
-      {
-        "id": "ig_DZn8tryB6DT",
-        "creator": "trainingtall",
-        "source": "instagram",
-        "exercise_group": "split-stance-deadlift",
+        "exercise_group": "seated-low-row-options-preserving-the-stimulus",
         "decision": "explicit_append"
       },
       {
-        "id": "ig_DZqhgTphRzD",
-        "creator": "trainingtall",
-        "source": "instagram",
-        "exercise_group": "diagonal-push-up",
-        "decision": "manual_force_include_new_group"
-      },
-      {
-        "id": "ig_DZq19G8tzM9",
+        "id": "ig_DbAFBvGtyUR",
         "creator": "coachingotf",
         "source": "instagram",
-        "exercise_group": "contralateral-single-arm-split-squat-with-hinge",
+        "exercise_group": "low-plank-alternating-leg-lift",
+        "decision": "classifier_accept_new_group"
+      },
+      {
+        "id": "ig_DbCT500Em1x",
+        "creator": "trainingtall",
+        "source": "instagram",
+        "exercise_group": "treadmill-speed-progression-with-decimal-increments",
+        "decision": "classifier_accept_new_group"
+      },
+      {
+        "id": "ig_DbChl3YtL2A",
+        "creator": "coachingotf",
+        "source": "instagram",
+        "exercise_group": "clean-to-front-squat-aka-hang-squat-clean",
         "decision": "explicit_append"
       },
       {
-        "id": "ig_DZtGRTKB21h",
+        "id": "ig_DbEmQthgJ1z",
         "creator": "trainingtall",
         "source": "instagram",
-        "exercise_group": "deadlift-wall-hinge-drill",
-        "decision": "classifier_accept_new_group"
-      },
-      {
-        "id": "ig_DZtVOZDtR3H",
-        "creator": "coachingotf",
-        "source": "instagram",
-        "exercise_group": "floor-single-arm-chest-fly",
-        "decision": "classifier_accept_new_group"
-      },
-      {
-        "id": "ig_DZvrC9lSxzb",
-        "creator": "trainingtall",
-        "source": "instagram",
-        "exercise_group": "running-form-at-any-speed",
-        "decision": "classifier_accept_new_group"
-      },
-      {
-        "id": "ig_DZv-JwbtbdS",
-        "creator": "coachingotf",
-        "source": "instagram",
-        "exercise_group": "bench-goblet-sit-to-stand",
-        "decision": "classifier_accept_new_group"
-      },
-      {
-        "id": "ig_DZyqxVuNu4z",
-        "creator": "coachingotf",
-        "source": "instagram",
-        "exercise_group": "strap-side-facing-single-arm-biceps-curl",
+        "exercise_group": "correcting-swingingcurling-in-the-clean",
         "decision": "explicit_append"
       },
       {
-        "id": "ig_DZ1HByBRIIa",
+        "id": "ig_DbFMZnXNf7g",
         "creator": "coachingotf",
         "source": "instagram",
-        "exercise_group": "strap-low-plank",
+        "exercise_group": "push-up-to-superhero-press",
         "decision": "classifier_accept_new_group"
       },
       {
-        "id": "ig_DZ3gIBVATZ2",
-        "creator": "coachingotf",
-        "source": "instagram",
-        "exercise_group": "dynamic-single-arm-body-twist",
-        "decision": "manual_force_include_new_group"
-      },
-      {
-        "id": "ig_DZ3s6pQp4rj",
+        "id": "ig_DbHLdYej4Ig",
         "creator": "trainingtall",
         "source": "instagram",
-        "exercise_group": "shoulder-press-elbow-position",
-        "decision": "manual_force_include_new_group"
-      },
-      {
-        "id": "ig_DZ53Z0QB_KO",
-        "creator": "trainingtall",
-        "source": "instagram",
-        "exercise_group": "running-cadence",
-        "decision": "classifier_accept_new_group"
-      },
-      {
-        "id": "ig_DZ6fG3Gt3xX",
-        "creator": "coachingotf",
-        "source": "instagram",
-        "exercise_group": "front-rack-split-squat-aqap-as-quick-as-possible",
-        "decision": "classifier_accept_new_group"
-      },
-      {
-        "id": "ig_DZ8cKYSBdRO",
-        "creator": "trainingtall",
-        "source": "instagram",
-        "exercise_group": "snatch",
+        "exercise_group": "sumo-squat",
         "decision": "explicit_append"
       },
       {
-        "id": "ig_DZ9G7sBtODy",
+        "id": "ig_DbHs3OegnAX",
         "creator": "coachingotf",
         "source": "instagram",
-        "exercise_group": "bench-high-plank-single-arm-triceps-kickback",
+        "exercise_group": "two-handed-single-dumbbell-transverse-deadlift",
         "decision": "classifier_accept_new_group"
       },
       {
-        "id": "ig_DZ_BAaJB8HB",
+        "id": "ig_DbJwvLrjI5Z",
         "creator": "trainingtall",
         "source": "instagram",
-        "exercise_group": "goblet-squat",
+        "exercise_group": "cross-back-lunge",
         "decision": "explicit_append"
       },
       {
-        "id": "ig_DZ_pkjitR81",
-        "creator": "coachingotf",
-        "source": "instagram",
-        "exercise_group": "seated-uppercut",
-        "decision": "manual_force_include_new_group"
-      },
-      {
-        "id": "ig_DaBl0KKBL-m",
-        "creator": "trainingtall",
-        "source": "instagram",
-        "exercise_group": "reverse-fly-hinge-position",
-        "decision": "manual_force_include_new_group"
-      },
-      {
-        "id": "ig_DaCPsuHNqBJ",
-        "creator": "coachingotf",
-        "source": "instagram",
-        "exercise_group": "mid-band-squat",
-        "decision": "classifier_accept_new_group"
-      },
-      {
-        "id": "ig_DaEz-g_Nsu5",
-        "creator": "coachingotf",
-        "source": "instagram",
-        "exercise_group": "dumbbell-grip-strength",
-        "decision": "manual_force_include_new_group"
-      },
-      {
-        "id": "ig_DaHXDW4N13i",
-        "creator": "coachingotf",
-        "source": "instagram",
-        "exercise_group": "alternating-biceps-curl",
-        "decision": "classifier_accept_new_group"
-      },
-      {
-        "id": "ig_DaJ6xTQt-tb",
-        "creator": "coachingotf",
-        "source": "instagram",
-        "exercise_group": "goblet-alternating-reverse-lunge-with-torso-rotation",
-        "decision": "classifier_accept_new_group"
-      },
-      {
-        "id": "ig_DaJt09qJUcd",
-        "creator": "trainingtall",
-        "source": "instagram",
-        "exercise_group": "sit-up-leg-position",
-        "decision": "classifier_accept_new_group"
-      },
-      {
-        "id": "ig_DaL4-n9Bze9",
-        "creator": "trainingtall",
-        "source": "instagram",
-        "exercise_group": "biceps-curl-wrist-position",
-        "decision": "manual_force_include_new_group"
-      },
-      {
-        "id": "ig_DaMgf6PNphi",
-        "creator": "coachingotf",
-        "source": "instagram",
-        "exercise_group": "bench-seated-high-row",
-        "decision": "classifier_accept_new_group"
-      },
-      {
-        "id": "ig_DaOdueghjOi",
-        "creator": "trainingtall",
-        "source": "instagram",
-        "exercise_group": "rear-foot-elevated-split-squat-setup",
-        "decision": "classifier_accept_new_group"
-      },
-      {
-        "id": "ig_DaO-m2YNVeh",
-        "creator": "coachingotf",
-        "source": "instagram",
-        "exercise_group": "alternating-reverse-fly",
-        "decision": "classifier_accept_new_group"
-      },
-      {
-        "id": "ig_DaRCn_ZBxki",
-        "creator": "trainingtall",
-        "source": "instagram",
-        "exercise_group": "single-leg-deadlift-balance",
-        "decision": "classifier_accept_new_group"
-      },
-      {
-        "id": "ig_DaRjz-BNhnD",
-        "creator": "coachingotf",
-        "source": "instagram",
-        "exercise_group": "high-plank-alternating-wide-step-with-power",
-        "decision": "explicit_append"
-      },
-      {
-        "id": "ig_DaUS1b3AJTE",
-        "creator": "coachingotf",
-        "source": "instagram",
-        "exercise_group": "alternating-full-step-up-to-knee-raise",
-        "decision": "explicit_append"
-      },
-      {
-        "id": "ig_DaWwoZcgY4T",
-        "creator": "coachingotf",
-        "source": "instagram",
-        "exercise_group": "single-leg-contralateral-single-arm-low-row",
-        "decision": "classifier_accept_new_group"
-      },
-      {
-        "id": "ig_DaZawPMtivI",
-        "creator": "coachingotf",
-        "source": "instagram",
-        "exercise_group": "deadlift-to-high-pull",
-        "decision": "classifier_accept_new_group"
-      },
-      {
-        "id": "ig_Dab_GCvN0k5",
-        "creator": "coachingotf",
-        "source": "instagram",
-        "exercise_group": "squat-to-calf-raise",
-        "decision": "explicit_append"
-      },
-      {
-        "id": "ig_Dabs3yspqdo",
-        "creator": "trainingtall",
-        "source": "instagram",
-        "exercise_group": "diagonal-dumbbell-chest-press-grip",
-        "decision": "manual_force_include_new_group"
-      },
-      {
-        "id": "ig_DaeCLdbP-ul",
-        "creator": "trainingtall",
-        "source": "instagram",
-        "exercise_group": "reverse-lunge-movement-timing",
-        "decision": "manual_force_include_new_group"
-      },
-      {
-        "id": "ig_DaecVvKNRW5",
-        "creator": "coachingotf",
-        "source": "instagram",
-        "exercise_group": "y-bell-squat-jump-punch",
-        "decision": "classifier_accept_new_group"
-      },
-      {
-        "id": "ig_Dag-rmstW2T",
-        "creator": "coachingotf",
-        "source": "instagram",
-        "exercise_group": "alternating-cross-back-lunge",
-        "decision": "classifier_accept_new_group"
-      },
-      {
-        "id": "ig_DajjlDMJY5A",
-        "creator": "trainingtall",
-        "source": "instagram",
-        "exercise_group": "deadlift-range-of-motion",
-        "decision": "classifier_accept_new_group"
-      },
-      {
-        "id": "ig_DajqsDpNHsz",
-        "creator": "coachingotf",
-        "source": "instagram",
-        "exercise_group": "lateral-step-over",
-        "decision": "classifier_accept_new_group"
-      },
-      {
-        "id": "ig_DamOMbSNnCy",
-        "creator": "coachingotf",
-        "source": "instagram",
-        "exercise_group": "contralateral-single-arm-reverse-lunge-to-press",
-        "decision": "explicit_append"
-      },
-      {
-        "id": "ig_DapEQksAC5q",
-        "creator": "coachingotf",
-        "source": "instagram",
-        "exercise_group": "alternating-step-out-neutral-grip-thruster",
-        "decision": "classifier_accept_new_group"
-      },
-      {
-        "id": "ig_DarYFGBthYy",
+        "id": "ig_DbKXlCDNXqy",
         "creator": "coachingotf",
         "source": "instagram",
         "exercise_group": "bench-pullover",
+        "decision": "exact_slug_append"
+      },
+      {
+        "id": "ig_DbM8gluNVZx",
+        "creator": "coachingotf",
+        "source": "instagram",
+        "exercise_group": "single-arm-snatch-to-contralateral-overhead-reverse-lunge",
+        "decision": "exact_slug_append"
+      },
+      {
+        "id": "ig_DbPY9rrh6bm",
+        "creator": "coachingotf",
+        "source": "instagram",
+        "exercise_group": "bench-mountain-climber",
         "decision": "classifier_accept_new_group"
       },
       {
-        "id": "ig_Dat-tkLpkxF",
+        "id": "ig_DbRfmjEjncE",
         "creator": "trainingtall",
         "source": "instagram",
-        "exercise_group": "200m-row-sprint-technique",
+        "exercise_group": "split-squat-foot-position-setup",
         "decision": "classifier_accept_new_group"
       },
       {
-        "id": "ig_DauJzOzAxAv",
+        "id": "ig_DbSDK_CNCzZ",
         "creator": "coachingotf",
         "source": "instagram",
-        "exercise_group": "burpee-to-squat-to-press",
+        "exercise_group": "crab-position-setup",
         "decision": "classifier_accept_new_group"
       },
       {
-        "id": "ig_DawMwoeN1uh",
-        "creator": "coachingotf",
-        "source": "instagram",
-        "exercise_group": "seated-reverse-fly",
-        "decision": "classifier_accept_new_group"
-      },
-      {
-        "id": "ig_DazEiFItJjY",
-        "creator": "coachingotf",
-        "source": "instagram",
-        "exercise_group": "scapular-protraction-to-push-up",
-        "decision": "classifier_accept_new_group"
-      },
-      {
-        "id": "ig_DazF4j-p5Oo",
+        "id": "ig_DbUE0a9lLFY",
         "creator": "trainingtall",
         "source": "instagram",
-        "exercise_group": "lateral-step-up-position",
+        "exercise_group": "trx-bridge-row-setup",
+        "decision": "manual_force_include_new_group"
+      },
+      {
+        "id": "ig_DbUlG_ztw2P",
+        "creator": "coachingotf",
+        "source": "instagram",
+        "exercise_group": "half-kneeling-single-arm-high-row",
+        "decision": "manual_force_include_new_group"
+      },
+      {
+        "id": "ig_DbXMKlNN32G",
+        "creator": "coachingotf",
+        "source": "instagram",
+        "exercise_group": "split-stance-high-row-to-low-row",
+        "decision": "explicit_append"
+      },
+      {
+        "id": "ig_DbZkUTqNQ6r",
+        "creator": "coachingotf",
+        "source": "instagram",
+        "exercise_group": "plank",
+        "decision": "explicit_append"
+      },
+      {
+        "id": "ig_DbcWs8CNUEG",
+        "creator": "coachingotf",
+        "source": "instagram",
+        "exercise_group": "goblet-reverse-lunge",
         "decision": "classifier_accept_new_group"
       },
       {
-        "id": "ig_Da1kMrPNmtt",
+        "id": "ig_Dbe2ubbtsfo",
         "creator": "coachingotf",
         "source": "instagram",
-        "exercise_group": "bench-sit-up-to-seated-torso-rotation",
-        "decision": "classifier_accept_new_group"
+        "exercise_group": "low-bench-b-stance-goblet-squat",
+        "decision": "manual_force_include_new_group"
+      },
+      {
+        "id": "ig_Dbhf4gMtQVv",
+        "creator": "coachingotf",
+        "source": "instagram",
+        "exercise_group": "goblet-squat-to-hip-extension",
+        "decision": "manual_force_include_new_group"
+      },
+      {
+        "id": "ig_DbjdvLcj1Ro",
+        "creator": "trainingtall",
+        "source": "instagram",
+        "exercise_group": "should-your-heels-lift-when-you-row",
+        "decision": "exact_slug_append"
+      },
+      {
+        "id": "ig_Dbj_v9VNeZG",
+        "creator": "coachingotf",
+        "source": "instagram",
+        "exercise_group": "full-lateral-step-up-to-knee-raise",
+        "decision": "exact_slug_append"
+      },
+      {
+        "id": "ig_DbmDqj0CmOx",
+        "creator": "trainingtall",
+        "source": "instagram",
+        "exercise_group": "strap-push-up",
+        "decision": "explicit_append"
+      },
+      {
+        "id": "ig_DbmpG6-NTW6",
+        "creator": "coachingotf",
+        "source": "instagram",
+        "exercise_group": "lateral-lunge-to-single-arm-high-pull-with-power",
+        "decision": "manual_force_include_new_group"
+      },
+      {
+        "id": "ig_DboomckijG_",
+        "creator": "trainingtall",
+        "source": "instagram",
+        "exercise_group": "hip-hinge-swing",
+        "decision": "explicit_append"
+      },
+      {
+        "id": "ig_DbpLc8WR7_7",
+        "creator": "coachingotf",
+        "source": "instagram",
+        "exercise_group": "tall-kneeling-halo",
+        "decision": "explicit_append"
+      },
+      {
+        "id": "ig_DbrNkX0Ate4",
+        "creator": "trainingtall",
+        "source": "instagram",
+        "exercise_group": "treadmill",
+        "decision": "explicit_append"
+      },
+      {
+        "id": "ig_Dbrv3BQtG7p",
+        "creator": "coachingotf",
+        "source": "instagram",
+        "exercise_group": "low-bench-step-down-reverse-lunge-to-single-leg-knee-drive",
+        "decision": "exact_slug_append"
+      },
+      {
+        "id": "ig_DbtyfVWFY28",
+        "creator": "trainingtall",
+        "source": "instagram",
+        "exercise_group": "concentration-curl",
+        "decision": "explicit_append"
+      },
+      {
+        "id": "ig_Dbt55rNAYvk",
+        "creator": "coachingotf",
+        "source": "instagram",
+        "exercise_group": "straight-leg-roll-up",
+        "decision": "manual_force_include_new_group"
+      },
+      {
+        "id": "ig_Dbwy9YGM7FI",
+        "creator": "coachingotf",
+        "source": "instagram",
+        "exercise_group": "floor-chest-press-with-bent-knees",
+        "decision": "manual_force_include_new_group"
+      },
+      {
+        "id": "ig_DbzCjMAgzA8",
+        "creator": "coachingotf",
+        "source": "instagram",
+        "exercise_group": "bosu-bridge-hold-with-chest-press-shoulders-on",
+        "decision": "manual_force_include_new_group"
+      },
+      {
+        "id": "ig_Db12iGytNa1",
+        "creator": "coachingotf",
+        "source": "instagram",
+        "exercise_group": "half-kneeling-high-to-low-chop",
+        "decision": "manual_force_include_new_group"
+      },
+      {
+        "id": "ig_Db4k1QjgDxt",
+        "creator": "coachingotf",
+        "source": "instagram",
+        "exercise_group": "mid-band-high-plank-alternating-toe-tap-to-leg-lift",
+        "decision": "manual_force_include_new_group"
+      },
+      {
+        "id": "ig_Db7AkooNk21",
+        "creator": "coachingotf",
+        "source": "instagram",
+        "exercise_group": "single-leg-full-v-up",
+        "decision": "manual_force_include_new_group"
+      },
+      {
+        "id": "ig_Db9mAoMtFen",
+        "creator": "coachingotf",
+        "source": "instagram",
+        "exercise_group": "bosu-high-plank-plank-jack-to-knee-tuck",
+        "decision": "manual_force_include_new_group"
+      },
+      {
+        "id": "ig_DcALjFwNPrL",
+        "creator": "coachingotf",
+        "source": "instagram",
+        "exercise_group": "alternating-single-arm-high-pull-with-power",
+        "decision": "manual_force_include_new_group"
       }
     ],
     "rejected": [
       {
-        "id": "ig_DZbUFcOJuAr",
+        "id": "ig_DbWqFg8gbu1",
         "creator": "trainingtall",
-        "reason": "recipe content"
+        "reason": "general mile-time motivation and pacing advice rather than an exercise demonstration"
       },
       {
-        "id": "ig_DaJVSabSzP_",
+        "id": "ig_DbglzB-PZy-",
         "creator": "trainingtall",
-        "reason": "nutrition interview"
-      },
-      {
-        "id": "ig_DaK4O_cu2Ro",
-        "creator": "coachingotf",
-        "reason": "Season of Strength community promotion"
-      },
-      {
-        "id": "ig_DaRa48zpOGZ",
-        "creator": "trainingtall",
-        "reason": "nutrition interview"
-      },
-      {
-        "id": "ig_DaTL2QAp0yX",
-        "creator": "trainingtall",
-        "reason": "generic interview prompt"
-      },
-      {
-        "id": "ig_DaTnU_JBNr_",
-        "creator": "trainingtall",
-        "reason": "standalone running-course promotion"
-      },
-      {
-        "id": "ig_DaWEqe-S_9k",
-        "creator": "trainingtall",
-        "reason": "calorie-deficit advice rather than an exercise demonstration"
+        "reason": "fat-loss food promotion rather than an exercise demonstration"
       }
     ],
     "skipped": []
   },
-  "failures": [
-    {
-      "source": "instagram",
-      "stage": "direct_apply_attempt",
-      "error": "HTTP 401 after three retries: Please wait a few minutes before you try again",
-      "catalog_written": false,
-      "fallback_used": "complete same-session live scan from 2026-07-16T23:03:16Z"
-    }
-  ]
+  "failures": []
 }
