@@ -319,8 +319,9 @@ function monitorPage(page, label, { javaScriptDisabled = false } = {}) {
       javaScriptDisabled &&
       reason.toLocaleLowerCase("en-US") === "csp" &&
       requestUrl.origin === localOrigin &&
-      requestUrl.pathname.startsWith("/_next/static/chunks/") &&
-      requestUrl.pathname.endsWith(".js");
+      /^\/_next\/static\/(?:immutable\/)?chunks\/.+\.js$/.test(
+        requestUrl.pathname
+      );
     if (expectedDisabledScriptBlock) return;
     if (!/abort|cancel/i.test(reason)) {
       failures.push(`request: ${request.method()} ${request.url()} (${reason})`);
