@@ -2,7 +2,7 @@
 
 ## Verdict
 
-**CONDITIONAL PASS — final local candidate**
+**CONDITIONAL PASS — production verified**
 
 The core product is usable, responsive, visually consistent, and fast after the
 remediation. No Critical or High product defect remains. The strict audit result
@@ -194,6 +194,8 @@ least one console read per route.
   optimistic save, destructive action, or concurrent editor to exercise.
 - After local metrics: LCP 68 ms, CLS 0, INP 24 ms, TTFB 7 ms. Baseline live
   production metrics were also green: LCP 356 ms, CLS 0, INP 24 ms, TTFB 34 ms.
+- Final live production metrics remained green: LCP 336 ms, CLS 0, INP 24 ms,
+  TTFB 39 ms.
 
 ## Visual system review
 
@@ -216,9 +218,17 @@ is subtle, established, and does not compete with content.
 - `npm run build` — 1,884 production pages compiled and typechecked
 - `BASE_URL=http://127.0.0.1:3000 npm run test:e2e` — Chromium and WebKit at
   desktop, 390px, and 320px; reduced-motion and JavaScript-disabled variants
+- `BASE_URL=https://o-tf-exercises.vercel.app npm run test:e2e` — the same full
+  browser matrix passed on the public production alias
 
 Permanent regression coverage now asserts 48-pixel touch targets, contextual
 empty-state recovery, and desktop Escape/focus behavior.
+
+Production commit `a412a8662e5d02d61854fd7d3d66669711513101` was verified
+after Vercel deployment `dpl_AyqzrdFSzRRhKhp35uZAVG2yf6Bw` reached Ready. The
+live six-route sweep reproduced the local result: zero axe violations, zero
+layout clipping, zero 5xx responses, clean console output on all five 200 routes,
+and the one transparent browser error on the deliberate true-404 route.
 
 ## Audit self-critique
 

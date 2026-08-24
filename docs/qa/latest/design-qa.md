@@ -1,6 +1,6 @@
 # Design QA — 2026-08-23 UI/UX audit
 
-**Final local result: CONDITIONAL PASS**
+**Final production result: CONDITIONAL PASS**
 
 The exercise and coaching directories pass the tested core flows, visual review,
 responsive checks, accessibility scan, performance budget, and Chromium/WebKit
@@ -78,11 +78,16 @@ problem in plain language, and provides a 48-pixel Try again action.
 - Zero network 5xx responses.
 - Five real 200 routes: zero console errors and warnings.
 - Intentional unknown route: true HTTP 404 and one raw browser 404 console error.
-- Local after metrics: LCP 68 ms, CLS 0, INP 24 ms.
+- Live production after metrics: LCP 336 ms, CLS 0, INP 24 ms, TTFB 39 ms.
 - Chromium and WebKit pass at 1280×900, 390×844, and 320×844; Chromium also
   passes reduced-motion and JavaScript-disabled variants.
 - Catalog, directory, security, thumbnail, documentation, and refresh suites,
   lint, TypeScript, and the 1,884-page Next.js production build pass.
+
+Production commit `a412a8662e5d02d61854fd7d3d66669711513101` was
+verified at `https://o-tf-exercises.vercel.app` after Vercel deployment
+`dpl_AyqzrdFSzRRhKhp35uZAVG2yf6Bw` reached Ready. The full Chromium/WebKit
+matrix and six-route automated audit were rerun against that public alias.
 
 The full findings, interaction manifest, stress coverage, and remaining caveats
 are in [the canonical audit](../../audits/2026-08-23-ui-ux-audit.md).
