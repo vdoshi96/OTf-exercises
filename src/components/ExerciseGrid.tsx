@@ -44,6 +44,13 @@ function isDirectoryResponse(value: unknown): value is DirectoryResponse {
   );
 }
 
+function requestErrorMessage() {
+  if (typeof navigator !== "undefined" && !navigator.onLine) {
+    return "You're offline. Check your connection and try again.";
+  }
+  return "We couldn't update the directory. Try again.";
+}
+
 export default function ExerciseGrid({
   initialResponse,
   pathname,
@@ -150,15 +157,9 @@ export default function ExerciseGrid({
           window.history.replaceState(null, "", canonicalHref);
         }
       })
-      .catch((error: unknown) => {
+      .catch(() => {
         if (controller.signal.aborted || sequence !== requestSequence.current) return;
-        setRequestError({
-          key: queryKey,
-          message:
-            error instanceof Error
-              ? error.message
-              : "Unable to load the directory",
-        });
+        setRequestError({ key: queryKey, message: requestErrorMessage() });
       });
 
     return () => controller.abort();
@@ -241,6 +242,15 @@ export default function ExerciseGrid({
   const visibleCount = response.items.length;
   const formattedTotal = response.total.toLocaleString();
   const itemLabel = response.query.section === "coaching" ? "resources" : "exercises";
+  const hasSearchQuery = queryFromUrl.q.length > 0;
+  const hasActiveFilters = [
+    queryFromUrl.categories,
+    queryFromUrl.muscles,
+    queryFromUrl.equipment,
+    queryFromUrl.sources,
+    queryFromUrl.creators,
+    queryFromUrl.topics,
+  ].some((values) => values.length > 0);
 
   return (
     <>
@@ -295,7 +305,11 @@ export default function ExerciseGrid({
               : "Exercise reference"}
           </h2>
           {isInteractiveRequestLoading && (
-            <span className="text-xs font-semibold text-[var(--signal)]" role="status">
+            <span
+              className="t-shimmer directory-loading-label text-xs font-semibold"
+              data-text="Updating…"
+              role="status"
+            >
               Updating…
             </span>
           )}
@@ -310,7 +324,7 @@ export default function ExerciseGrid({
                 setRequestError(null);
                 setRetryNonce((value) => value + 1);
               }}
-              className="min-h-11 rounded-md border border-red-300/40 px-4 font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-200"
+              className="min-h-12 rounded-md border border-red-300/40 px-4 font-semibold transition hover:bg-red-300/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-200"
             >
               Try again
             </button>
@@ -318,20 +332,41 @@ export default function ExerciseGrid({
         )}
 
         {response.items.length === 0 ? (
-          <div className="rounded-lg border border-white/10 bg-[#101111]/80 px-6 py-20 text-center">
+          <div data-testid="empty-results" className="rounded-lg border border-white/10 bg-[#101111]/80 px-6 py-20 text-center">
             <p className="text-lg font-semibold text-stone-200">No results found</p>
-            <p className="mt-1 text-sm text-stone-500">
+            <p className="mt-1 text-sm text-stone-400">
               Try adjusting your search or filters
             </p>
+            {(hasSearchQuery || hasActiveFilters) && (
+              <div className="mt-5 flex flex-wrap justify-center gap-3">
+                {hasSearchQuery && (
+                  <button
+                    type="button"
+                    onClick={clearSearch}
+                    className="min-h-12 rounded-md bg-orange-500 px-4 text-sm font-bold text-black transition hover:bg-orange-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-300"
+                  >
+                    Reset search
+                  </button>
+                )}
+                {hasActiveFilters && (
+                  <button
+                    type="button"
+                    onClick={clearFilters}
+                    className="min-h-12 rounded-md border border-white/15 px-4 text-sm font-bold text-stone-200 transition hover:border-orange-500/50 hover:text-orange-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-400"
+                  >
+                    Clear filters
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4">
-            {response.items.map((item, index) => (
+            {response.items.map((item) => (
               <ExerciseCard
                 key={item.id}
                 item={item}
                 query={queryFromUrl}
-                eager={index === 0}
               />
             ))}
           </div>

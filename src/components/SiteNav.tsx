@@ -41,7 +41,7 @@ function NavLink({
       href={href}
       aria-current={active ? "page" : undefined}
       className={
-        "relative inline-flex min-h-11 items-center rounded-md px-3 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 " +
+        "relative inline-flex min-h-12 items-center rounded-md px-3 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 " +
         (active
           ? "text-stone-50"
           : "text-stone-300 hover:bg-white/5 hover:text-orange-200")
@@ -71,7 +71,7 @@ export default function SiteNav() {
         <Link
           href="/"
           aria-label="Unofficial OTF Exercise Directory home"
-          className="flex min-w-0 items-center gap-3 rounded-md py-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400"
+          className="flex min-h-12 min-w-0 items-center gap-3 rounded-md py-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400"
         >
           <Image
             src="/otf-logo.svg"

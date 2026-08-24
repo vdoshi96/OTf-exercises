@@ -63,7 +63,7 @@ export default function TikTokEmbed({
           href={url}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex min-h-11 items-center rounded-md bg-orange-500 px-4 py-2 font-semibold text-black transition hover:bg-orange-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400"
+          className="inline-flex min-h-12 items-center rounded-md bg-orange-500 px-4 py-2 font-semibold text-black transition hover:bg-orange-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400"
         >
           Watch on TikTok
         </a>
@@ -141,7 +141,7 @@ export default function TikTokEmbed({
         href={url}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex min-h-11 items-center justify-center gap-2 border-t border-white/10 px-4 py-2 text-sm font-semibold text-stone-300 transition hover:bg-white/5 hover:text-orange-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-orange-400"
+        className="flex min-h-12 items-center justify-center gap-2 border-t border-white/10 px-4 py-2 text-sm font-semibold text-stone-300 transition hover:bg-white/5 hover:text-orange-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-orange-400"
       >
         <TikTokMark />
         Open original on TikTok

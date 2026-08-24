@@ -29,11 +29,11 @@ export default function NotFound() {
             type="search"
             name="q"
             placeholder="Search exercises"
-            className="min-h-11 min-w-0 flex-1 rounded-md border border-white/15 bg-[#181919] px-4 text-stone-100 placeholder:text-stone-500 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500/25"
+            className="min-h-12 min-w-0 flex-1 rounded-md border border-white/15 bg-[#181919] px-4 text-stone-100 placeholder:text-stone-400 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500/25"
           />
           <button
             type="submit"
-            className="min-h-11 rounded-md bg-orange-500 px-5 py-2 font-semibold text-black transition hover:bg-orange-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-400"
+            className="min-h-12 rounded-md bg-orange-500 px-5 py-2 font-semibold text-black transition hover:bg-orange-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-400"
           >
             Search directory
           </button>
@@ -42,13 +42,13 @@ export default function NotFound() {
         <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2">
           <Link
             href="/#directory"
-            className="inline-flex min-h-11 items-center rounded-md text-sm font-semibold text-orange-300 underline decoration-orange-500/50 underline-offset-4 transition hover:text-orange-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-400"
+            className="inline-flex min-h-12 items-center rounded-md text-sm font-semibold text-orange-300 underline decoration-orange-500/50 underline-offset-4 transition hover:text-orange-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-400"
           >
             Browse all exercises
           </Link>
           <Link
             href="/coaching"
-            className="inline-flex min-h-11 items-center rounded-md text-sm font-semibold text-orange-300 underline decoration-orange-500/50 underline-offset-4 transition hover:text-orange-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-400"
+            className="inline-flex min-h-12 items-center rounded-md text-sm font-semibold text-orange-300 underline decoration-orange-500/50 underline-offset-4 transition hover:text-orange-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-400"
           >
             Browse coaching resources
           </Link>

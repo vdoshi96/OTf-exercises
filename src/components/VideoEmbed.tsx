@@ -66,16 +66,16 @@ export default function VideoEmbed({
             href={video.creator.profile_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-sm text-xs font-semibold text-stone-300 transition hover:text-orange-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400"
+            className="inline-flex min-h-12 items-center rounded-sm text-xs font-semibold text-stone-300 transition hover:text-orange-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 sm:min-h-0"
           >
             {video.creator.display_name}{" "}
-            <span className="font-normal text-stone-500">
+            <span className="font-normal text-stone-400">
               {creatorHandle}
             </span>
           </a>
         </div>
         {total > 1 && (
-          <span className="shrink-0 text-xs font-bold uppercase text-stone-500">
+          <span className="shrink-0 text-xs font-bold uppercase text-stone-400">
             {index + 1} of {total}
           </span>
         )}
