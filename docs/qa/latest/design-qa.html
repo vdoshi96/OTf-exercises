@@ -6,7 +6,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: https:; style-src 'unsafe-inline'">
   <meta name="generator" content="otf-docs-parity/v1">
   <meta name="doc-source" content="docs/qa/latest/design-qa.md">
-  <meta name="doc-source-sha256" content="4e40d73811bebcfeef40420e1629bda25e9ff4ad94efcd58789d6451853902c9">
+  <meta name="doc-source-sha256" content="0f904c856d10a9c7284dc1065e5c35b023011dd2f6206f5cd9d470f835601393">
   <title>Design QA — 2026-08-23 UI/UX audit</title>
   <style>
     :root {
@@ -87,7 +87,7 @@
 <body>
   <main>
 <h1 id="design-qa-2026-08-23-uiux-audit">Design QA — 2026-08-23 UI/UX audit</h1>
-<p><strong>Final local result: CONDITIONAL PASS</strong></p>
+<p><strong>Final production result: CONDITIONAL PASS</strong></p>
 <p>The exercise and coaching directories pass the tested core flows, visual review,
 responsive checks, accessibility scan, performance budget, and Chromium/WebKit
 production-browser matrix. The qualifier is narrow and explicit: navigating to
@@ -175,12 +175,16 @@ for manual review rather than an automated failure.</li>
 <li>Zero network 5xx responses.</li>
 <li>Five real 200 routes: zero console errors and warnings.</li>
 <li>Intentional unknown route: true HTTP 404 and one raw browser 404 console error.</li>
-<li>Local after metrics: LCP 68 ms, CLS 0, INP 24 ms.</li>
+<li>Live production after metrics: LCP 336 ms, CLS 0, INP 24 ms, TTFB 39 ms.</li>
 <li>Chromium and WebKit pass at 1280×900, 390×844, and 320×844; Chromium also
 passes reduced-motion and JavaScript-disabled variants.</li>
 <li>Catalog, directory, security, thumbnail, documentation, and refresh suites,
 lint, TypeScript, and the 1,884-page Next.js production build pass.</li>
 </ul>
+<p>Production commit <code>a412a8662e5d02d61854fd7d3d66669711513101</code> was
+verified at <code>https://o-tf-exercises.vercel.app</code> after Vercel deployment
+<code>dpl_AyqzrdFSzRRhKhp35uZAVG2yf6Bw</code> reached Ready. The full Chromium/WebKit
+matrix and six-route automated audit were rerun against that public alias.</p>
 <p>The full findings, interaction manifest, stress coverage, and remaining caveats
 are in <a href="../../audits/2026-08-23-ui-ux-audit.html">the canonical audit</a>.</p>
   </main>
