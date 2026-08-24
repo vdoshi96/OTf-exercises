@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type {
   DirectoryFilterOption,
   DirectoryFilterOptions,
@@ -39,11 +39,11 @@ interface FilterGroupConfig {
   wide?: boolean;
 }
 
-function ChevronIcon({ open }: { open?: boolean }) {
+function ChevronIcon() {
   return (
     <svg
       aria-hidden="true"
-      className={`h-4 w-4 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+      className="h-4 w-4"
       fill="none"
       stroke="currentColor"
       viewBox="0 0 24 24"
@@ -117,7 +117,7 @@ function Chip({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`min-h-11 max-w-full rounded-md border px-3 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 ${
+      className={`min-h-12 max-w-full rounded-md border px-3 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 ${
         active
           ? "border-orange-400/70 bg-orange-500/20 text-orange-100 shadow-sm shadow-orange-950/40"
           : "border-white/10 bg-[#161717] text-stone-300 hover:border-orange-500/50 hover:text-orange-100"
@@ -136,7 +136,7 @@ function ActiveFilterChip({ filter }: { filter: ActiveFilter }) {
         type="button"
         onClick={filter.onRemove}
         aria-label={`Remove ${filter.label} filter`}
-        className="-my-2 -mr-2 flex min-h-11 min-w-11 items-center justify-center rounded-sm text-orange-200 transition hover:bg-orange-500/20 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 sm:my-0 sm:mr-0 sm:min-h-0 sm:min-w-0 sm:p-0.5"
+        className="-my-2 -mr-2 flex min-h-12 min-w-12 items-center justify-center rounded-sm text-orange-200 transition hover:bg-orange-500/20 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 sm:my-0 sm:mr-0 sm:min-h-0 sm:min-w-0 sm:p-0.5"
       >
         <CloseIcon />
       </button>
@@ -155,7 +155,7 @@ function DesktopFilterGroups({
     <div className="grid gap-5 lg:grid-cols-2">
       {groups.map((group) => (
         <div key={group.key} className={group.wide ? "lg:col-span-2" : ""}>
-          <h3 className="mb-2 text-xs font-bold uppercase text-stone-500">
+          <h3 className="mb-2 text-xs font-bold uppercase text-stone-400">
             {group.title}
           </h3>
           <div
@@ -231,7 +231,9 @@ export default function FilterPanel({
   onClear,
 }: FilterPanelProps) {
   const [desktopPanelOpen, setDesktopPanelOpen] = useState(false);
+  const [mobileDialogOpen, setMobileDialogOpen] = useState(false);
   const mobileDialogRef = useRef<HTMLDialogElement>(null);
+  const mobileCloseTimerRef = useRef<number | null>(null);
   const mobileTriggerRef = useRef<HTMLButtonElement>(null);
   const desktopTriggerRef = useRef<HTMLButtonElement>(null);
 
@@ -271,7 +273,29 @@ export default function FilterPanel({
   const activeFilterCount = activeFilters.length;
   const hasFilters = activeFilterCount > 0;
 
-  const closeMobileDialog = () => mobileDialogRef.current?.close();
+  const openMobileDialog = () => {
+    const dialog = mobileDialogRef.current;
+    if (!dialog || dialog.open) return;
+    if (mobileCloseTimerRef.current !== null) {
+      window.clearTimeout(mobileCloseTimerRef.current);
+      mobileCloseTimerRef.current = null;
+    }
+    dialog.showModal();
+    window.requestAnimationFrame(() => setMobileDialogOpen(true));
+  };
+  const closeMobileDialog = () => {
+    const dialog = mobileDialogRef.current;
+    if (!dialog?.open || mobileCloseTimerRef.current !== null) return;
+    setMobileDialogOpen(false);
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    mobileCloseTimerRef.current = window.setTimeout(
+      () => {
+        dialog.close();
+        mobileCloseTimerRef.current = null;
+      },
+      reducedMotion ? 0 : 200
+    );
+  };
   const restoreFilterTriggerFocus = () => {
     const mobileTrigger = mobileTriggerRef.current;
     const desktopTrigger = desktopTriggerRef.current;
@@ -280,10 +304,34 @@ export default function FilterPanel({
     (mobileVisible ? mobileTrigger : desktopTrigger)?.focus();
   };
 
+  useEffect(() => {
+    if (!desktopPanelOpen) return;
+
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== "Escape" || mobileDialogRef.current?.open) return;
+      event.preventDefault();
+      setDesktopPanelOpen(false);
+      desktopTriggerRef.current?.focus();
+    };
+
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [desktopPanelOpen]);
+
+  useEffect(
+    () => () => {
+      if (mobileCloseTimerRef.current !== null) {
+        window.clearTimeout(mobileCloseTimerRef.current);
+      }
+    },
+    []
+  );
+
   return (
     <section
+      data-open={desktopPanelOpen}
       className={
-        "w-fit max-w-full max-sm:bg-transparent " +
+        "t-acc w-fit max-w-full max-sm:bg-transparent " +
         (desktopPanelOpen
           ? "sm:w-full sm:max-w-5xl sm:rounded-lg sm:border sm:border-white/10 sm:bg-[#101111]/90 sm:shadow-xl sm:shadow-black/20"
           : "sm:w-fit")
@@ -301,10 +349,11 @@ export default function FilterPanel({
           <button
             ref={mobileTriggerRef}
             type="button"
-            onClick={() => mobileDialogRef.current?.showModal()}
+            onClick={openMobileDialog}
             aria-haspopup="dialog"
+            aria-expanded={mobileDialogOpen}
             aria-controls="mobile-exercise-filters"
-            className="inline-flex min-h-11 items-center gap-2 rounded-md border border-white/15 bg-[#181919] px-4 py-2 text-sm font-semibold text-stone-100 transition hover:border-orange-500/50 hover:text-orange-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 sm:hidden"
+            className="inline-flex min-h-12 items-center gap-2 rounded-md border border-white/15 bg-[#181919] px-4 py-2 text-sm font-semibold text-stone-100 transition hover:border-orange-500/50 hover:text-orange-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 sm:hidden"
           >
             <FilterIcon />
             <span>Filters</span>
@@ -321,7 +370,7 @@ export default function FilterPanel({
             onClick={() => setDesktopPanelOpen((open) => !open)}
             aria-expanded={desktopPanelOpen}
             aria-controls="desktop-exercise-filters"
-            className="hidden min-h-11 items-center gap-2 rounded-md border border-white/15 bg-[#181919] px-4 py-2 text-sm font-semibold text-stone-100 transition hover:border-orange-500/50 hover:text-orange-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 sm:inline-flex"
+            className="hidden min-h-12 items-center gap-2 rounded-md border border-white/15 bg-[#181919] px-4 py-2 text-sm font-semibold text-stone-100 transition hover:border-orange-500/50 hover:text-orange-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 sm:inline-flex"
           >
             <FilterIcon />
             <span>Filters</span>
@@ -330,7 +379,9 @@ export default function FilterPanel({
                 {activeFilterCount}
               </span>
             )}
-            <ChevronIcon open={desktopPanelOpen} />
+            <span className="t-acc-chevron">
+              <ChevronIcon />
+            </span>
           </button>
 
           {hasFilters && (
@@ -356,28 +407,38 @@ export default function FilterPanel({
         )}
       </div>
 
-      {desktopPanelOpen && (
+      <div className="hidden sm:block">
         <div
           id="desktop-exercise-filters"
-          className="animate-filter-panel hidden border-t border-white/10 p-4 sm:block"
+          className="t-acc-panel"
+          aria-hidden={!desktopPanelOpen}
+          inert={!desktopPanelOpen}
         >
-          <DesktopFilterGroups groups={groups} onToggle={onToggle} />
+          <div className="t-acc-panel-inner border-t border-white/10">
+            <div className="p-4">
+              <DesktopFilterGroups groups={groups} onToggle={onToggle} />
+            </div>
+          </div>
         </div>
-      )}
+      </div>
 
       <dialog
         ref={mobileDialogRef}
         id="mobile-exercise-filters"
+        data-open={mobileDialogOpen}
         aria-labelledby="mobile-filter-heading"
         onCancel={(event) => {
           event.preventDefault();
           closeMobileDialog();
         }}
-        onClose={restoreFilterTriggerFocus}
+        onClose={() => {
+          setMobileDialogOpen(false);
+          restoreFilterTriggerFocus();
+        }}
         onClick={(event) => {
           if (event.target === event.currentTarget) closeMobileDialog();
         }}
-        className="fixed inset-x-0 bottom-0 top-auto m-0 max-h-[88dvh] w-full max-w-none flex-col overflow-hidden rounded-t-2xl border border-white/15 bg-[#0b0c0c] p-0 text-stone-100 shadow-2xl shadow-black open:flex backdrop:bg-black/80 backdrop:backdrop-blur-sm sm:hidden"
+        className="t-panel-slide mobile-filter-dialog fixed inset-x-0 bottom-0 top-auto m-0 max-h-[88dvh] w-full max-w-none flex-col overflow-hidden rounded-t-2xl border border-white/15 bg-[#0b0c0c] p-0 text-stone-100 shadow-2xl shadow-black open:flex backdrop:bg-black/80 backdrop:backdrop-blur-sm sm:hidden"
       >
         <div className="flex shrink-0 items-center justify-between gap-4 border-b border-white/10 bg-[#101111] px-4 py-3">
           <div>
@@ -390,7 +451,7 @@ export default function FilterPanel({
             type="button"
             onClick={closeMobileDialog}
             aria-label="Close filters"
-            className="flex min-h-11 min-w-11 items-center justify-center rounded-md border border-white/10 bg-[#181919] text-stone-300 transition hover:border-orange-500/50 hover:text-orange-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400"
+            className="flex min-h-12 min-w-12 items-center justify-center rounded-md border border-white/10 bg-[#181919] text-stone-300 transition hover:border-orange-500/50 hover:text-orange-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400"
           >
             <CloseIcon />
           </button>

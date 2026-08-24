@@ -6,7 +6,6 @@ interface ExercisePlaceholderProps {
   category: GroupedExercise["category"];
   exerciseName: string;
   muscleGroups: string[];
-  eager?: boolean;
 }
 
 const CATEGORY_ICONS: Record<string, string> = {
@@ -23,7 +22,6 @@ export default function ExercisePlaceholder({
   category,
   exerciseName,
   muscleGroups,
-  eager = false,
 }: ExercisePlaceholderProps) {
   const colorClasses = CATEGORY_COLORS[category] || CATEGORY_COLORS.other;
   const bgClass = colorClasses.split(" ")[0]; // e.g. "bg-blue-500/20"
@@ -37,7 +35,7 @@ export default function ExercisePlaceholder({
         alt=""
         fill
         sizes="(max-width: 639px) 40vw, (min-width: 1280px) 25vw, (min-width: 1024px) 33vw, 50vw"
-        loading={eager ? "eager" : "lazy"}
+        loading="lazy"
         className="object-cover opacity-25"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/50 to-black/35" />

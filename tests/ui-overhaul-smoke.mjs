@@ -152,6 +152,22 @@ async function clearSearch(page) {
   await expectCardCount(page, pageSize, "Clearing search should reset results");
 }
 
+async function assertEmptyStateRecovery(page) {
+  const query = "definitely-not-an-otf-exercise";
+  await page.getByRole("searchbox", { name: "Search exercises" }).fill(query);
+  await page.waitForURL((url) => url.searchParams.get("q") === query);
+  await waitForDirectoryIdle(page);
+
+  const emptyState = page.getByTestId("empty-results");
+  await expectVisible(emptyState, "An empty search should expose recovery actions.");
+  const resetSearch = emptyState.getByRole("button", { name: "Reset search" });
+  await assertTouchTarget(resetSearch, "Empty-state reset action");
+  await resetSearch.click();
+  await page.waitForURL((url) => !url.searchParams.has("q"));
+  await waitForDirectoryIdle(page);
+  await expectCardCount(page, pageSize, "Reset search should restore the directory");
+}
+
 async function assertUnofficialHeader(page, label) {
   const header = page.locator("header");
   await expectVisible(
@@ -260,9 +276,9 @@ async function assertTouchTarget(locator, label, checkWidth = false) {
   await expectVisible(locator, `${label} should be visible.`);
   const box = await locator.boundingBox();
   assert(box, `${label} should have a measurable touch target.`);
-  assert(box.height >= 44, `${label} is only ${box.height}px tall; expected 44px.`);
+  assert(box.height >= 48, `${label} is only ${box.height}px tall; expected 48px.`);
   if (checkWidth) {
-    assert(box.width >= 44, `${label} is only ${box.width}px wide; expected 44px.`);
+    assert(box.width >= 48, `${label} is only ${box.width}px wide; expected 48px.`);
   }
 }
 
@@ -744,6 +760,37 @@ async function chooseDesktopCategory(page, label) {
   await expectVisible(choice, `Desktop ${label} category should be available.`);
   await choice.click();
   await waitForDirectoryIdle(page);
+}
+
+async function assertDesktopFilterEscape(page) {
+  const trigger = page.locator(
+    "button[aria-controls='desktop-exercise-filters']"
+  );
+  const panel = page.locator("#desktop-exercise-filters");
+  await expectVisible(trigger, "Desktop filter trigger should be visible.");
+  if ((await trigger.getAttribute("aria-expanded")) !== "true") {
+    await trigger.click();
+  }
+  await expectVisible(panel, "Desktop filters should open.");
+  await page.keyboard.press("Escape");
+  await page.waitForFunction(() => {
+    const inner = document.querySelector(
+      "#desktop-exercise-filters .t-acc-panel-inner"
+    );
+    return inner && inner.getBoundingClientRect().height <= 1;
+  });
+  assert(
+    (await panel.getAttribute("aria-hidden")) === "true",
+    "Collapsed desktop filters should leave the accessibility tree."
+  );
+  assert(
+    (await trigger.getAttribute("aria-expanded")) === "false",
+    "Closing desktop filters should update aria-expanded."
+  );
+  assert(
+    await trigger.evaluate((element) => document.activeElement === element),
+    "Closing desktop filters should restore focus to the trigger."
+  );
 }
 
 async function assertAuthoritativeDirectoryState(context, page) {
@@ -2063,8 +2110,10 @@ async function runDesktopChromium(browser) {
       "Desktop should paginate instead of rendering the full catalog."
     );
     await assertCatalogNotShipped(page);
+    await assertDesktopFilterEscape(page);
     await assertSearchCategoryParity(page);
     await assertSingleSearchClear(page);
+    await assertEmptyStateRecovery(page);
     await assertApiPagingPrefix(page);
     await assertMalformedUrlCanonicalization(page);
     await assertRapidSearchRace(page);

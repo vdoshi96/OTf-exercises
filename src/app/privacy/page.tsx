@@ -85,7 +85,7 @@ export default function PrivacyPage() {
 
       <Link
         href="/#directory"
-        className="mt-8 inline-flex min-h-11 items-center rounded-md bg-orange-500 px-4 py-2 text-sm font-semibold text-black transition hover:bg-orange-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-400"
+        className="mt-8 inline-flex min-h-12 items-center rounded-md bg-orange-500 px-4 py-2 text-sm font-semibold text-black transition hover:bg-orange-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-400"
       >
         Browse the directory
       </Link>

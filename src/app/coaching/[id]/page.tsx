@@ -69,7 +69,7 @@ export default async function CoachingDetailPage({
     .map((exerciseId) => exercises.find((exercise) => exercise.id === exerciseId))
     .filter((exercise): exercise is GroupedExercise => Boolean(exercise));
   const backLinkClassName =
-    "mb-3 inline-flex min-h-11 items-center gap-2 rounded-md text-sm font-semibold text-orange-400 transition hover:text-orange-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-400 sm:mb-4 sm:min-h-0";
+    "mb-3 inline-flex min-h-12 items-center gap-2 rounded-md text-sm font-semibold text-orange-400 transition hover:text-orange-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-400 sm:mb-4 sm:min-h-0";
 
   return (
     <div className="mx-auto max-w-[92rem] px-4 py-4 sm:px-6 sm:py-5 lg:px-8 lg:py-6">
@@ -142,7 +142,7 @@ export default async function CoachingDetailPage({
                       href={creator.profile_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block rounded-md border border-white/10 bg-[#181919] px-3 py-2 text-sm font-semibold text-stone-200 transition hover:border-orange-500/40 hover:text-orange-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400"
+                      className="flex min-h-12 items-center rounded-md border border-white/10 bg-[#181919] px-3 py-2 text-sm font-semibold text-stone-200 transition hover:border-orange-500/40 hover:text-orange-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400"
                     >
                       {creator.display_name}
                     </a>
@@ -162,7 +162,7 @@ export default async function CoachingDetailPage({
                   <Link
                     key={exercise.id}
                     href={`/exercise/${exercise.id}`}
-                    className="block rounded-md border border-white/10 bg-[#181919] px-3 py-2 text-sm font-semibold text-stone-200 transition hover:border-orange-500/40 hover:text-orange-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400"
+                    className="flex min-h-12 items-center rounded-md border border-white/10 bg-[#181919] px-3 py-2 text-sm font-semibold text-stone-200 transition hover:border-orange-500/40 hover:text-orange-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400"
                   >
                     {exercise.exercise_name}
                   </Link>

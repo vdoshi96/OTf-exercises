@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: https:; style-src 'unsafe-inline'">
+  <meta name="generator" content="otf-docs-parity/v1">
+  <meta name="doc-source" content="docs/audits/2026-08-23-ui-ux-audit.md">
+  <meta name="doc-source-sha256" content="291c1077dcf2af205dfc8597c665d3bf7b26ee3eb45bf1b9d398f65724af0cf0">
+  <title>UI/UX audit and remediation — 2026-08-23</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      --background: #ffffff;
+      --foreground: #172033;
+      --muted: #5d6678;
+      --surface: #f5f7fa;
+      --border: #d8dee9;
+      --accent: #b84f10;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #111827;
+        --foreground: #e5e7eb;
+        --muted: #aeb7c6;
+        --surface: #1f2937;
+        --border: #445064;
+        --accent: #ff9b5e;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--background);
+      color: var(--foreground);
+    }
+    main {
+      width: min(100% - 2rem, 72rem);
+      margin: 0 auto;
+      padding: 2.5rem 0 5rem;
+      overflow-x: auto;
+      overflow-wrap: anywhere;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      line-height: 1.25;
+      margin-block: 2rem 0.75rem;
+    }
+    h1 { margin-top: 0; }
+    a { color: var(--accent); text-underline-offset: 0.15em; }
+    a:focus-visible { outline: 0.2rem solid currentColor; outline-offset: 0.2rem; }
+    blockquote {
+      margin-inline: 0;
+      padding: 0.2rem 1rem;
+      color: var(--muted);
+      border-inline-start: 0.25rem solid var(--border);
+    }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    code {
+      padding: 0.1rem 0.3rem;
+      background: var(--surface);
+      border-radius: 0.25rem;
+    }
+    pre {
+      padding: 1rem;
+      overflow-x: auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+    }
+    pre code { padding: 0; background: transparent; }
+    table {
+      width: 100%;
+      margin-block: 1rem;
+      border-collapse: collapse;
+    }
+    th, td { padding: 0.5rem 0.75rem; border: 1px solid var(--border); text-align: start; }
+    th { background: var(--surface); }
+    img { max-width: 100%; height: auto; }
+    hr { border: 0; border-top: 1px solid var(--border); }
+    .plain-text { white-space: pre-wrap; }
+    .task-list-item { list-style: none; }
+    input[type="checkbox"] { margin-inline: -1.25rem 0.5rem; }
+  </style>
+</head>
+<body>
+  <main>
+<h1 id="uiux-audit-and-remediation-2026-08-23">UI/UX audit and remediation — 2026-08-23</h1>
+<h2 id="verdict">Verdict</h2>
+<p><strong>CONDITIONAL PASS — final local candidate</strong></p>
+<p>The core product is usable, responsive, visually consistent, and fast after the
+remediation. No Critical or High product defect remains. The strict audit result
+is conditional because the deliberate custom 404 route generates one expected
+browser-level 404 console error; changing that route to HTTP 200 would make the
+product less correct.</p>
+<p>Hard gates after remediation:</p>
+<table>
+<thead>
+<tr>
+<th>Gate</th>
+<th align="right">Raw</th>
+<th align="right">Allowlisted</th>
+<th align="right">Reportable</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Console errors</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td>Conditional — intentional true 404 only</td>
+</tr>
+<tr>
+<td>Console warnings</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td>Pass</td>
+</tr>
+<tr>
+<td>Network 5xx</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td>Pass</td>
+</tr>
+<tr>
+<td>Layout collapse</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td>Pass</td>
+</tr>
+<tr>
+<td>axe Critical</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td>Pass</td>
+</tr>
+<tr>
+<td>axe Serious</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td>Pass</td>
+</tr>
+<tr>
+<td>Performance budget</td>
+<td align="right">0 misses</td>
+<td align="right">—</td>
+<td align="right">0</td>
+<td>Pass</td>
+</tr>
+</tbody></table>
+<p>The five audited 200 routes have zero console errors or warnings. The unknown
+route returns the required HTTP 404 and renders a useful recovery page. Axe also
+reports one incomplete automated check per route; those items were manually
+reviewed and are not represented as conclusive automated passes.</p>
+<h2 id="scope-and-persona">Scope and persona</h2>
+<p>Primary persona: a time-pressed Orangetheory member or coach with moderate
+technical comfort who wants to find and understand a movement in under one
+minute, commonly on a phone shortly before class.</p>
+<p>Audited routes:</p>
+<ol>
+<li><code>/</code></li>
+<li><code>/coaching</code></li>
+<li><code>/exercise/deadbug?q=dead+bug</code></li>
+<li><code>/coaching/how-to-row-a-500m-test?q=row+pacing</code></li>
+<li><code>/privacy</code></li>
+<li><code>/audit-route-that-does-not-exist</code></li>
+</ol>
+<p>The walkthrough covered search, filtering, zero results, paging, directory to
+detail and back, coaching search, keyboard navigation, offline and retry states,
+slow responses, custom recovery, external media boundaries, mobile filtering,
+and responsive layout. The app is public and read-only, so authentication,
+permissions, destructive actions, write success, conflicts, and expired-session
+scenarios do not exist in this product.</p>
+<h2 id="interaction-manifest">Interaction manifest</h2>
+<p>The baseline interaction walkthrough ran from <code>2026-08-24T02:23:16.371Z</code> to
+<code>2026-08-24T02:30:44.674Z</code> and produced 18 distinct captured checkpoints. Median
+gap between checkpoints was 15.056 seconds; the minimum was 2.728 seconds, so
+the audit-the-audit clustered-timestamp guard did not fire.</p>
+<table>
+<thead>
+<tr>
+<th>Time (UTC)</th>
+<th>Route / state</th>
+<th>Interaction and observation</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>02:23:16</td>
+<td><code>/</code> desktop</td>
+<td>Loaded real production site; recorded normal console and network baseline.</td>
+</tr>
+<tr>
+<td>02:24:06</td>
+<td><code>/</code> desktop</td>
+<td>Typed <code>dead bug</code>; observed three results and URL-backed state.</td>
+</tr>
+<tr>
+<td>02:24:19</td>
+<td><code>/</code> desktop</td>
+<td>Submitted search and confirmed stable result count.</td>
+</tr>
+<tr>
+<td>02:24:43</td>
+<td><code>/</code> desktop</td>
+<td>Opened filters and inspected all filter groups.</td>
+</tr>
+<tr>
+<td>02:24:55</td>
+<td><code>/</code> desktop</td>
+<td>Added Lower Body to create a zero-result combination.</td>
+</tr>
+<tr>
+<td>02:25:20</td>
+<td><code>/</code> desktop</td>
+<td>Pressed Escape; reproduced that desktop filters stayed open.</td>
+</tr>
+<tr>
+<td>02:25:33</td>
+<td>exercise detail</td>
+<td>Opened a result and checked media, creator, metadata, focus, and layout.</td>
+</tr>
+<tr>
+<td>02:25:36</td>
+<td><code>/</code> desktop</td>
+<td>Used Back to directory; search state and three results were restored.</td>
+</tr>
+<tr>
+<td>02:25:50</td>
+<td><code>/coaching</code> desktop</td>
+<td>Navigated to the separate coaching directory.</td>
+</tr>
+<tr>
+<td>02:26:07</td>
+<td><code>/coaching</code> desktop</td>
+<td>Typed <code>row pacing</code>; observed 18 results and relevant first matches.</td>
+</tr>
+<tr>
+<td>02:26:29</td>
+<td><code>/</code> mobile</td>
+<td>Repeated search at 390×844 and inspected tap targets.</td>
+</tr>
+<tr>
+<td>02:26:47</td>
+<td><code>/</code> mobile</td>
+<td>Opened the native filter dialog, used Escape, and confirmed focus return.</td>
+</tr>
+<tr>
+<td>02:29:23</td>
+<td><code>/</code> keyboard</td>
+<td>Tabbed through header, search, filters, cards, and focus indicators.</td>
+</tr>
+<tr>
+<td>02:29:38</td>
+<td><code>/</code> responsive</td>
+<td>Checked the 375/768/1024/1280/1440/1920 width matrix.</td>
+</tr>
+<tr>
+<td>02:29:49</td>
+<td><code>/</code> offline</td>
+<td>Disabled the network and reproduced raw <code>Failed to fetch</code> copy.</td>
+</tr>
+<tr>
+<td>02:30:01</td>
+<td><code>/</code> recovery</td>
+<td>Restored the network and used Try again.</td>
+</tr>
+<tr>
+<td>02:30:32</td>
+<td><code>/</code> slow response</td>
+<td>Delayed the API and inspected the small <code>Updating…</code> feedback.</td>
+</tr>
+<tr>
+<td>02:30:44</td>
+<td>six-route sweep</td>
+<td>Read console, network, layout, axe, and performance evidence.</td>
+</tr>
+</tbody></table>
+<p>Evidence is retained in <code>output/playwright/ux-audit-2026-08-23</code> for the working
+run and in <code>docs/qa/latest</code> for the newest completed visual record. The baseline
+contains more than two screenshots per route and the automated sweep records at
+least one console read per route.</p>
+<h2 id="findings-and-fixes">Findings and fixes</h2>
+<h3 id="h-1-search-and-creator-text-failed-contrast">H-1 — Search and creator text failed contrast</h3>
+<ul>
+<li><strong>Layer:</strong> Visual / accessibility</li>
+<li><strong>Severity:</strong> High</li>
+<li><strong>Surface:</strong> <code>/</code>, <code>/coaching</code>, representative exercise and coaching details</li>
+<li><strong>Reproduce:</strong> Run axe at 1440×900; inspect the orange Search button and muted
+creator handles.</li>
+<li><strong>Observed:</strong> The baseline reported Serious <code>color-contrast</code> violations on
+both directory Search buttons and representative creator handles.</li>
+<li><strong>Expected:</strong> Important text meets contrast requirements without changing the
+established black/orange visual system.</li>
+<li><strong>Evidence:</strong> <code>before/automated-checks.json</code> and the desktop before screenshot.</li>
+<li><strong>Location:</strong> <code>src/components/SearchBar.tsx</code>, <code>src/components/VideoEmbed.tsx</code>,
+<code>src/app/exercise/[id]/page.tsx</code>, <code>src/app/layout.tsx</code>.</li>
+<li><strong>Patch:</strong> Use black text on orange actions and raise muted text from Stone 500
+to Stone 400 where needed.</li>
+<li><strong>After:</strong> Zero axe Critical/Serious violations on all six audited routes.</li>
+</ul>
+<h3 id="m-1-important-mobile-targets-were-44-pixels-or-smaller">M-1 — Important mobile targets were 44 pixels or smaller</h3>
+<ul>
+<li><strong>Layer:</strong> Interaction</li>
+<li><strong>Severity:</strong> Medium</li>
+<li><strong>Surface:</strong> All six routes at 390×844</li>
+<li><strong>Reproduce:</strong> Measure visible buttons, links, and form controls.</li>
+<li><strong>Observed:</strong> Header navigation, filter actions, detail Back links, creator and
+related cards, privacy CTA, and 404 recovery controls measured 16–44 pixels.</li>
+<li><strong>Expected:</strong> Isolated important controls provide at least a 48-pixel target.</li>
+<li><strong>Evidence:</strong> Baseline route measurements and before mobile screenshot.</li>
+<li><strong>Location:</strong> <code>SiteNav.tsx</code>, <code>SearchBar.tsx</code>, <code>FilterPanel.tsx</code>, detail routes,
+<code>VideoEmbed.tsx</code>, <code>TikTokEmbed.tsx</code>, privacy and not-found routes.</li>
+<li><strong>Patch:</strong> Apply 48-pixel minimum heights and widths to the relevant controls.</li>
+<li><strong>After:</strong> Only the intentionally hidden skip link and inline footer Privacy
+link remain below 48 pixels; both qualify for target-size exceptions.</li>
+</ul>
+<h3 id="m-2-desktop-filters-ignored-escape">M-2 — Desktop filters ignored Escape</h3>
+<ul>
+<li><strong>Layer:</strong> Interaction</li>
+<li><strong>Severity:</strong> Medium</li>
+<li><strong>Surface:</strong> <code>/</code> and <code>/coaching</code>, desktop</li>
+<li><strong>Reproduce:</strong> Open Filters, then press Escape.</li>
+<li><strong>Observed:</strong> The panel stayed open and focus stayed inside it.</li>
+<li><strong>Expected:</strong> Escape closes a disclosure and restores focus to its trigger.</li>
+<li><strong>Evidence:</strong> Baseline desktop filter screenshot and interaction checkpoint.</li>
+<li><strong>Location:</strong> <code>src/components/FilterPanel.tsx</code>.</li>
+<li><strong>Patch:</strong> Add Escape handling, focus restoration, <code>aria-hidden</code>, <code>inert</code>, and
+an <code>aria-expanded</code> regression test.</li>
+<li><strong>After:</strong> Chromium and WebKit production smoke pass; focus returns correctly.</li>
+</ul>
+<h3 id="m-3-zero-results-lacked-direct-recovery">M-3 — Zero results lacked direct recovery</h3>
+<ul>
+<li><strong>Layer:</strong> Feedback</li>
+<li><strong>Severity:</strong> Medium</li>
+<li><strong>Surface:</strong> Directory empty state</li>
+<li><strong>Reproduce:</strong> Search for <code>dead bug</code>, then add an incompatible category.</li>
+<li><strong>Observed:</strong> The page explained the empty result but offered no action inside
+the state.</li>
+<li><strong>Expected:</strong> Recovery should be adjacent to the problem.</li>
+<li><strong>Evidence:</strong> <code>before/desktop-empty-state.png</code>.</li>
+<li><strong>Location:</strong> <code>src/components/ExerciseGrid.tsx</code>.</li>
+<li><strong>Patch:</strong> Add contextual Reset search and Clear filters actions.</li>
+<li><strong>After:</strong> The permanent browser test resets an empty query and restores the
+first 24 results.</li>
+</ul>
+<h3 id="m-4-offline-errors-exposed-technical-fetch-copy">M-4 — Offline errors exposed technical fetch copy</h3>
+<ul>
+<li><strong>Layer:</strong> Feedback</li>
+<li><strong>Severity:</strong> Medium</li>
+<li><strong>Surface:</strong> Directory request error</li>
+<li><strong>Reproduce:</strong> Go offline, change the search query, and wait for the API call.</li>
+<li><strong>Observed:</strong> The alert displayed <code>Failed to fetch</code>.</li>
+<li><strong>Expected:</strong> Explain what happened and the next action in user language.</li>
+<li><strong>Evidence:</strong> <code>before/desktop-offline-search.png</code>.</li>
+<li><strong>Location:</strong> <code>src/components/ExerciseGrid.tsx</code>.</li>
+<li><strong>Patch:</strong> Distinguish offline from generic request failure, preserve the last
+good results, and retain Try again.</li>
+<li><strong>After:</strong> The alert says, “You&#39;re offline. Check your connection and try
+again.”</li>
+</ul>
+<h3 id="l-1-state-changes-used-weak-or-ad-hoc-motion">L-1 — State changes used weak or ad hoc motion</h3>
+<ul>
+<li><strong>Layer:</strong> Delight / feedback</li>
+<li><strong>Severity:</strong> Low</li>
+<li><strong>Surface:</strong> desktop filter disclosure, mobile filter dialog, loading label</li>
+<li><strong>Reproduce:</strong> Open and close Filters, then delay a directory API request.</li>
+<li><strong>Observed:</strong> Desktop filters used a one-way 160 ms entrance only; the mobile
+bottom sheet appeared and disappeared abruptly; loading feedback was static.</li>
+<li><strong>Expected:</strong> State changes should be legible, restrained, and reduced-motion
+safe.</li>
+<li><strong>Evidence:</strong> Baseline filter and slow-loading screenshots.</li>
+<li><strong>Location:</strong> <code>src/app/globals.css</code>, <code>src/components/FilterPanel.tsx</code>,
+<code>src/components/ExerciseGrid.tsx</code>.</li>
+<li><strong>Patch:</strong> Apply transitions.dev accordion, panel-reveal, and shimmer patterns
+with app-specific timing tokens and required reduced-motion guards.</li>
+<li><strong>After:</strong> Desktop disclosure is 250 ms; mobile sheet is 260/200 ms; shimmer is
+limited to real pending work. Tabs and write-success states do not exist.</li>
+</ul>
+<h2 id="responsive-stress-and-performance-coverage">Responsive, stress, and performance coverage</h2>
+<ul>
+<li>No horizontal overflow or clipped content at 375, 768, 1024, 1280, 1440, or
+1920 pixels.</li>
+<li>Mobile filter content scrolls independently while actions remain visible.</li>
+<li>The full public catalog naturally supplies heavy data: 765 exercises and 515
+coaching resources with bounded 24-item paging.</li>
+<li>Long titles, absent equipment, multiple sources, empty results, malformed URL
+state, rapid search races, delayed requests, offline retry, JavaScript-disabled
+paging, custom 404, and reduced motion are covered.</li>
+<li>There is no multi-pane workspace, authentication, role matrix, write form,
+optimistic save, destructive action, or concurrent editor to exercise.</li>
+<li>After local metrics: LCP 68 ms, CLS 0, INP 24 ms, TTFB 7 ms. Baseline live
+production metrics were also green: LCP 356 ms, CLS 0, INP 24 ms, TTFB 34 ms.</li>
+</ul>
+<h2 id="visual-system-review">Visual system review</h2>
+<p>The current Oswald/Inter typography, black surfaces, orange emphasis, compact
+cards, and editorial density fit the pre-class lookup job. The remediation keeps
+that identity instead of redesigning it. The Impeccable detector reports one
+advisory for the existing decorative grid background; it is retained because it
+is subtle, established, and does not compete with content.</p>
+<h2 id="regression-verification">Regression verification</h2>
+<ul>
+<li><code>npm run lint</code></li>
+<li><code>npm run typecheck</code></li>
+<li><code>npm run test:data</code> — 26 passed</li>
+<li><code>npm run test:directory</code> — 9 passed</li>
+<li><code>npm run test:security</code> — 5 passed</li>
+<li><code>npm run test:thumbnails</code> — 15 passed</li>
+<li><code>npm run test:catalog</code> — 11 passed plus deterministic route and integrity gates</li>
+<li><code>npm run test:docs</code> — 9 passed</li>
+<li><code>npm run build</code> — 1,884 production pages compiled and typechecked</li>
+<li><code>BASE_URL=http://127.0.0.1:3000 npm run test:e2e</code> — Chromium and WebKit at
+desktop, 390px, and 320px; reduced-motion and JavaScript-disabled variants</li>
+</ul>
+<p>Permanent regression coverage now asserts 48-pixel touch targets, contextual
+empty-state recovery, and desktop Escape/focus behavior.</p>
+<h2 id="audit-self-critique">Audit self-critique</h2>
+<p>Fresh review drafted 7 candidate observations, kept 6, removed 1 duplicate, and
+found 0 generic filler findings. It identified no missed Critical/High product
+defect. It did require four reporting corrections that this document follows:</p>
+<ol>
+<li>Separate the intentional 404 console error from clean 200 routes.</li>
+<li>State zero axe violations while preserving the incomplete/manual-review note.</li>
+<li>Report zero network 5xx rather than claiming no aborted requests; expected
+Next.js prefetch aborts are present in raw evidence.</li>
+<li>Retain after evidence for filters, empty results, offline errors, the mobile
+sheet, and detail contrast.</li>
+</ol>
+<h2 id="remaining-caveats">Remaining caveats</h2>
+<ol>
+<li>The strict all-route console hard gate remains red only because a true custom
+404 produces the browser&#39;s standard failed-resource message. No allowlist was
+added and the status was not weakened to 200.</li>
+<li>Axe incomplete checks were reviewed manually but remain automation limits.</li>
+<li>The inline footer Privacy link is smaller than 48 pixels under the inline-text
+exception.</li>
+<li>Third-party TikTok playback and fullscreen behavior are outside bounded local
+verification; the click gate, iframe contract, privacy copy, and fallback link
+are verified.</li>
+</ol>
+<h2 id="final-visual-evidence">Final visual evidence</h2>
+<ul>
+<li><a href="../qa/latest/before-desktop-directory-1440x900.png">Desktop before</a></li>
+<li><a href="../qa/latest/after-desktop-directory-1440x900.png">Desktop after</a></li>
+<li><a href="../qa/latest/before-mobile-directory-390x844.png">Mobile before</a></li>
+<li><a href="../qa/latest/after-mobile-directory-390x844.png">Mobile after</a></li>
+<li><a href="../qa/latest/after-desktop-filters-1440x900.png">Desktop filters after</a></li>
+<li><a href="../qa/latest/after-desktop-empty-state-1440x900.png">Desktop empty-state recovery after</a></li>
+<li><a href="../qa/latest/after-desktop-detail-contrast-1440x900.png">Desktop detail contrast after</a></li>
+<li><a href="../qa/latest/after-mobile-filters-390x844.png">Mobile filters after</a></li>
+<li><a href="../qa/latest/after-mobile-offline-390x844.png">Offline recovery after</a></li>
+</ul>
+  </main>
+</body>
+</html>

@@ -58,7 +58,7 @@ export default function RootLayout({
         </main>
 
         <footer className="border-t border-white/10 bg-[#060707]/95 py-8">
-          <div className="mx-auto max-w-[92rem] space-y-2 px-4 text-center text-sm leading-6 text-stone-500 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-[92rem] space-y-2 px-4 text-center text-sm leading-6 text-stone-400 sm:px-6 lg:px-8">
             <p>
               Unofficial fan-made directory. Not affiliated with, endorsed by,
               or operated by Orangetheory Fitness. Orangetheory and related

@@ -56,14 +56,14 @@ export default function SearchBar({
           value={value}
           onChange={(event) => onChange(event.target.value)}
           placeholder="Search directory…"
-          className="search-input min-w-0 flex-1 bg-transparent py-3 pl-11 pr-12 text-base font-medium text-stone-50 outline-none placeholder:text-stone-500 sm:py-4 sm:pl-14 sm:pr-44 sm:text-lg"
+          className="search-input min-w-0 flex-1 bg-transparent py-3 pl-11 pr-12 text-base font-medium text-stone-50 outline-none placeholder:text-stone-400 sm:py-4 sm:pl-14 sm:pr-44 sm:text-lg"
         />
         {value && (
           <button
             type="button"
             aria-label="Clear search"
             onClick={onClear}
-            className="absolute right-32 top-1/2 flex min-h-11 min-w-11 -translate-y-1/2 items-center justify-center rounded-md text-stone-500 transition hover:bg-white/10 hover:text-orange-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 max-sm:right-1"
+            className="absolute right-32 top-1/2 flex min-h-12 min-w-12 -translate-y-1/2 items-center justify-center rounded-md text-stone-400 transition hover:bg-white/10 hover:text-orange-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 max-sm:right-0"
           >
             <svg
               aria-hidden="true"
@@ -83,7 +83,7 @@ export default function SearchBar({
         )}
         <button
           type="submit"
-          className="hidden min-w-32 items-center justify-center bg-orange-500 px-6 text-base font-bold text-white transition hover:bg-orange-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-orange-100 sm:inline-flex"
+          className="hidden min-w-32 items-center justify-center bg-orange-500 px-6 text-base font-bold text-black transition hover:bg-orange-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-orange-100 sm:inline-flex"
         >
           Search
         </button>

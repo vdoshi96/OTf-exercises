@@ -21,13 +21,11 @@ function summarizeList(items: string[], limit: number): string {
 interface ExerciseCardProps {
   item: DirectoryItemSummary;
   query: DirectoryQuery;
-  eager?: boolean;
 }
 
 export default function ExerciseCard({
   item,
   query,
-  eager = false,
 }: ExerciseCardProps) {
   const [thumbnailError, setThumbnailError] = useState(false);
   const sources = new Set(item.sources);
@@ -51,7 +49,7 @@ export default function ExerciseCard({
             alt={item.title}
             fill
             sizes="(max-width: 639px) 40vw, (min-width: 1280px) 25vw, (min-width: 1024px) 33vw, 50vw"
-            loading={eager ? "eager" : "lazy"}
+            loading="lazy"
             onError={() => setThumbnailError(true)}
             className="object-cover transition duration-300 group-hover:scale-105"
           />
@@ -64,7 +62,6 @@ export default function ExerciseCard({
             }
             exerciseName={item.title}
             muscleGroups={item.muscleGroups}
-            eager={eager}
           />
         )}
 
