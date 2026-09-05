@@ -3,7 +3,7 @@
 A searchable, unofficial fan directory of Orangetheory Fitness exercise demos
 and reviewed coaching resources from multiple creators and source platforms.
 
-Browse 1,383 demonstrations across 765 grouped exercises, or explore 655
+Browse 1,405 demonstrations across 778 grouped exercises, or explore 655
 videos across 515 separately classified coaching resources. Exercise results
 can be searched or filtered by category, muscle group, equipment, platform, and
 creator; coaching results use reviewed topics instead of pretending to have
@@ -74,10 +74,11 @@ empty. The complete apply workflow holds one repository lock across catalog,
 thumbnail, and integrity work, and uses `data/refresh-transaction.json` for
 crash-safe multi-file recovery.
 
-`data/refresh-report.json` is intentionally the last historical applied-source
-report (`2026-08-14T15:13:18Z`, schema v1). The next reviewed apply will replace
-it with the current queue-aware schema; documentation does not misrepresent a
-curation-only migration as a new creator-source scan.
+`data/refresh-report.json` records the September 5, 2026 UTC source refresh in
+queue-aware schema v2: 22 reviewed exercise videos accepted and one personal
+recap excluded. TrainingTall and TikTok have no newer videos. The targeted
+Instagram browser capture is in `data/refresh-browser-scan.json`; it retains
+public post fields and concise source summaries, without private account data.
 
 ### Durable thumbnails
 
@@ -145,7 +146,7 @@ check. The same check runs automatically before every production build.
 │   │   ├── TikTokEmbed.tsx     # Tap-to-play TikTok player
 │   │   └── InstagramEmbed.tsx  # Explicit outbound Instagram preview
 │   ├── data/
-│   │   ├── exercises.json      # 765 reviewed grouped exercises
+│   │   ├── exercises.json      # 778 reviewed grouped exercises
 │   │   ├── coaching.json       # 515 reviewed coaching resources
 │   │   └── legacy-exercise-routes.json # Redirect/recovery outcomes
 │   └── lib/

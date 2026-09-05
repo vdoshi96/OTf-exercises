@@ -6,7 +6,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: https:; style-src 'unsafe-inline'">
   <meta name="generator" content="otf-docs-parity/v1">
   <meta name="doc-source" content="hosting-guide.md">
-  <meta name="doc-source-sha256" content="e7a0b174cfb67acadef31ee7a95e509b150515b3342414a4f3414f3d3f26022a">
+  <meta name="doc-source-sha256" content="1128ea1e18bf6a224f436daadecd2978b33c8f9800181222565ffb64dcf2803c">
   <title>Hosting Guide — OTF Exercise Directory</title>
   <style>
     :root {
@@ -116,8 +116,9 @@ git switch -c vishal/&lt;short-change-name&gt;
 data changes:</p>
 <pre><code class="language-bash">npm run refresh
 </code></pre>
-<p>New candidates persist in <code>data/catalog-review-queue.json</code>; heuristic
-classification is advisory and cannot publish or reject them. After every
+<p>Apply mode persists unresolved candidates in <code>data/catalog-review-queue.json</code>;
+dry-run mode writes nothing. Heuristic classification is advisory and cannot
+publish or reject candidates. After every
 candidate has a durable video-ID decision in <code>data/catalog-curation.json</code>,
 apply the refresh. <code>data/refresh-overrides.json</code> is retired and all four legacy
 maps must remain empty:</p>
@@ -134,10 +135,16 @@ for isolated fixtures, but any apply touching even one canonical repository
 transaction target must use the canonical repository lock. The full workflow
 rejects alternate apply targets because its thumbnail and integrity stages are
 repository-scoped.</p>
-<p><code>data/refresh-report.json</code> currently preserves the last actual applied source
-scan (<code>2026-08-14T15:13:18Z</code>, schema v1). The next reviewed apply writes the
-queue-aware schema v2; do not regenerate the report merely to make a curation
-migration look like a new source scan.</p>
+<p><code>data/refresh-report.json</code> records the September 5, 2026 UTC reviewed source
+refresh in schema v2. Instagram required signed-in browser access; the targeted
+public-field capture is in <code>data/refresh-browser-scan.json</code>. TikTok was checked
+with the live feed scanner. The refresh accepted 22 exercise videos and excluded
+one personal recap; no new TrainingTall or TikTok videos were found.</p>
+<p>After adding curation decisions, update the matching <code>source_scope</code> provenance
+counters and regenerate the legacy-route ledger with
+<code>npm run legacy-routes:generate</code> before the final catalog-integrity check.
+Do not regenerate source-scan timestamps merely for a curation or documentation
+change.</p>
 <h2 id="required-local-verification">Required local verification</h2>
 <p>Run the complete release checks before publishing:</p>
 <pre><code class="language-bash">npm run test:data

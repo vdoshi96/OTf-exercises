@@ -1,16 +1,30 @@
 {
   "version": 1,
-  "reviewed_at": "2026-08-14",
+  "reviewed_at": "2026-09-05",
   "source_scope": {
     "catalog_commit": "7d059a7",
     "legacy_other_reviewed_groups": 129,
     "legacy_other_reviewed_videos": 151,
     "catalog_audit_reviewed_groups": 1136,
     "catalog_audit_reviewed_videos": 1866,
-    "review_queue_reviewed_videos": 0,
+    "review_queue_reviewed_videos": 23,
     "legacy_refresh_reviewed_videos": 64
   },
-  "reviewed_coaching_cues": {},
+  "reviewed_coaching_cues": {
+    "low-bench-in-in-out-out-and-up-up-down-down": [],
+    "reciprocating-hammer-curl": [],
+    "pulsing-split-squat": [],
+    "standing-overhead-triceps-extension": [],
+    "bosu-bridge-feet-on": [],
+    "reverse-lunge-to-single-leg-knee-drive": [],
+    "mid-band-upright-row": [],
+    "mid-band-bridge-hold-with-alternating-walkout": [],
+    "bench-push-up": [],
+    "bosu-crunch": [],
+    "contralateral-single-arm-split-squat-explosive": [],
+    "low-bench-goblet-step-down-squat-to-single-leg-knee-raise": [],
+    "dumbbell-balance-front-press": []
+  },
   "decisions": {
     "ig_C-G1T6nPnFU": {
       "decision": "coaching",
@@ -12433,6 +12447,144 @@
       "destination_id": "ybell-overhead-alternating-march-in-place",
       "review_origin": "catalog-audit",
       "source_group_id": "ybell-overhead-alternating-march-in-place"
+    },
+    "ig_Dc4xpoPt5Tu": {
+      "decision": "exercise",
+      "destination_id": "heavy-hip-bridge",
+      "review_origin": "review-queue",
+      "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+    },
+    "ig_Dc2D596AW6I": {
+      "decision": "exercise",
+      "destination_id": "low-bench-in-in-out-out-and-up-up-down-down",
+      "review_origin": "review-queue",
+      "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+    },
+    "ig_DczdHx1A2tU": {
+      "decision": "exercise",
+      "destination_id": "reciprocating-hammer-curl",
+      "review_origin": "review-queue",
+      "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+    },
+    "ig_Dcwg0LIAHRq": {
+      "decision": "exercise",
+      "destination_id": "pulsing-split-squat",
+      "review_origin": "review-queue",
+      "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+    },
+    "ig_DcwBLaUAhtj": {
+      "decision": "exclude",
+      "reason": "personal",
+      "review_origin": "review-queue",
+      "note": "Personal Marathon Month mileage recap; no exercise demonstration or substantive technique instruction."
+    },
+    "ig_Dct3tvMg14K": {
+      "decision": "exercise",
+      "destination_id": "strap-single-arm-low-row",
+      "review_origin": "review-queue",
+      "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+    },
+    "ig_Dcrt4OWAYLn": {
+      "decision": "exercise",
+      "destination_id": "standing-overhead-triceps-extension",
+      "review_origin": "review-queue",
+      "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+    },
+    "ig_DcpXralN6Lg": {
+      "decision": "exercise",
+      "destination_id": "bosu-bridge-feet-on",
+      "review_origin": "review-queue",
+      "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+    },
+    "ig_DcnB7LSNaFi": {
+      "decision": "exercise",
+      "destination_id": "low-side-plank-leg-lift",
+      "review_origin": "review-queue",
+      "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+    },
+    "ig_DckKJj5NvHp": {
+      "decision": "exercise",
+      "destination_id": "rear-foot-elevated-split-squats-rfess-bulgarian-split-squats",
+      "review_origin": "review-queue",
+      "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+    },
+    "ig_DchYRfjgrCr": {
+      "decision": "exercise",
+      "destination_id": "bear-plank-alternating-contralateral-lift",
+      "review_origin": "review-queue",
+      "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+    },
+    "ig_DcfOe_4NbTi": {
+      "decision": "exercise",
+      "destination_id": "bosu-front-foot-elevated-ffe-forward-lunge",
+      "review_origin": "review-queue",
+      "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+    },
+    "ig_DcclDKutQoR": {
+      "decision": "exercise",
+      "destination_id": "reverse-lunge-to-single-leg-knee-drive",
+      "review_origin": "review-queue",
+      "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+    },
+    "ig_DcZ8KtQtowt": {
+      "decision": "exercise",
+      "destination_id": "mid-band-upright-row",
+      "review_origin": "review-queue",
+      "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+    },
+    "ig_DcXhiRHNthH": {
+      "decision": "exercise",
+      "destination_id": "mid-band-bridge-hold-with-alternating-walkout",
+      "review_origin": "review-queue",
+      "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+    },
+    "ig_DcU2SsJNMZg": {
+      "decision": "exercise",
+      "destination_id": "bench-push-up",
+      "review_origin": "review-queue",
+      "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+    },
+    "ig_DcSKN4-t6zB": {
+      "decision": "exercise",
+      "destination_id": "bosu-crunch",
+      "review_origin": "review-queue",
+      "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+    },
+    "ig_DcPwsTKNYKW": {
+      "decision": "exercise",
+      "destination_id": "contralateral-single-arm-split-squat-explosive",
+      "review_origin": "review-queue",
+      "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+    },
+    "ig_DcNI99TNIBV": {
+      "decision": "exercise",
+      "destination_id": "deep-squat-to-alternating-t-spine-rotation-to-stand",
+      "review_origin": "review-queue",
+      "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+    },
+    "ig_DcKgz8ctwKE": {
+      "decision": "exercise",
+      "destination_id": "low-bench-goblet-step-down-squat-to-single-leg-knee-raise",
+      "review_origin": "review-queue",
+      "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+    },
+    "ig_DcHslafA8t1": {
+      "decision": "exercise",
+      "destination_id": "bosu-hip-bridge-shoulders-on",
+      "review_origin": "review-queue",
+      "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+    },
+    "ig_DcFADsfgYKN": {
+      "decision": "exercise",
+      "destination_id": "side-crunch",
+      "review_origin": "review-queue",
+      "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+    },
+    "ig_DcCxL0Zxrb_": {
+      "decision": "exercise",
+      "destination_id": "dumbbell-balance-front-press",
+      "review_origin": "review-queue",
+      "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
     }
   },
   "exercise_metadata": {
@@ -14573,7 +14725,8 @@
         "hamstrings"
       ],
       "equipment": [
-        "bosu"
+        "bosu",
+        "dumbbell"
       ],
       "movement_type": "compound"
     },
@@ -18356,7 +18509,8 @@
         "hamstrings"
       ],
       "equipment": [
-        "bench"
+        "bench",
+        "dumbbell"
       ],
       "movement_type": "compound"
     },
@@ -21680,6 +21834,173 @@
         "dumbbell"
       ],
       "movement_type": "isolation"
+    },
+    "low-bench-in-in-out-out-and-up-up-down-down": {
+      "exercise_name": "Low-Bench In/In Out/Out and Up/Up Down/Down",
+      "category": "cardio",
+      "muscle_groups": [
+        "quads",
+        "calves",
+        "glutes"
+      ],
+      "equipment": [
+        "bench"
+      ],
+      "movement_type": "cardio"
+    },
+    "reciprocating-hammer-curl": {
+      "exercise_name": "Reciprocating Hammer Curl",
+      "category": "upper_body",
+      "muscle_groups": [
+        "biceps",
+        "forearms"
+      ],
+      "equipment": [
+        "dumbbell"
+      ],
+      "movement_type": "isolation"
+    },
+    "pulsing-split-squat": {
+      "exercise_name": "Pulsing Split Squat",
+      "category": "lower_body",
+      "muscle_groups": [
+        "quads",
+        "glutes"
+      ],
+      "equipment": [
+        "dumbbell"
+      ],
+      "movement_type": "compound"
+    },
+    "standing-overhead-triceps-extension": {
+      "exercise_name": "Standing Overhead Triceps Extension",
+      "category": "upper_body",
+      "muscle_groups": [
+        "triceps"
+      ],
+      "equipment": [
+        "dumbbell"
+      ],
+      "movement_type": "isolation"
+    },
+    "bosu-bridge-feet-on": {
+      "exercise_name": "BOSU Bridge (Feet On)",
+      "category": "lower_body",
+      "muscle_groups": [
+        "glutes",
+        "hamstrings"
+      ],
+      "equipment": [
+        "bosu",
+        "dumbbell"
+      ],
+      "movement_type": "compound"
+    },
+    "reverse-lunge-to-single-leg-knee-drive": {
+      "exercise_name": "Reverse Lunge to Single-Leg Knee Drive",
+      "category": "lower_body",
+      "muscle_groups": [
+        "quads",
+        "glutes",
+        "hamstrings",
+        "calves"
+      ],
+      "equipment": [
+        "dumbbell"
+      ],
+      "movement_type": "compound"
+    },
+    "mid-band-upright-row": {
+      "exercise_name": "Mid Band Upright Row",
+      "category": "upper_body",
+      "muscle_groups": [
+        "shoulders",
+        "traps"
+      ],
+      "equipment": [
+        "mini band",
+        "dumbbell"
+      ],
+      "movement_type": "compound"
+    },
+    "mid-band-bridge-hold-with-alternating-walkout": {
+      "exercise_name": "Mid Band Bridge Hold with Alternating Walkout",
+      "category": "lower_body",
+      "muscle_groups": [
+        "glutes",
+        "hamstrings",
+        "core"
+      ],
+      "equipment": [
+        "mini band"
+      ],
+      "movement_type": "compound"
+    },
+    "bench-push-up": {
+      "exercise_name": "Bench Push-Up",
+      "category": "upper_body",
+      "muscle_groups": [
+        "chest",
+        "triceps",
+        "shoulders"
+      ],
+      "equipment": [
+        "bench"
+      ],
+      "movement_type": "compound"
+    },
+    "bosu-crunch": {
+      "exercise_name": "BOSU Crunch",
+      "category": "core",
+      "muscle_groups": [
+        "abs"
+      ],
+      "equipment": [
+        "bosu"
+      ],
+      "movement_type": "isolation"
+    },
+    "contralateral-single-arm-split-squat-explosive": {
+      "exercise_name": "Contralateral Single-Arm Split Squat (Explosive)",
+      "category": "lower_body",
+      "muscle_groups": [
+        "quads",
+        "glutes",
+        "hamstrings",
+        "core"
+      ],
+      "equipment": [
+        "dumbbell"
+      ],
+      "movement_type": "compound"
+    },
+    "low-bench-goblet-step-down-squat-to-single-leg-knee-raise": {
+      "exercise_name": "Low-Bench Goblet Step-Down Squat to Single-Leg Knee Raise",
+      "category": "lower_body",
+      "muscle_groups": [
+        "quads",
+        "glutes",
+        "core"
+      ],
+      "equipment": [
+        "bench",
+        "dumbbell"
+      ],
+      "movement_type": "compound"
+    },
+    "dumbbell-balance-front-press": {
+      "exercise_name": "Dumbbell Balance Front Press",
+      "category": "upper_body",
+      "muscle_groups": [
+        "shoulders",
+        "chest",
+        "triceps",
+        "core"
+      ],
+      "equipment": [
+        "dumbbell"
+      ],
+      "movement_type": "compound"
     }
   },
   "coaching_resources": {

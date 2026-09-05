@@ -37,8 +37,9 @@ data changes:
 npm run refresh
 ```
 
-New candidates persist in `data/catalog-review-queue.json`; heuristic
-classification is advisory and cannot publish or reject them. After every
+Apply mode persists unresolved candidates in `data/catalog-review-queue.json`;
+dry-run mode writes nothing. Heuristic classification is advisory and cannot
+publish or reject candidates. After every
 candidate has a durable video-ID decision in `data/catalog-curation.json`,
 apply the refresh. `data/refresh-overrides.json` is retired and all four legacy
 maps must remain empty:
@@ -60,10 +61,17 @@ transaction target must use the canonical repository lock. The full workflow
 rejects alternate apply targets because its thumbnail and integrity stages are
 repository-scoped.
 
-`data/refresh-report.json` currently preserves the last actual applied source
-scan (`2026-08-14T15:13:18Z`, schema v1). The next reviewed apply writes the
-queue-aware schema v2; do not regenerate the report merely to make a curation
-migration look like a new source scan.
+`data/refresh-report.json` records the September 5, 2026 UTC reviewed source
+refresh in schema v2. Instagram required signed-in browser access; the targeted
+public-field capture is in `data/refresh-browser-scan.json`. TikTok was checked
+with the live feed scanner. The refresh accepted 22 exercise videos and excluded
+one personal recap; no new TrainingTall or TikTok videos were found.
+
+After adding curation decisions, update the matching `source_scope` provenance
+counters and regenerate the legacy-route ledger with
+`npm run legacy-routes:generate` before the final catalog-integrity check.
+Do not regenerate source-scan timestamps merely for a curation or documentation
+change.
 
 ## Required local verification
 

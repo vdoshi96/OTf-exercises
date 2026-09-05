@@ -6,7 +6,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: https:; style-src 'unsafe-inline'">
   <meta name="generator" content="otf-docs-parity/v1">
   <meta name="doc-source" content="README.md">
-  <meta name="doc-source-sha256" content="fa9b4170fef8474f995b6861757adacf27af99e1a3d9e46685eda7393ea7cbfe">
+  <meta name="doc-source-sha256" content="acec67b7c9009d9b80600a99a5736c11f5f1a17cff3bfd71524173fad119dff0">
   <title>Unofficial OTF Exercise Directory</title>
   <style>
     :root {
@@ -89,7 +89,7 @@
 <h1 id="unofficial-otf-exercise-directory">Unofficial OTF Exercise Directory</h1>
 <p>A searchable, unofficial fan directory of Orangetheory Fitness exercise demos
 and reviewed coaching resources from multiple creators and source platforms.</p>
-<p>Browse 1,383 demonstrations across 765 grouped exercises, or explore 655
+<p>Browse 1,405 demonstrations across 778 grouped exercises, or explore 655
 videos across 515 separately classified coaching resources. Exercise results
 can be searched or filtered by category, muscle group, equipment, platform, and
 creator; coaching results use reviewed topics instead of pretending to have
@@ -147,10 +147,11 @@ a human records a decision; the legacy override maps are retired and must stay
 empty. The complete apply workflow holds one repository lock across catalog,
 thumbnail, and integrity work, and uses <code>data/refresh-transaction.json</code> for
 crash-safe multi-file recovery.</p>
-<p><code>data/refresh-report.json</code> is intentionally the last historical applied-source
-report (<code>2026-08-14T15:13:18Z</code>, schema v1). The next reviewed apply will replace
-it with the current queue-aware schema; documentation does not misrepresent a
-curation-only migration as a new creator-source scan.</p>
+<p><code>data/refresh-report.json</code> records the September 5, 2026 UTC source refresh in
+queue-aware schema v2: 22 reviewed exercise videos accepted and one personal
+recap excluded. TrainingTall and TikTok have no newer videos. The targeted
+Instagram browser capture is in <code>data/refresh-browser-scan.json</code>; it retains
+public post fields and concise source summaries, without private account data.</p>
 <h3 id="durable-thumbnails">Durable thumbnails</h3>
 <p>Instagram and TikTok CDN URLs expire, so release data never references them
 directly. <code>scripts/ensure-thumbnails.mjs</code> covers both public catalogs, recovers
@@ -208,7 +209,7 @@ check. The same check runs automatically before every production build.</p>
 │   │   ├── TikTokEmbed.tsx     # Tap-to-play TikTok player
 │   │   └── InstagramEmbed.tsx  # Explicit outbound Instagram preview
 │   ├── data/
-│   │   ├── exercises.json      # 765 reviewed grouped exercises
+│   │   ├── exercises.json      # 778 reviewed grouped exercises
 │   │   ├── coaching.json       # 515 reviewed coaching resources
 │   │   └── legacy-exercise-routes.json # Redirect/recovery outcomes
 │   └── lib/

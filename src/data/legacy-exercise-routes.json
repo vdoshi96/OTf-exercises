@@ -4,7 +4,7 @@
   "baseline_routes_sha256": "9f08565d076f653b1829eca7e4f7b80617895d8e972f0589dc43c8777bffb5c9",
   "stats": {
     "baseline_routes": 1309,
-    "current_exercise_routes": 765,
+    "current_exercise_routes": 778,
     "preserved_current_routes": 714,
     "legacy_routes": 595,
     "redirect_routes": 546,
