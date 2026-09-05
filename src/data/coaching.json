@@ -5090,6 +5090,30 @@
     ]
   },
   {
+    "id": "high-row-vs-low-row-activation",
+    "title": "High Row vs Low Row Activation",
+    "topic": "movement-technique",
+    "summary": "Explains movement mechanics and practical coaching points for High Row vs Low Row Activation.",
+    "related_exercise_ids": [
+      "high-row"
+    ],
+    "videos": [
+      {
+        "id": "ig_CtCoqimABKR",
+        "url": "https://www.instagram.com/reel/CtCoqimABKR/",
+        "source": "instagram",
+        "thumbnail": "/thumbs/CtCoqimABKR.jpg",
+        "description": "Great opportunity for members to feel the difference in the back muscle activation of a high row vs a low row. Make sure members aren’t using too much traps in the split stance position and in the high row itself.",
+        "creator": {
+          "id": "coachingotf",
+          "display_name": "Coach Rudy",
+          "handle": "coachingotf",
+          "profile_url": "https://www.instagram.com/coachingotf/"
+        }
+      }
+    ]
+  },
+  {
     "id": "high-rep-push-up-options",
     "title": "High-Rep Push-Up Options",
     "topic": "safety-and-modifications",
@@ -5117,30 +5141,6 @@
         "source": "tiktok",
         "thumbnail": "/thumbs/tiktok-7370038698261384490.jpg",
         "description": "High Rep Push Up Options  Bonus Push Up/Plank Jack Medley #pushups #triceps #chest #tricepspushups #otf #coach #otfcoach #orangetheory #orangetheorycoach ",
-        "creator": {
-          "id": "coachingotf",
-          "display_name": "Coach Rudy",
-          "handle": "coachingotf",
-          "profile_url": "https://www.instagram.com/coachingotf/"
-        }
-      }
-    ]
-  },
-  {
-    "id": "high-row-vs-low-row-activation",
-    "title": "High Row vs Low Row Activation",
-    "topic": "movement-technique",
-    "summary": "Explains movement mechanics and practical coaching points for High Row vs Low Row Activation.",
-    "related_exercise_ids": [
-      "high-row"
-    ],
-    "videos": [
-      {
-        "id": "ig_CtCoqimABKR",
-        "url": "https://www.instagram.com/reel/CtCoqimABKR/",
-        "source": "instagram",
-        "thumbnail": "/thumbs/CtCoqimABKR.jpg",
-        "description": "Great opportunity for members to feel the difference in the back muscle activation of a high row vs a low row. Make sure members aren’t using too much traps in the split stance position and in the high row itself.",
         "creator": {
           "id": "coachingotf",
           "display_name": "Coach Rudy",
@@ -6613,6 +6613,28 @@
     ]
   },
   {
+    "id": "lift-more-or-row-more",
+    "title": "Lift More or Row More",
+    "topic": "programming",
+    "summary": "Explains a Lift More or Row More programming template for choosing a training emphasis.",
+    "related_exercise_ids": [],
+    "videos": [
+      {
+        "id": "ig_C4rdbHxNUcN",
+        "url": "https://www.instagram.com/reel/C4rdbHxNUcN/",
+        "source": "instagram",
+        "thumbnail": "/thumbs/C4rdbHxNUcN.jpg",
+        "description": "Lift More or Row More",
+        "creator": {
+          "id": "coachingotf",
+          "display_name": "Coach Rudy",
+          "handle": "coachingotf",
+          "profile_url": "https://www.instagram.com/coachingotf/"
+        }
+      }
+    ]
+  },
+  {
     "id": "line-of-pull-in-a-pallof-press",
     "title": "Line of Pull in a Pallof Press",
     "topic": "movement-technique",
@@ -6838,41 +6860,6 @@
     ]
   },
   {
-    "id": "low-bench-lunge-range-of-motion",
-    "title": "Low-Bench Lunge Range of Motion",
-    "topic": "class-delivery",
-    "summary": "Helps coaches identify shortened low-bench lunge reps and cue members toward the intended range of motion.",
-    "related_exercise_ids": [],
-    "videos": [
-      {
-        "id": "7239190462546906411",
-        "url": "https://www.tiktok.com/@coachingotf/video/7239190462546906411",
-        "source": "tiktok",
-        "thumbnail": "/thumbs/tiktok-7239190462546906411.jpg",
-        "description": "The Daily Beat talks about it but members often short the range of motion with the low bench. Keep an eye out. #otf #orangetheory #coach #lunges #lowbench #rom ",
-        "creator": {
-          "id": "coachingotf",
-          "display_name": "Coach Rudy",
-          "handle": "coachingotf",
-          "profile_url": "https://www.instagram.com/coachingotf/"
-        }
-      },
-      {
-        "id": "ig_Cs5Kur8AKRM",
-        "url": "https://www.instagram.com/reel/Cs5Kur8AKRM/",
-        "source": "instagram",
-        "thumbnail": "/thumbs/Cs5Kur8AKRM.jpg",
-        "description": "The Daily Beat talks about it, but to see it is a little different. Make sure members aren’t just stepping back off the low bench but are actually increasing their ROM and getting deeper into the lunge.",
-        "creator": {
-          "id": "coachingotf",
-          "display_name": "Coach Rudy",
-          "handle": "coachingotf",
-          "profile_url": "https://www.instagram.com/coachingotf/"
-        }
-      }
-    ]
-  },
-  {
     "id": "low-row-vs-high-row-do-you-know-the-difference-between-a-low-row-and-a-high-row",
     "title": "Low Row and High Row Comparison",
     "topic": "movement-technique",
@@ -6981,6 +6968,41 @@
         "source": "tiktok",
         "thumbnail": "/thumbs/tiktok-7585789379038219575.jpg",
         "description": "Low Bench Chest Fly We are looking for functional strength, not bodybuilding. We want wingspan at the bottom of the chest fly. If the weight is causing pressure in the elbow we can use a soft bend. What ever we establish as the angle, should be maintained throughout the movement and not change. We don’t want to change the chest fly for a wide grip chest press which we see often.  #lowbenchchestfly #chestfly #otf #orangetheory #otfcoach",
+        "creator": {
+          "id": "coachingotf",
+          "display_name": "Coach Rudy",
+          "handle": "coachingotf",
+          "profile_url": "https://www.instagram.com/coachingotf/"
+        }
+      }
+    ]
+  },
+  {
+    "id": "low-bench-lunge-range-of-motion",
+    "title": "Low-Bench Lunge Range of Motion",
+    "topic": "class-delivery",
+    "summary": "Helps coaches identify shortened low-bench lunge reps and cue members toward the intended range of motion.",
+    "related_exercise_ids": [],
+    "videos": [
+      {
+        "id": "7239190462546906411",
+        "url": "https://www.tiktok.com/@coachingotf/video/7239190462546906411",
+        "source": "tiktok",
+        "thumbnail": "/thumbs/tiktok-7239190462546906411.jpg",
+        "description": "The Daily Beat talks about it but members often short the range of motion with the low bench. Keep an eye out. #otf #orangetheory #coach #lunges #lowbench #rom ",
+        "creator": {
+          "id": "coachingotf",
+          "display_name": "Coach Rudy",
+          "handle": "coachingotf",
+          "profile_url": "https://www.instagram.com/coachingotf/"
+        }
+      },
+      {
+        "id": "ig_Cs5Kur8AKRM",
+        "url": "https://www.instagram.com/reel/Cs5Kur8AKRM/",
+        "source": "instagram",
+        "thumbnail": "/thumbs/Cs5Kur8AKRM.jpg",
+        "description": "The Daily Beat talks about it, but to see it is a little different. Make sure members aren’t just stepping back off the low bench but are actually increasing their ROM and getting deeper into the lunge.",
         "creator": {
           "id": "coachingotf",
           "display_name": "Coach Rudy",
@@ -13428,28 +13450,6 @@
           "display_name": "Austin Hendrickson (Trainingtall)",
           "handle": "trainingtall",
           "profile_url": "https://www.instagram.com/trainingtall/"
-        }
-      }
-    ]
-  },
-  {
-    "id": "lift-more-or-row-more",
-    "title": "Lift More or Row More",
-    "topic": "programming",
-    "summary": "Explains a Lift More or Row More programming template for choosing a training emphasis.",
-    "related_exercise_ids": [],
-    "videos": [
-      {
-        "id": "ig_C4rdbHxNUcN",
-        "url": "https://www.instagram.com/reel/C4rdbHxNUcN/",
-        "source": "instagram",
-        "thumbnail": "/thumbs/C4rdbHxNUcN.jpg",
-        "description": "Lift More or Row More",
-        "creator": {
-          "id": "coachingotf",
-          "display_name": "Coach Rudy",
-          "handle": "coachingotf",
-          "profile_url": "https://www.instagram.com/coachingotf/"
         }
       }
     ]

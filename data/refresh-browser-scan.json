@@ -1,0 +1,578 @@
+{
+  "version": 1,
+  "captured_at": "2026-09-05T01:35:22Z",
+  "method": "Targeted public DOM extraction from signed-in Instagram posts and reels; exact post dates from permalink time elements. No credentials, account metadata, comments, or private messages retained. Captions summarized after item-level review; thumbnails visually checked.",
+  "sources": {
+    "instagram:coachingotf": {
+      "handle": "coachingotf",
+      "checkpoint_id": "ig_DcALjFwNPrL",
+      "checkpoint_timestamp": 1786672645,
+      "latest_seen_id": "ig_Dc4xpoPt5Tu",
+      "latest_seen_timestamp": 1788571606,
+      "scanned_count": 48,
+      "page_count": 3,
+      "stop_reason": "browser_checkpoint_and_historical_overlap",
+      "candidates": [
+        {
+          "id": "ig_Dc4xpoPt5Tu",
+          "url": "https://www.instagram.com/reel/Dc4xpoPt5Tu/",
+          "description": "Bridge — Demonstrates a floor bridge and dumbbell loading, with attention to glute engagement and avoiding excessive lower-back extension.",
+          "thumbnail": "/thumbs/Dc4xpoPt5Tu.jpg",
+          "timestamp": 1788571606,
+          "upload_date": "20260905",
+          "source": "instagram",
+          "creator": {
+            "id": "coachingotf",
+            "display_name": "Coach Rudy",
+            "handle": "coachingotf",
+            "profile_url": "https://www.instagram.com/coachingotf/"
+          },
+          "review": {
+            "decision": "exercise",
+            "destination_id": "heavy-hip-bridge",
+            "review_origin": "review-queue",
+            "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+          }
+        },
+        {
+          "id": "ig_Dc2D596AW6I",
+          "url": "https://www.instagram.com/reel/Dc2D596AW6I/",
+          "description": "Low Bench In/In Out/Out and Up/Up Down/Down — Demonstrates two low-bench agility patterns in different planes, with stepping and flat-ground options.",
+          "thumbnail": "/thumbs/Dc2D596AW6I.jpg",
+          "timestamp": 1788480608,
+          "upload_date": "20260904",
+          "source": "instagram",
+          "creator": {
+            "id": "coachingotf",
+            "display_name": "Coach Rudy",
+            "handle": "coachingotf",
+            "profile_url": "https://www.instagram.com/coachingotf/"
+          },
+          "review": {
+            "decision": "exercise",
+            "destination_id": "low-bench-in-in-out-out-and-up-up-down-down",
+            "review_origin": "review-queue",
+            "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+          }
+        },
+        {
+          "id": "ig_DczdHx1A2tU",
+          "url": "https://www.instagram.com/reel/DczdHx1A2tU/",
+          "description": "Reciprocating Hammer Curls — Demonstrates alternating continuous hammer-curl motion with the elbows held beside the ribs.",
+          "thumbnail": "/thumbs/DczdHx1A2tU.jpg",
+          "timestamp": 1788393155,
+          "upload_date": "20260902",
+          "source": "instagram",
+          "creator": {
+            "id": "coachingotf",
+            "display_name": "Coach Rudy",
+            "handle": "coachingotf",
+            "profile_url": "https://www.instagram.com/coachingotf/"
+          },
+          "review": {
+            "decision": "exercise",
+            "destination_id": "reciprocating-hammer-curl",
+            "review_origin": "review-queue",
+            "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+          }
+        },
+        {
+          "id": "ig_Dcwg0LIAHRq",
+          "url": "https://www.instagram.com/reel/Dcwg0LIAHRq/",
+          "description": "Pulsing Split Squat — Demonstrates partial-range split-squat pulses with weight concentrated through the front leg.",
+          "thumbnail": "/thumbs/Dcwg0LIAHRq.jpg",
+          "timestamp": 1788294377,
+          "upload_date": "20260901",
+          "source": "instagram",
+          "creator": {
+            "id": "coachingotf",
+            "display_name": "Coach Rudy",
+            "handle": "coachingotf",
+            "profile_url": "https://www.instagram.com/coachingotf/"
+          },
+          "review": {
+            "decision": "exercise",
+            "destination_id": "pulsing-split-squat",
+            "review_origin": "review-queue",
+            "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+          }
+        },
+        {
+          "id": "ig_DcwBLaUAhtj",
+          "url": "https://www.instagram.com/reel/DcwBLaUAhtj/",
+          "description": "Marathon Month 2026 Complete — Personal recap of a mileage competition; no exercise demonstration or substantive technique instruction.",
+          "thumbnail": "/thumbs/DcwBLaUAhtj.jpg",
+          "timestamp": 1788277681,
+          "upload_date": "20260901",
+          "source": "instagram",
+          "creator": {
+            "id": "coachingotf",
+            "display_name": "Coach Rudy",
+            "handle": "coachingotf",
+            "profile_url": "https://www.instagram.com/coachingotf/"
+          },
+          "review": {
+            "decision": "exclude",
+            "reason": "personal",
+            "review_origin": "review-queue",
+            "note": "Personal Marathon Month mileage recap; no exercise demonstration or substantive technique instruction."
+          }
+        },
+        {
+          "id": "ig_Dct3tvMg14K",
+          "url": "https://www.instagram.com/reel/Dct3tvMg14K/",
+          "description": "Strap Single Arm Low Row — Demonstrates single-arm suspension rows, strap setup, body angle, and keeping the shoulders square.",
+          "thumbnail": "/thumbs/Dct3tvMg14K.jpg",
+          "timestamp": 1788205722,
+          "upload_date": "20260831",
+          "source": "instagram",
+          "creator": {
+            "id": "coachingotf",
+            "display_name": "Coach Rudy",
+            "handle": "coachingotf",
+            "profile_url": "https://www.instagram.com/coachingotf/"
+          },
+          "review": {
+            "decision": "exercise",
+            "destination_id": "strap-single-arm-low-row",
+            "review_origin": "review-queue",
+            "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+          }
+        },
+        {
+          "id": "ig_Dcrt4OWAYLn",
+          "url": "https://www.instagram.com/reel/Dcrt4OWAYLn/",
+          "description": "Overhead Triceps Extension — Demonstrates overhead dumbbell triceps extensions with elbow positioning and a staggered-stance option.",
+          "thumbnail": "/thumbs/Dcrt4OWAYLn.jpg",
+          "timestamp": 1788133626,
+          "upload_date": "20260830",
+          "source": "instagram",
+          "creator": {
+            "id": "coachingotf",
+            "display_name": "Coach Rudy",
+            "handle": "coachingotf",
+            "profile_url": "https://www.instagram.com/coachingotf/"
+          },
+          "review": {
+            "decision": "exercise",
+            "destination_id": "standing-overhead-triceps-extension",
+            "review_origin": "review-queue",
+            "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+          }
+        },
+        {
+          "id": "ig_DcpXralN6Lg",
+          "url": "https://www.instagram.com/reel/DcpXralN6Lg/",
+          "description": "BOSU Bridge (Feet On) — Demonstrates setting up a bridge with the feet on a BOSU and loading a dumbbell across the hips.",
+          "thumbnail": "/thumbs/DcpXralN6Lg.jpg",
+          "timestamp": 1788054704,
+          "upload_date": "20260830",
+          "source": "instagram",
+          "creator": {
+            "id": "coachingotf",
+            "display_name": "Coach Rudy",
+            "handle": "coachingotf",
+            "profile_url": "https://www.instagram.com/coachingotf/"
+          },
+          "review": {
+            "decision": "exercise",
+            "destination_id": "bosu-bridge-feet-on",
+            "review_origin": "review-queue",
+            "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+          }
+        },
+        {
+          "id": "ig_DcnB7LSNaFi",
+          "url": "https://www.instagram.com/reel/DcnB7LSNaFi/",
+          "description": "Low Side Plank Leg Lift — Demonstrates a low side plank with a leg lift, stacked shoulders, and supported modifications.",
+          "thumbnail": "/thumbs/DcnB7LSNaFi.jpg",
+          "timestamp": 1787976224,
+          "upload_date": "20260829",
+          "source": "instagram",
+          "creator": {
+            "id": "coachingotf",
+            "display_name": "Coach Rudy",
+            "handle": "coachingotf",
+            "profile_url": "https://www.instagram.com/coachingotf/"
+          },
+          "review": {
+            "decision": "exercise",
+            "destination_id": "low-side-plank-leg-lift",
+            "review_origin": "review-queue",
+            "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+          }
+        },
+        {
+          "id": "ig_DckKJj5NvHp",
+          "url": "https://www.instagram.com/reel/DckKJj5NvHp/",
+          "description": "Bench Rear Foot Elevated Split Squat — Demonstrates rear-foot-elevated split-squat setup, stance adjustments, loading, and lower-bench options.",
+          "thumbnail": "/thumbs/DckKJj5NvHp.jpg",
+          "timestamp": 1787880046,
+          "upload_date": "20260828",
+          "source": "instagram",
+          "creator": {
+            "id": "coachingotf",
+            "display_name": "Coach Rudy",
+            "handle": "coachingotf",
+            "profile_url": "https://www.instagram.com/coachingotf/"
+          },
+          "review": {
+            "decision": "exercise",
+            "destination_id": "rear-foot-elevated-split-squats-rfess-bulgarian-split-squats",
+            "review_origin": "review-queue",
+            "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+          }
+        },
+        {
+          "id": "ig_DchYRfjgrCr",
+          "url": "https://www.instagram.com/reel/DchYRfjgrCr/",
+          "description": "Bear Plank Alternating Contralateral Lift — Demonstrates slow opposite-arm-and-leg lifts from a bear plank, using a wider base to improve control.",
+          "thumbnail": "/thumbs/DchYRfjgrCr.jpg",
+          "timestamp": 1787786672,
+          "upload_date": "20260826",
+          "source": "instagram",
+          "creator": {
+            "id": "coachingotf",
+            "display_name": "Coach Rudy",
+            "handle": "coachingotf",
+            "profile_url": "https://www.instagram.com/coachingotf/"
+          },
+          "review": {
+            "decision": "exercise",
+            "destination_id": "bear-plank-alternating-contralateral-lift",
+            "review_origin": "review-queue",
+            "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+          }
+        },
+        {
+          "id": "ig_DcfOe_4NbTi",
+          "url": "https://www.instagram.com/reel/DcfOe_4NbTi/",
+          "description": "BOSU Forward Lunge — Demonstrates forward lunges onto a BOSU with attention to foot placement and controlled range of motion.",
+          "thumbnail": "/thumbs/DcfOe_4NbTi.jpg",
+          "timestamp": 1787714413,
+          "upload_date": "20260826",
+          "source": "instagram",
+          "creator": {
+            "id": "coachingotf",
+            "display_name": "Coach Rudy",
+            "handle": "coachingotf",
+            "profile_url": "https://www.instagram.com/coachingotf/"
+          },
+          "review": {
+            "decision": "exercise",
+            "destination_id": "bosu-front-foot-elevated-ffe-forward-lunge",
+            "review_origin": "review-queue",
+            "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+          }
+        },
+        {
+          "id": "ig_DcclDKutQoR",
+          "url": "https://www.instagram.com/reel/DcclDKutQoR/",
+          "description": "Reverse Lunge to Single Leg Knee Drive — Demonstrates a reverse lunge flowing directly into an explosive knee drive.",
+          "thumbnail": "/thumbs/DcclDKutQoR.jpg",
+          "timestamp": 1787625635,
+          "upload_date": "20260825",
+          "source": "instagram",
+          "creator": {
+            "id": "coachingotf",
+            "display_name": "Coach Rudy",
+            "handle": "coachingotf",
+            "profile_url": "https://www.instagram.com/coachingotf/"
+          },
+          "review": {
+            "decision": "exercise",
+            "destination_id": "reverse-lunge-to-single-leg-knee-drive",
+            "review_origin": "review-queue",
+            "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+          }
+        },
+        {
+          "id": "ig_DcZ8KtQtowt",
+          "url": "https://www.instagram.com/reel/DcZ8KtQtowt/",
+          "description": "Mid Band Upright Row — Demonstrates a dumbbell upright row with a mini band, maintaining band tension and guiding the elbows outward.",
+          "thumbnail": "/thumbs/DcZ8KtQtowt.jpg",
+          "timestamp": 1787537039,
+          "upload_date": "20260824",
+          "source": "instagram",
+          "creator": {
+            "id": "coachingotf",
+            "display_name": "Coach Rudy",
+            "handle": "coachingotf",
+            "profile_url": "https://www.instagram.com/coachingotf/"
+          },
+          "review": {
+            "decision": "exercise",
+            "destination_id": "mid-band-upright-row",
+            "review_origin": "review-queue",
+            "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+          }
+        },
+        {
+          "id": "ig_DcXhiRHNthH",
+          "url": "https://www.instagram.com/reel/DcXhiRHNthH/",
+          "description": "Mid Band Bridge Hold with Alternating Walkout — Demonstrates a mini-band bridge hold with short alternating walkout steps and maintained band tension.",
+          "thumbnail": "/thumbs/DcXhiRHNthH.jpg",
+          "timestamp": 1787455920,
+          "upload_date": "20260823",
+          "source": "instagram",
+          "creator": {
+            "id": "coachingotf",
+            "display_name": "Coach Rudy",
+            "handle": "coachingotf",
+            "profile_url": "https://www.instagram.com/coachingotf/"
+          },
+          "review": {
+            "decision": "exercise",
+            "destination_id": "mid-band-bridge-hold-with-alternating-walkout",
+            "review_origin": "review-queue",
+            "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+          }
+        },
+        {
+          "id": "ig_DcU2SsJNMZg",
+          "url": "https://www.instagram.com/reel/DcU2SsJNMZg/",
+          "description": "Bench Push Up — Demonstrates an incline push-up on a bench, elbow positioning, and a repeatable chest-contact target.",
+          "thumbnail": "/thumbs/DcU2SsJNMZg.jpg",
+          "timestamp": 1787366234,
+          "upload_date": "20260822",
+          "source": "instagram",
+          "creator": {
+            "id": "coachingotf",
+            "display_name": "Coach Rudy",
+            "handle": "coachingotf",
+            "profile_url": "https://www.instagram.com/coachingotf/"
+          },
+          "review": {
+            "decision": "exercise",
+            "destination_id": "bench-push-up",
+            "review_origin": "review-queue",
+            "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+          }
+        },
+        {
+          "id": "ig_DcSKN4-t6zB",
+          "url": "https://www.instagram.com/reel/DcSKN4-t6zB/",
+          "description": "BOSU Crunch — Demonstrates a small-range crunch on a BOSU with neck support and a floor-based option.",
+          "thumbnail": "/thumbs/DcSKN4-t6zB.jpg",
+          "timestamp": 1787275963,
+          "upload_date": "20260821",
+          "source": "instagram",
+          "creator": {
+            "id": "coachingotf",
+            "display_name": "Coach Rudy",
+            "handle": "coachingotf",
+            "profile_url": "https://www.instagram.com/coachingotf/"
+          },
+          "review": {
+            "decision": "exercise",
+            "destination_id": "bosu-crunch",
+            "review_origin": "review-queue",
+            "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+          }
+        },
+        {
+          "id": "ig_DcPwsTKNYKW",
+          "url": "https://www.instagram.com/reel/DcPwsTKNYKW/",
+          "description": "Contralateral Single Arm Split Squat (Explosive) — Demonstrates a contralaterally loaded split squat with a two-count lowering phase, one-count hold, and explosive ascent.",
+          "thumbnail": "/thumbs/DcPwsTKNYKW.jpg",
+          "timestamp": 1787195597,
+          "upload_date": "20260820",
+          "source": "instagram",
+          "creator": {
+            "id": "coachingotf",
+            "display_name": "Coach Rudy",
+            "handle": "coachingotf",
+            "profile_url": "https://www.instagram.com/coachingotf/"
+          },
+          "review": {
+            "decision": "exercise",
+            "destination_id": "contralateral-single-arm-split-squat-explosive",
+            "review_origin": "review-queue",
+            "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+          }
+        },
+        {
+          "id": "ig_DcNI99TNIBV",
+          "url": "https://www.instagram.com/reel/DcNI99TNIBV/",
+          "description": "Deep Squat to Alternating T-Spine Rotation to Stand — Demonstrates alternating thoracic rotation from a deep squat, with bench-supported options.",
+          "thumbnail": "/thumbs/DcNI99TNIBV.jpg",
+          "timestamp": 1787107901,
+          "upload_date": "20260819",
+          "source": "instagram",
+          "creator": {
+            "id": "coachingotf",
+            "display_name": "Coach Rudy",
+            "handle": "coachingotf",
+            "profile_url": "https://www.instagram.com/coachingotf/"
+          },
+          "review": {
+            "decision": "exercise",
+            "destination_id": "deep-squat-to-alternating-t-spine-rotation-to-stand",
+            "review_origin": "review-queue",
+            "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+          }
+        },
+        {
+          "id": "ig_DcKgz8ctwKE",
+          "url": "https://www.instagram.com/reel/DcKgz8ctwKE/",
+          "description": "Low Bench Goblet Step Down Squat to Single Leg Knee Raise — Demonstrates a low-bench goblet step-down squat followed by a knee raise and foot reset.",
+          "thumbnail": "/thumbs/DcKgz8ctwKE.jpg",
+          "timestamp": 1787019325,
+          "upload_date": "20260818",
+          "source": "instagram",
+          "creator": {
+            "id": "coachingotf",
+            "display_name": "Coach Rudy",
+            "handle": "coachingotf",
+            "profile_url": "https://www.instagram.com/coachingotf/"
+          },
+          "review": {
+            "decision": "exercise",
+            "destination_id": "low-bench-goblet-step-down-squat-to-single-leg-knee-raise",
+            "review_origin": "review-queue",
+            "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+          }
+        },
+        {
+          "id": "ig_DcHslafA8t1",
+          "url": "https://www.instagram.com/reel/DcHslafA8t1/",
+          "description": "BOSU Bridge (Shoulders On) — Demonstrates a dumbbell-loaded bridge with head and shoulders supported on a BOSU.",
+          "thumbnail": "/thumbs/DcHslafA8t1.jpg",
+          "timestamp": 1786924897,
+          "upload_date": "20260817",
+          "source": "instagram",
+          "creator": {
+            "id": "coachingotf",
+            "display_name": "Coach Rudy",
+            "handle": "coachingotf",
+            "profile_url": "https://www.instagram.com/coachingotf/"
+          },
+          "review": {
+            "decision": "exercise",
+            "destination_id": "bosu-hip-bridge-shoulders-on",
+            "review_origin": "review-queue",
+            "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+          }
+        },
+        {
+          "id": "ig_DcFADsfgYKN",
+          "url": "https://www.instagram.com/reel/DcFADsfgYKN/",
+          "description": "Side Crunch — Demonstrates a side crunch targeting the obliques and options for supporting the head and widening the base.",
+          "thumbnail": "/thumbs/DcFADsfgYKN.jpg",
+          "timestamp": 1786834441,
+          "upload_date": "20260815",
+          "source": "instagram",
+          "creator": {
+            "id": "coachingotf",
+            "display_name": "Coach Rudy",
+            "handle": "coachingotf",
+            "profile_url": "https://www.instagram.com/coachingotf/"
+          },
+          "review": {
+            "decision": "exercise",
+            "destination_id": "side-crunch",
+            "review_origin": "review-queue",
+            "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+          }
+        },
+        {
+          "id": "ig_DcCxL0Zxrb_",
+          "url": "https://www.instagram.com/reel/DcCxL0Zxrb_/",
+          "description": "Dumbbell Balance Front Press — Demonstrates a balance front press and explains how focal points and squeezing the dumbbell affect the challenge.",
+          "thumbnail": "/thumbs/DcCxL0Zxrb_.jpg",
+          "timestamp": 1786759509,
+          "upload_date": "20260815",
+          "source": "instagram",
+          "creator": {
+            "id": "coachingotf",
+            "display_name": "Coach Rudy",
+            "handle": "coachingotf",
+            "profile_url": "https://www.instagram.com/coachingotf/"
+          },
+          "review": {
+            "decision": "exercise",
+            "destination_id": "dumbbell-balance-front-press",
+            "review_origin": "review-queue",
+            "note": "Reviewed public source caption and exact post thumbnail on 2026-09-05. The description is a concise source summary."
+          }
+        }
+      ],
+      "observed_post_ids": [
+        "ig_DEvVtcsvl54",
+        "ig_Dc4xpoPt5Tu",
+        "ig_Dc2D596AW6I",
+        "ig_DczdHx1A2tU",
+        "ig_Dcwg0LIAHRq",
+        "ig_DcwBLaUAhtj",
+        "ig_Dct3tvMg14K",
+        "ig_Dcrt4OWAYLn",
+        "ig_DcpXralN6Lg",
+        "ig_DcnB7LSNaFi",
+        "ig_DckKJj5NvHp",
+        "ig_DchYRfjgrCr",
+        "ig_DcfOe_4NbTi",
+        "ig_DcclDKutQoR",
+        "ig_DcZ8KtQtowt",
+        "ig_DcXhiRHNthH",
+        "ig_DcU2SsJNMZg",
+        "ig_DcSKN4-t6zB",
+        "ig_DcPwsTKNYKW",
+        "ig_DcNI99TNIBV",
+        "ig_DcKgz8ctwKE",
+        "ig_DcHslafA8t1",
+        "ig_DcFADsfgYKN",
+        "ig_DcCxL0Zxrb_",
+        "ig_DcALjFwNPrL",
+        "ig_Db9mAoMtFen",
+        "ig_Db7AkooNk21",
+        "ig_Db4k1QjgDxt",
+        "ig_Db12iGytNa1",
+        "ig_DbzCjMAgzA8",
+        "ig_Dbwy9YGM7FI",
+        "ig_Dbt55rNAYvk",
+        "ig_Dbrv3BQtG7p",
+        "ig_DbpLc8WR7_7",
+        "ig_DbmpG6-NTW6",
+        "ig_Dbj_v9VNeZG",
+        "ig_Dbhf4gMtQVv",
+        "ig_Dbe2ubbtsfo",
+        "ig_DbcWs8CNUEG",
+        "ig_DbZkUTqNQ6r",
+        "ig_DbXMKlNN32G",
+        "ig_DbUlG_ztw2P",
+        "ig_DbSDK_CNCzZ",
+        "ig_DbPY9rrh6bm",
+        "ig_DbM8gluNVZx",
+        "ig_DbKXlCDNXqy",
+        "ig_DbHs3OegnAX",
+        "ig_DbFMZnXNf7g"
+      ],
+      "reels_cross_check": "All 23 newer posts also appeared in the reels feed, followed by the saved checkpoint and older reels; the pinned reel is historical."
+    },
+    "instagram:trainingtall": {
+      "handle": "trainingtall",
+      "checkpoint_id": "ig_DbtyfVWFY28",
+      "checkpoint_timestamp": 1786055382,
+      "latest_seen_id": "ig_DbtyfVWFY28",
+      "latest_seen_timestamp": 1786055382,
+      "scanned_count": 12,
+      "page_count": 1,
+      "stop_reason": "browser_latest_reel_matches_checkpoint",
+      "candidates": [],
+      "observed_post_ids": [
+        "ig_C3gnCQUpphv",
+        "ig_DbtyfVWFY28",
+        "ig_DbrNkX0Ate4",
+        "ig_DboomckijG_",
+        "ig_DbmDqj0CmOx",
+        "ig_DbjdvLcj1Ro",
+        "ig_DbglzB-PZy-",
+        "ig_DbWqFg8gbu1",
+        "ig_DbUE0a9lLFY",
+        "ig_DbRfmjEjncE",
+        "ig_DbJwvLrjI5Z",
+        "ig_DbHLdYej4Ig"
+      ]
+    }
+  }
+}

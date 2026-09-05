@@ -2,20 +2,20 @@
   "after": {
     "empty": 0,
     "fallback": 1,
-    "local": 2037,
+    "local": 2059,
     "remote": 0,
-    "total": 2038
+    "total": 2060
   },
   "before": {
     "empty": 0,
     "fallback": 1,
-    "local": 2037,
+    "local": 2059,
     "remote": 0,
-    "total": 2038
+    "total": 2060
   },
   "by_source": {
     "instagram": {
-      "local-valid": 1442
+      "local-valid": 1464
     },
     "tiktok": {
       "local-valid": 595,
@@ -41,7 +41,7 @@
   "failures": [
     {
       "errors": [
-        "download skipped; durable fallback retained"
+        "source-resolution: request failed after 3 attempt(s): fetch failed"
       ],
       "exercise_id": "single-arm-high-row",
       "section": "exercise",
@@ -50,36 +50,27 @@
       "video_url": "https://www.tiktok.com/@coachingotf/video/7254008823747300650"
     }
   ],
-  "excluded_thumbnails_pruned": [
-    "CyWwC7bv53n.jpg",
-    "DNyFTVAWpZ5.jpg",
-    "DXf0mlRDRxg.jpg",
-    "tiktok-7233396198764285227.jpg",
-    "tiktok-7236075135176887595.jpg",
-    "tiktok-7242352981364985131.jpg",
-    "tiktok-7242511073369181482.jpg",
-    "tiktok-7278130764720409898.jpg"
-  ],
+  "excluded_thumbnails_pruned": [],
   "fallback": {
     "generated": false,
     "generation": "640x960 JPEG, dark #111111 background, public/otf-logo.svg, visible UNOFFICIAL FAN DIRECTORY label, quality 72 mozjpeg",
     "path": "/thumbs/fallback-exercise.jpg",
     "reused": true
   },
-  "generated_at": "2026-08-14T18:59:46.382Z",
+  "generated_at": "2026-09-05T01:35:53.419Z",
   "options": {
     "attempts": 3,
     "between_items_ms": 200,
     "concurrency": 4,
     "force": false,
     "limit": null,
-    "skip_download": true,
+    "skip_download": false,
     "source": null,
     "timeout_ms": 15000
   },
-  "processed": 2038,
+  "processed": 2060,
   "statuses": {
-    "local-valid": 2037,
+    "local-valid": 2059,
     "fallback": 1
   }
 }
