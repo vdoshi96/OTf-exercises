@@ -1,74 +1,63 @@
-# Design QA — September 4, 2026 redesign
+# Catalog refresh QA — September 5, 2026
 
-## Scope
+## Reviewed update
 
-The approved white, cool-gray, charcoal, and orange redesign covers the exercise
-and coaching directories, both details, privacy, legacy split recovery, legacy
-removal recovery, and 404. The catalog, curation records, thumbnail assets,
-legacy-route ledger, query helpers, search ranking, and security configuration
-have no changes.
+The source refresh adds 22 Coach Rudy exercise videos: nine demonstrations join
+existing exercise groups and 13 create distinct variations. One personal
+Marathon Month recap is excluded. TrainingTall's newest Instagram reel matches
+the previous checkpoint, and the live TikTok scan finds no newer videos.
 
-## Verification
+The public catalog contains 778 exercises with 1,405 demonstrations and 515
+coaching resources with 655 videos. All original video records remain identical.
+Two reviewed equipment lists include the dumbbells visible in the added videos.
+All 1,309 historical exercise slugs retain their canonical or recovery outcome.
 
-The local Next.js production build passes typecheck and lint. The refresh
-fixtures, directory-query, security, thumbnail, catalog/legacy, and documentation
-suites pass. The Chromium and WebKit release matrix covers desktop, 390px, and
-320px, plus Chromium reduced-motion and JavaScript-disabled paging.
+The public source fields, date checks, checkpoint overlap, and review decisions
+are retained in `data/refresh-browser-scan.json` and `data/refresh-report.json`.
+The browser capture contains concise summaries of public captions and excludes
+private account metadata, comments, and messages. All 22 new thumbnails were
+visually checked and normalized with the existing thumbnail pipeline.
 
-The redesign suite checks all eight screens at 1280px, 390px, and 320px, with no
-horizontal overflow and intended HTTP statuses. It verifies one selected media
-area, every alternate selector, per-video attribution, no selector for a single
-video, source links without JavaScript, and discovery shortcuts that preserve
-search and other filter values. Selecting a demo does not load an iframe.
+## Local verification
 
-Eleven axe WCAG A/AA scans cover all eight mobile screens, multiple demos, the
-filter dialog, and a real failed directory request. There are zero violations.
-The directory and request-error scans retain the `aria-valid-attr-value`
-incomplete item; the multiple-demo scan retains a `color-contrast` incomplete
-item for manual review. These items are automation limits, not automated passes.
-The browser matrix separately verifies the visible control, open native dialog,
-focus containment, and focus restoration.
+Import, directory-query, security, thumbnail, catalog/legacy-route, documentation,
+lint, typecheck, and the Webpack production build pass. The typecheck passes
+after the build finishes generating Next.js types. The first apply integrity
+gate identified an outdated review counter and route statistics; updating the
+provenance counter and canonical route generator resolved both findings.
+Replaying the captured source delta after apply produces no further changes.
 
-## Independent visual review
-
-The finish reviewer validated all 27 screen and multiple-demo captures. Its
-verdict pass scored four requested fixes resolved: discovery shortcuts, metadata
-following headings, legible TikTok source links, and the SVG selection indicator.
-The disposition was `ship` for those scored fixes, with no observed regressions
-from that batch. This is not a claim of exhaustive review of every catalog item.
-
-## Media and recovery boundaries
-
-Automated TikTok playback tests intercept the third-party player and establish
-click-gating, iframe focus, and fallback links. They do not establish reliable
-provider playback or signed-in Instagram access. Unknown routes deliberately
-return HTTP 404; a browser may log the corresponding failed-resource message.
-No usability improvement or performance benchmark is inferred from this QA.
-
-## Evidence
-
-The newest completed screen captures and machine-readable results are in
-[redesign](redesign/results.json). Historical audit conclusions remain in their
-dated documents; their screenshot links point to the historical Git commit.
-`thumbnail-report.json` remains the independent catalog-integrity record.
+Chromium and WebKit pass at desktop, 390px, and 320px sizes. Reduced-motion and
+JavaScript-disabled checks also pass. The responsive suite passes 24 screen
+checks and alternate-video selection, source links, and discovery filters.
+Eleven automated accessibility scans report zero violations. Any manual-review
+items remain recorded in `redesign/results.json`.
 
 ## Production verification
 
-Implementation commit `452be78045532895303221fa7e7b27218936a46f` merged through
-[PR #24](https://github.com/vdoshi96/OTf-exercises/pull/24). Vercel deployment
-`dpl_5qN5au8aWiRmE6i1NKMX2NEDcvi3` reached Ready, and inspection confirmed
+Release commit `0d82fe9bd181c30f608265f72354133a7211743c` merged through
+[PR #27](https://github.com/vdoshi96/OTf-exercises/pull/27). Vercel deployment
+`dpl_Hb2Rng4KvfCg9qF5fVstgP4hDc4d` reached Ready, and inspection confirmed
 [the public production URL](https://o-tf-exercises.vercel.app) resolved to
-[that immutable deployment](https://o-tf-exercises-99ix993sm-vdoshi96s-projects.vercel.app).
+[that deployment](https://o-tf-exercises-3etcy3gu0-vdoshi96s-projects.vercel.app).
 
-The complete Chromium/WebKit matrix passed against the public URL, including
-all three viewport sizes, reduced motion, and JavaScript-disabled paging.
-The 24 screen/viewport checks, alternate-video and discovery-link checks, and
-11 accessibility scans also passed on production. The retained captures and
-results come from that live run and replace the local captures. Browser checks
-cover security headers, catalog-backed iframe policy, legacy redirects and
-reviewed recoveries, true HTTP 404s, robots, and sitemap cardinality.
+The full Chromium/WebKit and responsive suites pass on production. All 22 new
+video IDs appear on their exercise pages, every new thumbnail matches its local
+SHA-256 hash, and the sitemap has the expected 1,296 URLs. The checks are saved
+in `creator-refresh-production.json` and `creator-refresh-browser.log`.
 
-A Vercel error-level log query for this deployment over the preceding 10 minutes
-returned no entries during QA. This is a bounded observation, not a promise of
-ongoing monitoring. The evidence closeout changes documentation only; it does
-not alter the verified application source or catalog.
+Manual browser review confirms the new Reciprocating Hammer Curl page renders
+its exact thumbnail and source link, and selecting demonstration 3 on Heavy
+Hip Bridge shows the newly imported Bridge video.
+
+A deployment-specific error-log query covering the preceding 10 minutes
+returned no entries during QA. This is a bounded observation.
+
+The retained screenshots and responsive results in `redesign/` come from the
+production run and replace the previous completed captures. The independent
+thumbnail report covers all 2,060 public video thumbnails. The existing fallback
+for TikTok video `7254008823747300650` remains; none of the 22 new videos uses it.
+
+The tests verify provider links, previews, and click-gating. They do not promise
+third-party playback availability. The earlier redesign review remains available
+in the Git history at commit `9a054ac`.

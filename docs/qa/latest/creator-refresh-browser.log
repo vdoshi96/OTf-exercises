@@ -1,0 +1,13 @@
+
+> otf-exercise-directory@0.1.0 test:e2e
+> node tests/ui-overhaul-smoke.mjs
+
+PASS Chromium desktop 1280x900
+PASS Chromium mobile 390x844
+PASS Chromium mobile 320x844
+PASS Chromium reduced motion 1280x900
+PASS Chromium JavaScript-disabled paging
+PASS WebKit desktop 1280x900
+PASS WebKit mobile 390x844
+PASS WebKit mobile 320x844
+UI production smoke passed: 778 exercises, 515 coaching resources, 24-item paging.

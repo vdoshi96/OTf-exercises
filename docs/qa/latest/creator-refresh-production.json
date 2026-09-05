@@ -1,0 +1,318 @@
+{
+  "checked_at": "2026-09-05T01:42:22.572942+00:00",
+  "base_url": "https://o-tf-exercises.vercel.app",
+  "accepted_video_count": 22,
+  "verified_thumbnail_hashes": 22,
+  "sitemap_urls": 1296,
+  "checks": [
+    {
+      "video_id": "ig_DcCxL0Zxrb_",
+      "path": "/exercise/dumbbell-balance-front-press",
+      "status": 200,
+      "bytes": 25712,
+      "verified": true
+    },
+    {
+      "video_id": "ig_DcCxL0Zxrb_",
+      "path": "/thumbs/DcCxL0Zxrb_.jpg",
+      "status": 200,
+      "bytes": 53937,
+      "verified": true
+    },
+    {
+      "video_id": "ig_DcFADsfgYKN",
+      "path": "/exercise/side-crunch",
+      "status": 200,
+      "bytes": 26766,
+      "verified": true
+    },
+    {
+      "video_id": "ig_DcFADsfgYKN",
+      "path": "/thumbs/DcFADsfgYKN.jpg",
+      "status": 200,
+      "bytes": 45002,
+      "verified": true
+    },
+    {
+      "video_id": "ig_DcHslafA8t1",
+      "path": "/exercise/bosu-hip-bridge-shoulders-on",
+      "status": 200,
+      "bytes": 27773,
+      "verified": true
+    },
+    {
+      "video_id": "ig_DcHslafA8t1",
+      "path": "/thumbs/DcHslafA8t1.jpg",
+      "status": 200,
+      "bytes": 55505,
+      "verified": true
+    },
+    {
+      "video_id": "ig_DcKgz8ctwKE",
+      "path": "/exercise/low-bench-goblet-step-down-squat-to-single-leg-knee-raise",
+      "status": 200,
+      "bytes": 26173,
+      "verified": true
+    },
+    {
+      "video_id": "ig_DcKgz8ctwKE",
+      "path": "/thumbs/DcKgz8ctwKE.jpg",
+      "status": 200,
+      "bytes": 68652,
+      "verified": true
+    },
+    {
+      "video_id": "ig_DcNI99TNIBV",
+      "path": "/exercise/deep-squat-to-alternating-t-spine-rotation-to-stand",
+      "status": 200,
+      "bytes": 32508,
+      "verified": true
+    },
+    {
+      "video_id": "ig_DcNI99TNIBV",
+      "path": "/thumbs/DcNI99TNIBV.jpg",
+      "status": 200,
+      "bytes": 68789,
+      "verified": true
+    },
+    {
+      "video_id": "ig_DcPwsTKNYKW",
+      "path": "/exercise/contralateral-single-arm-split-squat-explosive",
+      "status": 200,
+      "bytes": 26120,
+      "verified": true
+    },
+    {
+      "video_id": "ig_DcPwsTKNYKW",
+      "path": "/thumbs/DcPwsTKNYKW.jpg",
+      "status": 200,
+      "bytes": 66363,
+      "verified": true
+    },
+    {
+      "video_id": "ig_DcSKN4-t6zB",
+      "path": "/exercise/bosu-crunch",
+      "status": 200,
+      "bytes": 24284,
+      "verified": true
+    },
+    {
+      "video_id": "ig_DcSKN4-t6zB",
+      "path": "/thumbs/DcSKN4-t6zB.jpg",
+      "status": 200,
+      "bytes": 54512,
+      "verified": true
+    },
+    {
+      "video_id": "ig_DcU2SsJNMZg",
+      "path": "/exercise/bench-push-up",
+      "status": 200,
+      "bytes": 25076,
+      "verified": true
+    },
+    {
+      "video_id": "ig_DcU2SsJNMZg",
+      "path": "/thumbs/DcU2SsJNMZg.jpg",
+      "status": 200,
+      "bytes": 49719,
+      "verified": true
+    },
+    {
+      "video_id": "ig_DcXhiRHNthH",
+      "path": "/exercise/mid-band-bridge-hold-with-alternating-walkout",
+      "status": 200,
+      "bytes": 25729,
+      "verified": true
+    },
+    {
+      "video_id": "ig_DcXhiRHNthH",
+      "path": "/thumbs/DcXhiRHNthH.jpg",
+      "status": 200,
+      "bytes": 64892,
+      "verified": true
+    },
+    {
+      "video_id": "ig_DcZ8KtQtowt",
+      "path": "/exercise/mid-band-upright-row",
+      "status": 200,
+      "bytes": 25227,
+      "verified": true
+    },
+    {
+      "video_id": "ig_DcZ8KtQtowt",
+      "path": "/thumbs/DcZ8KtQtowt.jpg",
+      "status": 200,
+      "bytes": 54786,
+      "verified": true
+    },
+    {
+      "video_id": "ig_DcclDKutQoR",
+      "path": "/exercise/reverse-lunge-to-single-leg-knee-drive",
+      "status": 200,
+      "bytes": 25854,
+      "verified": true
+    },
+    {
+      "video_id": "ig_DcclDKutQoR",
+      "path": "/thumbs/DcclDKutQoR.jpg",
+      "status": 200,
+      "bytes": 60576,
+      "verified": true
+    },
+    {
+      "video_id": "ig_DcfOe_4NbTi",
+      "path": "/exercise/bosu-front-foot-elevated-ffe-forward-lunge",
+      "status": 200,
+      "bytes": 30137,
+      "verified": true
+    },
+    {
+      "video_id": "ig_DcfOe_4NbTi",
+      "path": "/thumbs/DcfOe_4NbTi.jpg",
+      "status": 200,
+      "bytes": 57866,
+      "verified": true
+    },
+    {
+      "video_id": "ig_DchYRfjgrCr",
+      "path": "/exercise/bear-plank-alternating-contralateral-lift",
+      "status": 200,
+      "bytes": 27773,
+      "verified": true
+    },
+    {
+      "video_id": "ig_DchYRfjgrCr",
+      "path": "/thumbs/DchYRfjgrCr.jpg",
+      "status": 200,
+      "bytes": 58129,
+      "verified": true
+    },
+    {
+      "video_id": "ig_DckKJj5NvHp",
+      "path": "/exercise/rear-foot-elevated-split-squats-rfess-bulgarian-split-squats",
+      "status": 200,
+      "bytes": 29545,
+      "verified": true
+    },
+    {
+      "video_id": "ig_DckKJj5NvHp",
+      "path": "/thumbs/DckKJj5NvHp.jpg",
+      "status": 200,
+      "bytes": 58336,
+      "verified": true
+    },
+    {
+      "video_id": "ig_DcnB7LSNaFi",
+      "path": "/exercise/low-side-plank-leg-lift",
+      "status": 200,
+      "bytes": 26476,
+      "verified": true
+    },
+    {
+      "video_id": "ig_DcnB7LSNaFi",
+      "path": "/thumbs/DcnB7LSNaFi.jpg",
+      "status": 200,
+      "bytes": 52154,
+      "verified": true
+    },
+    {
+      "video_id": "ig_DcpXralN6Lg",
+      "path": "/exercise/bosu-bridge-feet-on",
+      "status": 200,
+      "bytes": 25206,
+      "verified": true
+    },
+    {
+      "video_id": "ig_DcpXralN6Lg",
+      "path": "/thumbs/DcpXralN6Lg.jpg",
+      "status": 200,
+      "bytes": 55655,
+      "verified": true
+    },
+    {
+      "video_id": "ig_Dcrt4OWAYLn",
+      "path": "/exercise/standing-overhead-triceps-extension",
+      "status": 200,
+      "bytes": 24858,
+      "verified": true
+    },
+    {
+      "video_id": "ig_Dcrt4OWAYLn",
+      "path": "/thumbs/Dcrt4OWAYLn.jpg",
+      "status": 200,
+      "bytes": 58419,
+      "verified": true
+    },
+    {
+      "video_id": "ig_Dct3tvMg14K",
+      "path": "/exercise/strap-single-arm-low-row",
+      "status": 200,
+      "bytes": 27354,
+      "verified": true
+    },
+    {
+      "video_id": "ig_Dct3tvMg14K",
+      "path": "/thumbs/Dct3tvMg14K.jpg",
+      "status": 200,
+      "bytes": 64047,
+      "verified": true
+    },
+    {
+      "video_id": "ig_Dcwg0LIAHRq",
+      "path": "/exercise/pulsing-split-squat",
+      "status": 200,
+      "bytes": 24844,
+      "verified": true
+    },
+    {
+      "video_id": "ig_Dcwg0LIAHRq",
+      "path": "/thumbs/Dcwg0LIAHRq.jpg",
+      "status": 200,
+      "bytes": 53878,
+      "verified": true
+    },
+    {
+      "video_id": "ig_DczdHx1A2tU",
+      "path": "/exercise/reciprocating-hammer-curl",
+      "status": 200,
+      "bytes": 24993,
+      "verified": true
+    },
+    {
+      "video_id": "ig_DczdHx1A2tU",
+      "path": "/thumbs/DczdHx1A2tU.jpg",
+      "status": 200,
+      "bytes": 61120,
+      "verified": true
+    },
+    {
+      "video_id": "ig_Dc2D596AW6I",
+      "path": "/exercise/low-bench-in-in-out-out-and-up-up-down-down",
+      "status": 200,
+      "bytes": 25624,
+      "verified": true
+    },
+    {
+      "video_id": "ig_Dc2D596AW6I",
+      "path": "/thumbs/Dc2D596AW6I.jpg",
+      "status": 200,
+      "bytes": 68617,
+      "verified": true
+    },
+    {
+      "video_id": "ig_Dc4xpoPt5Tu",
+      "path": "/exercise/heavy-hip-bridge",
+      "status": 200,
+      "bytes": 27260,
+      "verified": true
+    },
+    {
+      "video_id": "ig_Dc4xpoPt5Tu",
+      "path": "/thumbs/Dc4xpoPt5Tu.jpg",
+      "status": 200,
+      "bytes": 47631,
+      "verified": true
+    }
+  ],
+  "failures": []
+}
