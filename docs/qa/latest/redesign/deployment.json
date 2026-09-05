@@ -1,26 +1,16 @@
 {
-  "verifiedAt": "2026-09-05T01:05:02.408902+00:00",
-  "implementationCommit": "452be78045532895303221fa7e7b27218936a46f",
-  "pullRequest": "https://github.com/vdoshi96/OTf-exercises/pull/24",
-  "publicURL": "https://o-tf-exercises.vercel.app",
-  "deploymentID": "dpl_5qN5au8aWiRmE6i1NKMX2NEDcvi3",
-  "deploymentURL": "https://o-tf-exercises-99ix993sm-vdoshi96s-projects.vercel.app",
-  "deploymentState": "READY",
-  "publicAliasMatched": true,
-  "browserMatrix": [
-    "> otf-exercise-directory@0.1.0 test:e2e",
-    "> node tests/ui-overhaul-smoke.mjs",
-    "",
-    "PASS Chromium desktop 1280x900",
-    "PASS Chromium mobile 390x844",
-    "PASS Chromium mobile 320x844",
-    "PASS Chromium reduced motion 1280x900",
-    "PASS Chromium JavaScript-disabled paging",
-    "PASS WebKit desktop 1280x900",
-    "PASS WebKit mobile 390x844",
-    "PASS WebKit mobile 320x844",
-    "UI production smoke passed: 765 exercises, 515 coaching resources, 24-item paging."
+  "id": "dpl_Hb2Rng4KvfCg9qF5fVstgP4hDc4d",
+  "url": "o-tf-exercises-3etcy3gu0-vdoshi96s-projects.vercel.app",
+  "target": "production",
+  "readyState": "READY",
+  "createdAt": 1788572441963,
+  "aliases": [
+    "o-tf-exercises.vercel.app",
+    "o-tf-exercises-vdoshi96s-projects.vercel.app",
+    "o-tf-exercises-git-main-vdoshi96s-projects.vercel.app"
   ],
-  "runtimeErrorEntries": 0,
-  "runtimeErrorWindow": "preceding 10 minutes during QA"
+  "source_commit": "0d82fe9bd181c30f608265f72354133a7211743c",
+  "pull_request": "https://github.com/vdoshi96/OTf-exercises/pull/27",
+  "public_alias_verified": true,
+  "verification": "Full production Chromium/WebKit suite, responsive/accessibility suite, all 22 imported video routes and exact thumbnail hashes."
 }
