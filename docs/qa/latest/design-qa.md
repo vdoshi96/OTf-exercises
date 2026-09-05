@@ -52,5 +52,23 @@ The newest completed screen captures and machine-readable results are in
 dated documents; their screenshot links point to the historical Git commit.
 `thumbnail-report.json` remains the independent catalog-integrity record.
 
-Production release verification is recorded after the implementation reaches
-the public alias. This pre-release record establishes local integrated behavior.
+## Production verification
+
+Implementation commit `452be78045532895303221fa7e7b27218936a46f` merged through
+[PR #24](https://github.com/vdoshi96/OTf-exercises/pull/24). Vercel deployment
+`dpl_5qN5au8aWiRmE6i1NKMX2NEDcvi3` reached Ready, and inspection confirmed
+[the public production URL](https://o-tf-exercises.vercel.app) resolved to
+[that immutable deployment](https://o-tf-exercises-99ix993sm-vdoshi96s-projects.vercel.app).
+
+The complete Chromium/WebKit matrix passed against the public URL, including
+all three viewport sizes, reduced motion, and JavaScript-disabled paging.
+The 24 screen/viewport checks, alternate-video and discovery-link checks, and
+11 accessibility scans also passed on production. The retained captures and
+results come from that live run and replace the local captures. Browser checks
+cover security headers, catalog-backed iframe policy, legacy redirects and
+reviewed recoveries, true HTTP 404s, robots, and sitemap cardinality.
+
+A Vercel error-level log query for this deployment over the preceding 10 minutes
+returned no entries during QA. This is a bounded observation, not a promise of
+ongoing monitoring. The evidence closeout changes documentation only; it does
+not alter the verified application source or catalog.
