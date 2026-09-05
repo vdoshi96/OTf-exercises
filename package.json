@@ -25,6 +25,7 @@
     "test:security": "node --test tests/shell-security.test.mjs",
     "test:thumbnails": "node --test tests/thumbnail-pipeline.test.mjs",
     "test:catalog": "node --test tests/catalog-integrity.test.mjs tests/legacy-exercise-routes.test.mjs && npm run legacy-routes:check && node scripts/check_catalog_integrity.mjs --latest-thumbnail-report",
+    "test:redesign": "node tests/redesign-browser.mjs",
     "test:e2e": "node tests/ui-overhaul-smoke.mjs",
     "test:ui-overhaul": "node tests/ui-overhaul-smoke.mjs"
   },

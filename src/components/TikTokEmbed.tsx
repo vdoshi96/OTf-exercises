@@ -72,8 +72,8 @@ export default function TikTokEmbed({
   }
 
   return (
-    <div className="mx-auto w-full max-w-[420px] overflow-hidden rounded-lg border border-white/10 bg-[#0f1010]">
-      <div className="relative aspect-[9/16] w-full overflow-hidden bg-black">
+    <div className="platform-media">
+      <div className="media-stage tiktok-stage">
         {playing ? (
           <iframe
             ref={playerRef}
@@ -100,7 +100,7 @@ export default function TikTokEmbed({
                 sizes="(max-width: 639px) calc(100vw - 4rem), 420px"
                 loading={eager ? "eager" : "lazy"}
                 onError={() => setThumbnailError(true)}
-                className="object-cover transition duration-300 group-hover:scale-[1.02]"
+                className="object-contain"
               />
             ) : (
               <span className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-[radial-gradient(circle_at_top,#252626,#060707_70%)] px-6 text-stone-300">
@@ -121,18 +121,8 @@ export default function TikTokEmbed({
                 </span>
               </span>
             )}
-            <span className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-black/25" />
-            <span className="relative flex h-16 w-16 items-center justify-center rounded-full border-2 border-orange-500 bg-black/65 pl-1 shadow-2xl backdrop-blur-sm transition group-hover:scale-105 group-hover:bg-orange-500 group-hover:text-black">
-              <PlayIcon />
-            </span>
-            <span className="absolute bottom-4 left-4 right-4 rounded-md bg-black/75 px-3 py-2 backdrop-blur-sm">
-              <span className="block text-sm font-semibold">
-                Tap to play on TikTok
-              </span>
-              <span className="mt-0.5 block text-xs font-medium text-stone-300">
-                Playing loads TikTok’s embedded player
-              </span>
-            </span>
+            <span className="media-action"><PlayIcon /> Play on TikTok</span>
+            <span className="media-consent">Playing loads TikTok’s embedded player</span>
           </button>
         )}
       </div>
@@ -141,7 +131,7 @@ export default function TikTokEmbed({
         href={url}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex min-h-12 items-center justify-center gap-2 border-t border-white/10 px-4 py-2 text-sm font-semibold text-stone-300 transition hover:bg-white/5 hover:text-orange-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-orange-400"
+        className="tiktok-source-link"
       >
         <TikTokMark />
         Open original on TikTok

@@ -175,7 +175,7 @@ async function assertUnofficialHeader(page, label) {
     `${label}: unofficial identity should remain visible in the header.`
   );
   await expectVisible(
-    header.getByText("Exercise Directory", { exact: true }),
+    header.getByText("Exercise directory", { exact: true }),
     `${label}: directory identity should remain visible in the header.`
   );
   const home = header.getByRole("link", {
@@ -190,7 +190,7 @@ async function assertUnofficialHeader(page, label) {
 
 async function assertPrimaryNav(page, expected) {
   const nav = page.getByRole("navigation", { name: "Primary" });
-  const directory = nav.getByRole("link", { name: "Directory", exact: true });
+  const directory = nav.getByRole("link", { name: "Exercises", exact: true });
   const coaching = nav.getByRole("link", { name: "Coaching", exact: true });
   assert(
     (await directory.getAttribute("aria-current")) ===
@@ -392,7 +392,7 @@ async function gotoDirectory(page, expectedCards = pageSize) {
   await page.goto(baseURL, { waitUntil: "networkidle" });
   await expectVisible(
     page.getByRole("heading", {
-      name: "Find the movement before class starts.",
+      name: "Find a movement.",
     }),
     "Directory hero should render."
   );
@@ -413,7 +413,7 @@ async function assertDetailOrder(page, exerciseName) {
     "Card navigation should open the matching detail page."
   );
   const videoLibrary = page.locator(
-    "section[aria-labelledby='video-library-heading']"
+    "section[aria-label='Video demonstrations']"
   );
   const metadata = page.getByLabel("Exercise metadata");
   await expectVisible(videoLibrary, "Detail should expose its video library.");
@@ -1462,7 +1462,7 @@ async function assertInstagramBehavior(page) {
       "Instagram media should open safely in a separate tab."
     );
     assert(
-      /Open (?:original )?(?:on )?Instagram/i.test(await outbound.innerText()),
+      /Watch on Instagram/i.test(await outbound.innerText()),
       "Instagram media should use explicit outbound wording instead of player wording."
     );
     assert(
@@ -1491,7 +1491,7 @@ async function assertLongestTitleDetail(page) {
   );
   const firstVideo = longestTitleExercise.videos[0];
   const firstArticle = page
-    .locator("section[aria-labelledby='video-library-heading'] article")
+    .locator("section[aria-label='Video demonstrations'] article")
     .first();
   const mediaControl =
     firstVideo.source === "tiktok"
@@ -1514,7 +1514,7 @@ async function assertCoachingExperience(page) {
   await page.goto(`${baseURL}/coaching`, { waitUntil: "networkidle" });
   await assertPrimaryNav(page, "coaching");
   await expectVisible(
-    page.getByRole("heading", { name: "Coaching resources", level: 2 }),
+    page.getByRole("heading", { name: "Coaching resources.", level: 1 }),
     "Coaching should have a separate public directory."
   );
 
@@ -1663,7 +1663,7 @@ async function assertHttpSurface(page) {
   );
   const missingHtml = await missing.text();
   assert(
-    /That movement is not here/i.test(missingHtml),
+    /That page isn’t here/i.test(missingHtml),
     "The true 404 response should contain branded recovery content."
   );
 
@@ -1811,7 +1811,7 @@ async function assertNotFoundRecovery(page) {
   });
   assert(response?.status() === 404, "Unknown routes should retain a true 404 status.");
   await expectVisible(
-    page.getByRole("heading", { name: "That movement is not here.", level: 1 }),
+    page.getByRole("heading", { name: "That page isn’t here.", level: 1 }),
     "404 should render branded recovery guidance."
   );
   const form = page.getByRole("search");
@@ -1875,7 +1875,7 @@ async function assertReducedMotion(browser) {
     const filterTrigger = page.locator(
       "button[aria-controls='desktop-exercise-filters']"
     );
-    await filterTrigger.click();
+    if ((await filterTrigger.getAttribute("aria-expanded")) !== "true") await filterTrigger.click();
     const panel = page.locator("#desktop-exercise-filters");
     await expectVisible(panel, "Reduced-motion desktop filters should still open.");
     const panelAnimation = await panel.evaluate((element) => {
@@ -2081,6 +2081,8 @@ async function assertFallbackThumbnail(page) {
   await page.goto(`${baseURL}/exercise/${fallbackExercise.id}`, {
     waitUntil: "networkidle",
   });
+  const fallbackIndex = fallbackExercise.videos.findIndex(video => video.thumbnail === fallbackThumbnail);
+  if (fallbackExercise.videos.length > 1) await page.locator(".demo-option").nth(fallbackIndex).click();
   const fallback = page.locator("img[src*='fallback-exercise.jpg']").first();
   await assertLoadedImage(fallback, "Durable local fallback thumbnail");
   assert(

@@ -1,0 +1,217 @@
+{
+  "baseURL": "http://127.0.0.1:3013",
+  "results": [
+    {
+      "width": 1280,
+      "name": "directory",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 1280,
+      "name": "exercise-detail",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 1280,
+      "name": "coaching",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 1280,
+      "name": "coaching-detail",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 1280,
+      "name": "privacy",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 1280,
+      "name": "split",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 1280,
+      "name": "removed",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 1280,
+      "name": "not-found",
+      "status": 404,
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "name": "directory",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "name": "exercise-detail",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "name": "coaching",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "name": "coaching-detail",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "name": "privacy",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "name": "split",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "name": "removed",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "name": "not-found",
+      "status": 404,
+      "overflow": false
+    },
+    {
+      "width": 320,
+      "name": "directory",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 320,
+      "name": "exercise-detail",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 320,
+      "name": "coaching",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 320,
+      "name": "coaching-detail",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 320,
+      "name": "privacy",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 320,
+      "name": "split",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 320,
+      "name": "removed",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 320,
+      "name": "not-found",
+      "status": 404,
+      "overflow": false
+    }
+  ],
+  "multipleVideoFixture": "12-kneeling-around-the-world-raise",
+  "singleVideoFixture": "hang-power-clean-to-alternating-single-arm-neutral-grip-push-press",
+  "noJavaScriptSources": true,
+  "accessibility": [
+    {
+      "name": "directory",
+      "violations": [],
+      "incomplete": [
+        "aria-valid-attr-value"
+      ]
+    },
+    {
+      "name": "exercise-detail",
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "name": "coaching",
+      "violations": [],
+      "incomplete": [
+        "aria-valid-attr-value"
+      ]
+    },
+    {
+      "name": "coaching-detail",
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "name": "privacy",
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "name": "split",
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "name": "removed",
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "name": "not-found",
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "name": "multiple-demos",
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "name": "filter-dialog",
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "name": "request-error",
+      "violations": [],
+      "incomplete": [
+        "aria-valid-attr-value"
+      ]
+    }
+  ]
+}

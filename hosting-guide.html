@@ -6,7 +6,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: https:; style-src 'unsafe-inline'">
   <meta name="generator" content="otf-docs-parity/v1">
   <meta name="doc-source" content="hosting-guide.md">
-  <meta name="doc-source-sha256" content="868a4b0ca61c22ffbc43525d18ac88833a1944aa86e700eb298acf3983bd756c">
+  <meta name="doc-source-sha256" content="e7a0b174cfb67acadef31ee7a95e509b150515b3342414a4f3414f3d3f26022a">
   <title>Hosting Guide — OTF Exercise Directory</title>
   <style>
     :root {
@@ -155,6 +155,7 @@ npm run build -- --webpack
 <p>Then start the production build locally and run the browser matrix:</p>
 <pre><code class="language-bash">npm start
 BASE_URL=http://localhost:3000 npm run test:e2e
+BASE_URL=http://localhost:3000 npm run test:redesign
 </code></pre>
 <p>Webpack is the verified deterministic local production path for this release.
 The managed Codex host prevented Turbopack&#39;s CSS helper from binding a local
@@ -166,6 +167,13 @@ and filter parity, URL history and sharing, out-of-order response safety,
 24-item paging, exercise and coaching details, media request gates, privacy,
 branding, local thumbnails, historical exercise-route recovery, true 404s,
 security headers, robots, and exact sitemap cardinality.</p>
+<p>The redesign suite captures all eight screens at 1280px, 390px, and 320px. It
+checks alternate demonstrations, per-video attribution, absent single-video
+selectors, no-JavaScript source access, discovery-link filter composition, and
+WCAG A/AA scans of the mobile screens, filter dialog, and failed-request state.
+Screenshots and results default to <code>output/playwright/redesign</code>; set <code>QA_OUTPUT</code>
+to choose another destination. Keep only the newest completed evidence under
+<code>docs/qa/latest</code>, retaining the independent catalog thumbnail report.</p>
 <h2 id="publish-and-deploy">Publish and deploy</h2>
 <p>Push the scoped branch, merge it into GitHub <code>main</code>, and update local <code>main</code> to
 the same commit. Vercel deploys the repository&#39;s <code>main</code> branch automatically.
@@ -173,6 +181,7 @@ Remove the completed branch or worktree after the merge.</p>
 <p>After Vercel reports the deployment ready, verify the deployed catalog rather
 than treating deployment status alone as proof:</p>
 <pre><code class="language-bash">BASE_URL=https://o-tf-exercises.vercel.app npm run test:e2e
+BASE_URL=https://o-tf-exercises.vercel.app npm run test:redesign
 </code></pre>
 <p>Also confirm <code>/</code>, <code>/coaching</code>, <code>/privacy</code>, <code>/robots.txt</code>, representative
 exercise and coaching routes, their <code>/thumbs/</code> assets, and <code>/sitemap.xml</code>

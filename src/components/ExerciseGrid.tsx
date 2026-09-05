@@ -61,9 +61,9 @@ export default function ExerciseGrid({
     () =>
       parseDirectoryQuery(
         new URLSearchParams(serializedSearchParams),
-        initialResponse.query.section
+        initialResponse.query.section,
       ),
-    [initialResponse.query.section, serializedSearchParams]
+    [initialResponse.query.section, serializedSearchParams],
   );
   const queryKey = directoryQueryKey(queryFromUrl);
 
@@ -99,7 +99,7 @@ export default function ExerciseGrid({
       if (mode === "push") window.history.pushState(null, "", href);
       else window.history.replaceState(null, "", href);
     },
-    [pathname]
+    [pathname],
   );
 
   useEffect(() => {
@@ -110,10 +110,7 @@ export default function ExerciseGrid({
     if (normalizedDraft === queryFromUrl.q) return;
 
     const timeout = window.setTimeout(() => {
-      writeQuery(
-        { ...queryFromUrl, q: normalizedDraft, page: 1 },
-        "replace"
-      );
+      writeQuery({ ...queryFromUrl, q: normalizedDraft, page: 1 }, "replace");
     }, 250);
     return () => window.clearTimeout(timeout);
   }, [draftQuery, queryFromUrl, writeQuery]);
@@ -146,7 +143,8 @@ export default function ExerciseGrid({
         return payload;
       })
       .then((payload) => {
-        if (controller.signal.aborted || sequence !== requestSequence.current) return;
+        if (controller.signal.aborted || sequence !== requestSequence.current)
+          return;
 
         setResponse(payload);
         setRequestError(null);
@@ -158,7 +156,8 @@ export default function ExerciseGrid({
         }
       })
       .catch(() => {
-        if (controller.signal.aborted || sequence !== requestSequence.current) return;
+        if (controller.signal.aborted || sequence !== requestSequence.current)
+          return;
         setRequestError({ key: queryKey, message: requestErrorMessage() });
       });
 
@@ -186,7 +185,12 @@ export default function ExerciseGrid({
       appendedCard?.focus();
     }
     pendingAppendStart.current = null;
-  }, [isLoading, response.accumulated, response.hasMore, response.items.length]);
+  }, [
+    isLoading,
+    response.accumulated,
+    response.hasMore,
+    response.items.length,
+  ]);
 
   const submitSearch = () => {
     writeQuery(
@@ -198,7 +202,7 @@ export default function ExerciseGrid({
           .slice(0, DIRECTORY_QUERY_MAX_LENGTH),
         page: 1,
       },
-      "replace"
+      "replace",
     );
   };
 
@@ -214,7 +218,7 @@ export default function ExerciseGrid({
         [key]: toggleValue(queryFromUrl[key], value),
         page: 1,
       },
-      "push"
+      "push",
     );
   };
 
@@ -230,7 +234,7 @@ export default function ExerciseGrid({
         topics: [],
         page: 1,
       },
-      "push"
+      "push",
     );
   };
 
@@ -241,7 +245,8 @@ export default function ExerciseGrid({
 
   const visibleCount = response.items.length;
   const formattedTotal = response.total.toLocaleString();
-  const itemLabel = response.query.section === "coaching" ? "resources" : "exercises";
+  const itemLabel =
+    response.query.section === "coaching" ? "resources" : "exercises";
   const hasSearchQuery = queryFromUrl.q.length > 0;
   const hasActiveFilters = [
     queryFromUrl.categories,
@@ -252,11 +257,27 @@ export default function ExerciseGrid({
     queryFromUrl.topics,
   ].some((values) => values.length > 0);
 
+  const shortcutGroup =
+    response.query.section === "coaching" ? "topics" : "equipment";
+  const shortcuts =
+    response.query.section === "coaching"
+      ? [
+          { value: "movement-technique", label: "Movement technique" },
+          { value: "programming", label: "Programming" },
+          { value: "safety-and-modifications", label: "Modifications" },
+        ]
+      : [
+          { value: "dumbbell", label: "Dumbbells" },
+          { value: "TRX straps", label: "TRX straps" },
+          { value: "rower", label: "Rower" },
+          { value: "treadmill", label: "Treadmill" },
+        ];
+
   return (
     <>
-      <section className="border-b border-white/10">
-        <div className="mx-auto max-w-[92rem] px-4 pb-4 sm:px-6 sm:pb-6 lg:px-8">
-          <div className="flex flex-wrap items-start gap-2 sm:gap-3">
+      <section className="directory-search">
+        <div className="page-width">
+          <div className="search-width">
             <div className="min-w-[min(100%,16rem)] flex-1">
               <SearchBar
                 value={draftQuery}
@@ -275,129 +296,187 @@ export default function ExerciseGrid({
                 }
               />
             </div>
-            <div className="w-full sm:flex-1">
-              <FilterPanel
-                section={response.query.section}
-                options={response.filterOptions}
-                query={queryFromUrl}
-                resultCount={response.total}
-                onToggle={toggleFilter}
-                onClear={clearFilters}
-              />
-            </div>
           </div>
-          <p className="mt-3 text-sm font-medium text-stone-400" aria-live="polite">
-            Showing <span className="font-semibold text-stone-100">{visibleCount.toLocaleString()}</span>{" "}
-            of {formattedTotal} matching {itemLabel}
-          </p>
+          <nav
+            className="browse-shortcuts"
+            aria-label={
+              response.query.section === "coaching"
+                ? "Browse coaching topics"
+                : "Browse by equipment"
+            }
+          >
+            <span>
+              {response.query.section === "coaching"
+                ? "Explore:"
+                : "Browse by equipment:"}
+            </span>
+            {shortcuts.map(({ value, label }) => (
+              <a
+                key={value}
+                href={directoryPageHref(pathname, {
+                  ...queryFromUrl,
+                  [shortcutGroup]: toggleValue(
+                    queryFromUrl[shortcutGroup],
+                    value,
+                  ),
+                  page: 1,
+                })}
+                aria-current={
+                  queryFromUrl[shortcutGroup].includes(value)
+                    ? "true"
+                    : undefined
+                }
+                onClick={(event) => {
+                  if (
+                    event.metaKey ||
+                    event.ctrlKey ||
+                    event.shiftKey ||
+                    event.altKey
+                  )
+                    return;
+                  event.preventDefault();
+                  toggleFilter(shortcutGroup, value);
+                }}
+              >
+                {label}
+              </a>
+            ))}
+          </nav>
         </div>
       </section>
 
-      <section
-        id="directory"
-        aria-busy={isInteractiveRequestLoading}
-        className="mx-auto max-w-[92rem] scroll-mt-24 px-4 py-3 sm:px-6 lg:px-8 lg:py-4"
-      >
-        <div className="mb-3 flex flex-wrap items-end justify-between gap-2 sm:mb-4">
-          <h2 className="font-display display-tight text-2xl font-semibold text-stone-50 sm:text-4xl">
-            {response.query.section === "coaching"
-              ? "Coaching resources"
-              : "Exercise reference"}
-          </h2>
-          {isInteractiveRequestLoading && (
-            <span
-              className="t-shimmer directory-loading-label text-xs font-semibold"
-              data-text="Updating…"
-              role="status"
-            >
-              Updating…
-            </span>
-          )}
+      <div className="page-width directory-layout">
+        <div className="filter-rail">
+          <FilterPanel
+            section={response.query.section}
+            options={response.filterOptions}
+            query={queryFromUrl}
+            resultCount={response.total}
+            onToggle={toggleFilter}
+            onClear={clearFilters}
+          />
         </div>
 
-        {hasCurrentError && (
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-red-400/30 bg-red-500/10 p-4 text-sm text-red-100" role="alert">
-            <span>{requestError.message}</span>
-            <button
-              type="button"
-              onClick={() => {
-                setRequestError(null);
-                setRetryNonce((value) => value + 1);
-              }}
-              className="min-h-12 rounded-md border border-red-300/40 px-4 font-semibold transition hover:bg-red-300/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-200"
+        <section
+          id="directory"
+          aria-busy={isInteractiveRequestLoading}
+          className="directory-results"
+        >
+          <div className="mb-3 flex flex-wrap items-end justify-between gap-2 sm:mb-4">
+            <h2 className="sr-only">
+              {response.query.section === "coaching"
+                ? "Coaching resources"
+                : "Exercise reference"}
+            </h2>
+            <p
+              className="mt-3 text-sm font-medium text-muted"
+              aria-live="polite"
             >
-              Try again
-            </button>
-          </div>
-        )}
-
-        {response.items.length === 0 ? (
-          <div data-testid="empty-results" className="rounded-lg border border-white/10 bg-[#101111]/80 px-6 py-20 text-center">
-            <p className="text-lg font-semibold text-stone-200">No results found</p>
-            <p className="mt-1 text-sm text-stone-400">
-              Try adjusting your search or filters
+              Showing{" "}
+              <span className="font-semibold text-ink">
+                {visibleCount.toLocaleString()}
+              </span>{" "}
+              of {formattedTotal} matching {itemLabel}
             </p>
-            {(hasSearchQuery || hasActiveFilters) && (
-              <div className="mt-5 flex flex-wrap justify-center gap-3">
-                {hasSearchQuery && (
-                  <button
-                    type="button"
-                    onClick={clearSearch}
-                    className="min-h-12 rounded-md bg-orange-500 px-4 text-sm font-bold text-black transition hover:bg-orange-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-300"
-                  >
-                    Reset search
-                  </button>
-                )}
-                {hasActiveFilters && (
-                  <button
-                    type="button"
-                    onClick={clearFilters}
-                    className="min-h-12 rounded-md border border-white/15 px-4 text-sm font-bold text-stone-200 transition hover:border-orange-500/50 hover:text-orange-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-400"
-                  >
-                    Clear filters
-                  </button>
-                )}
-              </div>
+            {isInteractiveRequestLoading && (
+              <span
+                className="t-shimmer directory-loading-label text-xs font-semibold"
+                data-text="Updating…"
+                role="status"
+              >
+                Updating…
+              </span>
             )}
           </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4">
-            {response.items.map((item) => (
-              <ExerciseCard
-                key={item.id}
-                item={item}
-                query={queryFromUrl}
-              />
-            ))}
-          </div>
-        )}
 
-        {response.hasMore && (
-          <div className="flex justify-center py-8">
-            <a
-              ref={loadMoreRef}
-              href={`${directoryPageHref(pathname, {
-                ...queryFromUrl,
-                page: queryFromUrl.page + 1,
-              })}#directory`}
-              aria-disabled={isInteractiveRequestLoading || undefined}
-              onClick={(event) => {
-                if (isLoading && !response.accumulated) return;
-                event.preventDefault();
-                if (!isLoading) loadMore();
-              }}
-              className="inline-flex min-h-12 items-center justify-center rounded-md border border-orange-500/50 bg-orange-500 px-6 py-3 text-sm font-bold text-black shadow-lg shadow-orange-950/20 transition hover:bg-orange-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-400 aria-disabled:cursor-wait aria-disabled:opacity-60"
+          {hasCurrentError && (
+            <div
+              className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-red-400/30 bg-red-500/10 p-4 text-sm text-red-900"
+              role="alert"
             >
-              Load{" "}
-              {Math.min(
-                response.pageSize,
-                response.total - response.page * response.pageSize,
-              )}{" "}
-              more
-            </a>
-          </div>
-        )}
-      </section>
+              <span>{requestError.message}</span>
+              <button
+                type="button"
+                onClick={() => {
+                  setRequestError(null);
+                  setRetryNonce((value) => value + 1);
+                }}
+                className="min-h-12 rounded-md border border-red-300/40 px-4 font-semibold transition hover:bg-red-300/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-800"
+              >
+                Try again
+              </button>
+            </div>
+          )}
+
+          {response.items.length === 0 ? (
+            <div
+              data-testid="empty-results"
+              className="rounded-lg border border-line bg-white px-6 py-20 text-center"
+            >
+              <p className="text-lg font-semibold text-ink">No results found</p>
+              <p className="mt-1 text-sm text-muted">
+                Try adjusting your search or filters
+              </p>
+              {(hasSearchQuery || hasActiveFilters) && (
+                <div className="mt-5 flex flex-wrap justify-center gap-3">
+                  {hasSearchQuery && (
+                    <button
+                      type="button"
+                      onClick={clearSearch}
+                      className="min-h-12 rounded-md bg-accent px-4 text-sm font-bold text-white transition hover:bg-orange-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-300"
+                    >
+                      Reset search
+                    </button>
+                  )}
+                  {hasActiveFilters && (
+                    <button
+                      type="button"
+                      onClick={clearFilters}
+                      className="min-h-12 rounded-md border border-line px-4 text-sm font-bold text-ink transition hover:border-orange-500/50 hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-400"
+                    >
+                      Clear filters
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div
+              className={`result-grid ${response.query.section === "coaching" ? "coaching-results" : ""}`}
+            >
+              {response.items.map((item) => (
+                <ExerciseCard key={item.id} item={item} query={queryFromUrl} />
+              ))}
+            </div>
+          )}
+
+          {response.hasMore && (
+            <div className="flex justify-center py-8">
+              <a
+                ref={loadMoreRef}
+                href={`${directoryPageHref(pathname, {
+                  ...queryFromUrl,
+                  page: queryFromUrl.page + 1,
+                })}#directory`}
+                aria-disabled={isInteractiveRequestLoading || undefined}
+                onClick={(event) => {
+                  if (isLoading && !response.accumulated) return;
+                  event.preventDefault();
+                  if (!isLoading) loadMore();
+                }}
+                className="inline-flex min-h-12 items-center justify-center rounded-md border border-orange-500/50 bg-accent-soft px-6 py-3 text-sm font-bold text-black transition hover:bg-orange-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-400 aria-disabled:cursor-wait aria-disabled:opacity-60"
+              >
+                Load{" "}
+                {Math.min(
+                  response.pageSize,
+                  response.total - response.page * response.pageSize,
+                )}{" "}
+                more
+              </a>
+            </div>
+          )}
+        </section>
+      </div>
     </>
   );
 }

@@ -115,8 +115,8 @@ test("trust copy and media privacy controls remain explicit", async () => {
   assert.match(nav, /parseDirectoryQuery/);
   assert.match(nav, /directoryPageHref/);
 
-  assert.match(instagram, /External link/);
-  assert.match(instagram, /Open original on Instagram/);
+  assert.match(instagram, /new tab/);
+  assert.match(instagram, /Watch on Instagram/);
   assert.match(tiktok, /Playing loads TikTok’s embedded player/);
   assert.match(tiktok, /referrerPolicy="strict-origin-when-cross-origin"/);
   assert.doesNotMatch(tiktok, /\bsandbox=/);

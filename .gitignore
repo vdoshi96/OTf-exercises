@@ -62,3 +62,6 @@ add-instagram-plan.md
 reddit post.md
 *.Rhistory
 .superpowers/
+
+# Reproducible browser capture scratch space
+/output/playwright/

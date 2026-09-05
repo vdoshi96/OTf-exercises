@@ -88,6 +88,7 @@ Then start the production build locally and run the browser matrix:
 ```bash
 npm start
 BASE_URL=http://localhost:3000 npm run test:e2e
+BASE_URL=http://localhost:3000 npm run test:redesign
 ```
 
 Webpack is the verified deterministic local production path for this release.
@@ -102,6 +103,14 @@ and filter parity, URL history and sharing, out-of-order response safety,
 branding, local thumbnails, historical exercise-route recovery, true 404s,
 security headers, robots, and exact sitemap cardinality.
 
+The redesign suite captures all eight screens at 1280px, 390px, and 320px. It
+checks alternate demonstrations, per-video attribution, absent single-video
+selectors, no-JavaScript source access, discovery-link filter composition, and
+WCAG A/AA scans of the mobile screens, filter dialog, and failed-request state.
+Screenshots and results default to `output/playwright/redesign`; set `QA_OUTPUT`
+to choose another destination. Keep only the newest completed evidence under
+`docs/qa/latest`, retaining the independent catalog thumbnail report.
+
 ## Publish and deploy
 
 Push the scoped branch, merge it into GitHub `main`, and update local `main` to
@@ -113,6 +122,7 @@ than treating deployment status alone as proof:
 
 ```bash
 BASE_URL=https://o-tf-exercises.vercel.app npm run test:e2e
+BASE_URL=https://o-tf-exercises.vercel.app npm run test:redesign
 ```
 
 Also confirm `/`, `/coaching`, `/privacy`, `/robots.txt`, representative
