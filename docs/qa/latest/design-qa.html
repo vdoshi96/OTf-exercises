@@ -6,7 +6,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: https:; style-src 'unsafe-inline'">
   <meta name="generator" content="otf-docs-parity/v1">
   <meta name="doc-source" content="docs/qa/latest/design-qa.md">
-  <meta name="doc-source-sha256" content="19288de0e289cbb5ec6cac9c4b4b8f30f00208e1dcfab45e915a62b394550eab">
+  <meta name="doc-source-sha256" content="9386a939b75546b13e35a2b0f1cb44b24333f8d1219685077e57ca5a1183c4d3">
   <title>Design QA — September 4, 2026 redesign</title>
   <style>
     :root {
@@ -127,8 +127,23 @@ No usability improvement or performance benchmark is inferred from this QA.</p>
 <a href="redesign/results.json">redesign</a>. Historical audit conclusions remain in their
 dated documents; their screenshot links point to the historical Git commit.
 <code>thumbnail-report.json</code> remains the independent catalog-integrity record.</p>
-<p>Production release verification is recorded after the implementation reaches
-the public alias. This pre-release record establishes local integrated behavior.</p>
+<h2 id="production-verification">Production verification</h2>
+<p>Implementation commit <code>452be78045532895303221fa7e7b27218936a46f</code> merged through
+<a href="https://github.com/vdoshi96/OTf-exercises/pull/24">PR #24</a>. Vercel deployment
+<code>dpl_5qN5au8aWiRmE6i1NKMX2NEDcvi3</code> reached Ready, and inspection confirmed
+<a href="https://o-tf-exercises.vercel.app">the public production URL</a> resolved to
+<a href="https://o-tf-exercises-99ix993sm-vdoshi96s-projects.vercel.app">that immutable deployment</a>.</p>
+<p>The complete Chromium/WebKit matrix passed against the public URL, including
+all three viewport sizes, reduced motion, and JavaScript-disabled paging.
+The 24 screen/viewport checks, alternate-video and discovery-link checks, and
+11 accessibility scans also passed on production. The retained captures and
+results come from that live run and replace the local captures. Browser checks
+cover security headers, catalog-backed iframe policy, legacy redirects and
+reviewed recoveries, true HTTP 404s, robots, and sitemap cardinality.</p>
+<p>A Vercel error-level log query for this deployment over the preceding 10 minutes
+returned no entries during QA. This is a bounded observation, not a promise of
+ongoing monitoring. The evidence closeout changes documentation only; it does
+not alter the verified application source or catalog.</p>
   </main>
 </body>
 </html>
