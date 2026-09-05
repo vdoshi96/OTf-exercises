@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-05T01:00:18.106971+00:00",
+  "title": "Design system: OTF exercise directory",
+  "extensions": {
+    "shadows": [
+      {
+        "name": "media-action",
+        "value": "0 4px 20px #0002",
+        "purpose": "Separates the white action from source imagery."
+      }
+    ],
+    "motion": [
+      {
+        "name": "accordion",
+        "value": "200ms ease",
+        "purpose": "Expands and collapses filter groups."
+      },
+      {
+        "name": "modal-open",
+        "value": "260ms ease",
+        "purpose": "Raises the bottom filter modal by 32px."
+      },
+      {
+        "name": "modal-close",
+        "value": "200ms ease",
+        "purpose": "Closes the filter modal."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "phone-max",
+        "value": "650px"
+      },
+      {
+        "name": "intermediate-max",
+        "value": "1000px"
+      },
+      {
+        "name": "wide-min",
+        "value": "1500px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Search submission",
+      "kind": "button",
+      "description": "Charcoal submission action in the combined search control.",
+      "html": "<button class=\"ds-search\">Search</button>",
+      "css": ".ds-search{font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;background:var(--ink,#242e32);color:white;min-height:58px;min-width:104px;padding:12px 20px;border:0;font-weight:650}.ds-search:hover{background:#3c484d}.ds-search:focus-visible{outline:3px solid var(--accent,#b74113);outline-offset:4px}",
+      "refersTo": "search-submit"
+    },
+    {
+      "name": "Media action",
+      "kind": "button",
+      "description": "White platform action over a demonstration thumbnail.",
+      "html": "<button class=\"ds-media\">Play on TikTok</button>",
+      "css": ".ds-media{font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;background:white;color:var(--ink,#242e32);border:0;border-radius:7px;padding:12px 18px;min-height:46px;font-size:14px;font-weight:650;box-shadow:0 4px 20px #0002}.ds-media:focus-visible{outline:3px solid var(--accent,#b74113);outline-offset:4px}",
+      "refersTo": "media-action"
+    },
+    {
+      "name": "Search field",
+      "kind": "input",
+      "description": "White bordered search field with orange keyboard focus.",
+      "html": "<input class=\"ds-input\" aria-label=\"Search exercises\" placeholder=\"Search by exercise, equipment, or muscle\">",
+      "css": ".ds-input{font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;width:100%;min-height:58px;border:1px solid #8d999e;border-radius:10px;background:white;color:var(--ink,#242e32);padding:14px 16px;font-size:16px;caret-color:var(--accent,#b74113)}.ds-input::placeholder{color:var(--muted,#59656b)}.ds-input:focus-visible{outline:3px solid var(--accent,#b74113);outline-offset:4px}"
+    },
+    {
+      "name": "Navigation",
+      "kind": "nav",
+      "description": "Text navigation with an active orange underline.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Primary\"><a href=\"#exercises\" aria-current=\"page\">Exercises</a><a href=\"#coaching\">Coaching</a></nav>",
+      "css": ".ds-nav{font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;display:flex;gap:5px}.ds-nav a{display:inline-flex;align-items:center;min-height:48px;padding:0 12px;color:var(--muted,#59656b);font-size:14px;font-weight:600;text-decoration:none;border-bottom:2px solid transparent}.ds-nav a[aria-current]{color:var(--accent,#b74113);border-bottom-color:#eb5b23}.ds-nav a:hover{color:var(--accent,#b74113)}.ds-nav a:focus-visible{outline:3px solid var(--accent,#b74113);outline-offset:4px}.ds-nav:focus-visible{outline:3px solid var(--accent,#b74113);outline-offset:4px}"
+    },
+    {
+      "name": "Selected demonstration",
+      "kind": "custom",
+      "description": "Numbered creator choice with explicit selected state.",
+      "html": "<button class=\"ds-demo\" aria-pressed=\"true\"><span>2</span><span><strong>Coach Rudy</strong><small>TikTok \u00b7 @coachingotf</small></span><svg aria-hidden=\"true\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"m5 12 4 4L19 6\"/></svg></button>",
+      "css": ".ds-demo{font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;display:flex;align-items:center;gap:14px;text-align:left;width:100%;min-height:70px;padding:11px 13px;border:2px solid var(--accent,#b74113);border-radius:9px;background:var(--accent-soft,#fff1e9);color:var(--ink,#242e32)}.ds-demo strong{display:block;font-size:14px}.ds-demo small{display:block;font-size:12px;color:var(--muted,#59656b)}.ds-demo svg{margin-left:auto;color:var(--accent,#b74113)}.ds-demo:focus-visible{outline:3px solid var(--accent,#b74113);outline-offset:4px}",
+      "refersTo": "demo-option-selected"
+    },
+    {
+      "name": "Catalog entry",
+      "kind": "card",
+      "description": "Flat catalog text treatment; runtime entries also include reviewed imagery.",
+      "html": "<article class=\"ds-card\"><h3>Alternating Arnold Press</h3><p>Upper Body \u00b7 dumbbell</p><p>Coach Rudy</p><p>1 demo \u00b7 Instagram</p></article>",
+      "css": ".ds-card{font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;border-bottom:1px solid var(--line,#dce2e3);padding-bottom:18px;color:var(--ink,#242e32)}.ds-card h3{font-size:17px;font-weight:700;letter-spacing:-.02em;line-height:1.25;margin:0 0 7px}.ds-card p{font-size:12px;line-height:1.65;color:var(--muted,#59656b);margin:0 0 10px}.ds-card:hover h3{color:var(--accent,#b74113)}.ds-card:focus-visible{outline:3px solid var(--accent,#b74113);outline-offset:4px}"
+    },
+    {
+      "name": "Active filter chip",
+      "kind": "chip",
+      "description": "Pale orange selected-filter chip with an individual removal action.",
+      "html": "<span class=\"ds-chip\">Dumbbell <button aria-label=\"Remove Dumbbell filter\">Remove</button></span>",
+      "css": ".ds-chip{font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;display:inline-flex;align-items:center;gap:6px;border:1px solid #f9731659;border-radius:6px;background:var(--accent-soft,#fff1e9);color:var(--accent,#b74113);padding:6px 10px;font-size:14px;font-weight:600}.ds-chip button{font:inherit;color:inherit;border:0;background:transparent;min-height:44px}.ds-chip button:hover{background:var(--accent-soft,#fff1e9)}.ds-chip button:focus-visible{outline:3px solid var(--accent,#b74113);outline-offset:4px}.ds-chip:focus-visible{outline:3px solid var(--accent,#b74113);outline-offset:4px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Compact equipment reference",
+    "overview": "Movement names and search lead; reviewed imagery supports recognition. The interface uses white, cool gray, charcoal, and restrained orange. The existing logo and unofficial fan identity remain visible.",
+    "keyCharacteristics": [
+      "Compact, readable catalog entries with visible creator attribution.",
+      "Flat sections separated by fine rules and tonal backgrounds.",
+      "One selected demonstration with explicit platform actions."
+    ],
+    "rules": [
+      {
+        "name": "The restrained accent rule",
+        "body": "Reserve orange for identity and interactive state; keep reading surfaces neutral.",
+        "section": "colors"
+      },
+      {
+        "name": "The attribution rule",
+        "body": "Keep source and creator context with each demonstration, including alternate selections and fallback states.",
+        "section": "components"
+      }
+    ],
+    "dos": [
+      "**Do** preserve reviewed imagery, creator credit, and source links.",
+      "**Do** let long names wrap without hiding equipment or attribution.",
+      "**Do** pair selected color with a visible indicator and accessible state.",
+      "**Do** preserve the system sans-serif typography approved for this reference."
+    ],
+    "donts": [
+      "**Don't** wrap every section in a card or add decorative surface gradients.",
+      "**Don't** replace source demonstrations with invented assets or advice.",
+      "**Don't** simplify the full filter set or change query behavior to match a visual prototype."
+    ]
+  }
+}

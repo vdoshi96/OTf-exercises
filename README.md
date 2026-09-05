@@ -19,6 +19,16 @@ reviewed-removal recovery page. Unknown slugs remain true 404 responses.
 > Orangetheory, OTF, and related logos are trademarks of their owners. Video
 > content belongs to its original creators and source platforms.
 
+## Interface
+
+The white and cool-gray interface prioritizes search and movement identity.
+Desktop filters appear beside results; mobile uses a filter dialog and readable
+image-and-text rows. Each detail page shows one selected demonstration, with a
+selector for alternate videos and per-video creator attribution. Original-source
+links remain available without JavaScript.
+
+See [the design system](DESIGN.md) and [the implementation plan](docs/redesign-implementation.md).
+
 ## Tech Stack
 
 - **Framework:** Next.js 16 (App Router)
@@ -129,8 +139,9 @@ check. The same check runs automatically before every production build.
 │   ├── components/
 │   │   ├── SearchBar.tsx       # Debounced URL-backed search
 │   │   ├── FilterPanel.tsx     # Category/muscle/equipment/creator filters
-│   │   ├── ExerciseCard.tsx    # Exercise card with tags
-│   │   ├── ExerciseGrid.tsx    # Responsive card grid
+│   │   ├── ExerciseCard.tsx    # Named result with imagery and attribution
+│   │   ├── ExerciseGrid.tsx    # URL-backed directory and responsive results
+│   │   ├── VideoGallery.tsx    # Single selected demo and alternate sources
 │   │   ├── TikTokEmbed.tsx     # Tap-to-play TikTok player
 │   │   └── InstagramEmbed.tsx  # Explicit outbound Instagram preview
 │   ├── data/

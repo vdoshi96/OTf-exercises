@@ -1,93 +1,56 @@
-# Design QA — 2026-08-23 UI/UX audit
+# Design QA — September 4, 2026 redesign
 
-**Final production result: CONDITIONAL PASS**
+## Scope
 
-The exercise and coaching directories pass the tested core flows, visual review,
-responsive checks, accessibility scan, performance budget, and Chromium/WebKit
-production-browser matrix. The qualifier is narrow and explicit: navigating to
-the intentional custom 404 produces one browser-generated 404 console error.
-The five tested 200 routes are console-clean.
-
-## Before and after
-
-### Desktop directory — 1440 × 900
-
-| Before | After |
-| --- | --- |
-| ![Desktop directory before the audit fixes](before-desktop-directory-1440x900.png) | ![Desktop directory after the audit fixes](after-desktop-directory-1440x900.png) |
-
-The visual identity and information density are intentionally unchanged. The
-after state uses accessible black text on the orange Search action, clearer
-secondary text, and 48-pixel primary targets.
-
-### Mobile directory — 390 × 844
-
-| Before | After |
-| --- | --- |
-| ![Mobile directory before the audit fixes](before-mobile-directory-390x844.png) | ![Mobile directory after the audit fixes](after-mobile-directory-390x844.png) |
-
-The mobile header, navigation, search clear control, filters, chips, detail
-actions, privacy CTA, and recovery controls now use at least 48-pixel targets.
-The hidden skip link and inline footer Privacy link use the relevant target-size
-exceptions.
-
-## Affected states rechecked
-
-### Desktop disclosure and recovery
-
-| Filter disclosure | Empty-state recovery | Detail contrast |
-| --- | --- | --- |
-| ![Desktop filters after the audit fixes](after-desktop-filters-1440x900.png) | ![Desktop empty state after the audit fixes](after-desktop-empty-state-1440x900.png) | ![Desktop detail contrast after the audit fixes](after-desktop-detail-contrast-1440x900.png) |
-
-Escape collapses the filter disclosure and restores focus. Empty results expose
-an adjacent Reset search action. Representative creator and secondary metadata
-text now passes the automated contrast scan.
-
-### Mobile filter sheet
-
-![Mobile filter sheet after the audit fixes](after-mobile-filters-390x844.png)
-
-The native dialog has explicit expanded state, focus containment and restoration,
-Escape and backdrop dismissal, persistent actions, and a 260 ms open / 200 ms
-close panel transition. Reduced-motion users receive no transition.
-
-### Offline error recovery
-
-![Mobile offline recovery after the audit fixes](after-mobile-offline-390x844.png)
-
-The directory keeps the last good results visible, explains the connection
-problem in plain language, and provides a 48-pixel Try again action.
-
-## Five most important improvements
-
-1. Removed all axe Critical/Serious violations found in the baseline contrast
-   scan across the two directories and two representative detail routes.
-2. Raised important mobile targets to 48 pixels across all six audited routes.
-3. Made desktop filters close with Escape, update `aria-expanded`, leave the
-   accessibility tree while collapsed, and restore focus to the trigger.
-4. Added direct Reset search and Clear filters actions to the empty state, plus
-   human-readable offline and generic request errors.
-5. Replaced ad hoc state motion with tokenized filter accordion, bottom-sheet,
-   and loading-shimmer transitions that respect `prefers-reduced-motion`.
+The approved white, cool-gray, charcoal, and orange redesign covers the exercise
+and coaching directories, both details, privacy, legacy split recovery, legacy
+removal recovery, and 404. The catalog, curation records, thumbnail assets,
+legacy-route ledger, query helpers, search ranking, and security configuration
+have no changes.
 
 ## Verification
 
-- Zero axe violations on six routes; each route retains one axe incomplete item
-  for manual review rather than an automated failure.
-- Zero layout clipping at 375, 768, 1024, 1280, 1440, and 1920 pixels.
-- Zero network 5xx responses.
-- Five real 200 routes: zero console errors and warnings.
-- Intentional unknown route: true HTTP 404 and one raw browser 404 console error.
-- Live production after metrics: LCP 336 ms, CLS 0, INP 24 ms, TTFB 39 ms.
-- Chromium and WebKit pass at 1280×900, 390×844, and 320×844; Chromium also
-  passes reduced-motion and JavaScript-disabled variants.
-- Catalog, directory, security, thumbnail, documentation, and refresh suites,
-  lint, TypeScript, and the 1,884-page Next.js production build pass.
+The local Next.js production build passes typecheck and lint. The refresh
+fixtures, directory-query, security, thumbnail, catalog/legacy, and documentation
+suites pass. The Chromium and WebKit release matrix covers desktop, 390px, and
+320px, plus Chromium reduced-motion and JavaScript-disabled paging.
 
-Production commit `a412a8662e5d02d61854fd7d3d66669711513101` was
-verified at `https://o-tf-exercises.vercel.app` after Vercel deployment
-`dpl_AyqzrdFSzRRhKhp35uZAVG2yf6Bw` reached Ready. The full Chromium/WebKit
-matrix and six-route automated audit were rerun against that public alias.
+The redesign suite checks all eight screens at 1280px, 390px, and 320px, with no
+horizontal overflow and intended HTTP statuses. It verifies one selected media
+area, every alternate selector, per-video attribution, no selector for a single
+video, source links without JavaScript, and discovery shortcuts that preserve
+search and other filter values. Selecting a demo does not load an iframe.
 
-The full findings, interaction manifest, stress coverage, and remaining caveats
-are in [the canonical audit](../../audits/2026-08-23-ui-ux-audit.md).
+Eleven axe WCAG A/AA scans cover all eight mobile screens, multiple demos, the
+filter dialog, and a real failed directory request. There are zero violations.
+The directory and request-error scans retain the `aria-valid-attr-value`
+incomplete item; the multiple-demo scan retains a `color-contrast` incomplete
+item for manual review. These items are automation limits, not automated passes.
+The browser matrix separately verifies the visible control, open native dialog,
+focus containment, and focus restoration.
+
+## Independent visual review
+
+The finish reviewer validated all 27 screen and multiple-demo captures. Its
+verdict pass scored four requested fixes resolved: discovery shortcuts, metadata
+following headings, legible TikTok source links, and the SVG selection indicator.
+The disposition was `ship` for those scored fixes, with no observed regressions
+from that batch. This is not a claim of exhaustive review of every catalog item.
+
+## Media and recovery boundaries
+
+Automated TikTok playback tests intercept the third-party player and establish
+click-gating, iframe focus, and fallback links. They do not establish reliable
+provider playback or signed-in Instagram access. Unknown routes deliberately
+return HTTP 404; a browser may log the corresponding failed-resource message.
+No usability improvement or performance benchmark is inferred from this QA.
+
+## Evidence
+
+The newest completed screen captures and machine-readable results are in
+[redesign](redesign/results.json). Historical audit conclusions remain in their
+dated documents; their screenshot links point to the historical Git commit.
+`thumbnail-report.json` remains the independent catalog-integrity record.
+
+Production release verification is recorded after the implementation reaches
+the public alias. This pre-release record establishes local integrated behavior.

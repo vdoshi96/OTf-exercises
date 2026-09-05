@@ -117,12 +117,15 @@ function Chip({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`min-h-12 max-w-full rounded-md border px-3 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 ${
+      className={`filter-choice min-h-12 max-w-full rounded-md border px-3 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 ${
         active
-          ? "border-orange-400/70 bg-orange-500/20 text-orange-100 shadow-sm shadow-orange-950/40"
-          : "border-white/10 bg-[#161717] text-stone-300 hover:border-orange-500/50 hover:text-orange-100"
+          ? "border-orange-400/70 bg-accent-soft text-accent"
+          : "border-line bg-white text-muted hover:border-orange-500/50 hover:text-accent"
       }`}
     >
+      <span aria-hidden="true" className="choice-mark">
+        {active ? "✓" : ""}
+      </span>
       <span className="break-words">{label}</span>
     </button>
   );
@@ -130,13 +133,13 @@ function Chip({
 
 function ActiveFilterChip({ filter }: { filter: ActiveFilter }) {
   return (
-    <span className="inline-flex max-w-full items-center gap-1.5 rounded-md border border-orange-500/35 bg-orange-500/15 px-2.5 py-1.5 text-sm font-semibold text-orange-100">
+    <span className="inline-flex max-w-full items-center gap-1.5 rounded-md border border-orange-500/35 bg-accent-soft px-2.5 py-1.5 text-sm font-semibold text-accent">
       <span className="break-words">{filter.label}</span>
       <button
         type="button"
         onClick={filter.onRemove}
         aria-label={`Remove ${filter.label} filter`}
-        className="-my-2 -mr-2 flex min-h-12 min-w-12 items-center justify-center rounded-sm text-orange-200 transition hover:bg-orange-500/20 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 sm:my-0 sm:mr-0 sm:min-h-0 sm:min-w-0 sm:p-0.5"
+        className="-my-2 -mr-2 flex min-h-12 min-w-12 items-center justify-center rounded-sm text-accent transition hover:bg-accent-soft hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 sm:my-0 sm:mr-0 sm:min-h-0 sm:min-w-0 sm:p-0.5"
       >
         <CloseIcon />
       </button>
@@ -152,10 +155,10 @@ function DesktopFilterGroups({
   onToggle: (key: DirectoryFilterKey, value: string) => void;
 }) {
   return (
-    <div className="grid gap-5 lg:grid-cols-2">
+    <div className="desktop-filter-groups">
       {groups.map((group) => (
-        <div key={group.key} className={group.wide ? "lg:col-span-2" : ""}>
-          <h3 className="mb-2 text-xs font-bold uppercase text-stone-400">
+        <div key={group.key} className="filter-group">
+          <h3 className="mb-2 text-xs font-bold uppercase text-muted">
             {group.title}
           </h3>
           <div
@@ -165,7 +168,7 @@ function DesktopFilterGroups({
                 : undefined
             }
           >
-            <div className="flex flex-wrap gap-2">
+            <div className="filter-choices">
               {group.choices.map((choice) => (
                 <Chip
                   key={choice.value}
@@ -193,11 +196,11 @@ function MobileFilterGroups({
     <div className="divide-y divide-white/10">
       {groups.map((group) => (
         <details key={group.key} className="group/filter py-1">
-          <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 rounded-md px-1 text-sm font-bold uppercase text-stone-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 [&::-webkit-details-marker]:hidden">
+          <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 rounded-md px-1 text-sm font-bold uppercase text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 [&::-webkit-details-marker]:hidden">
             <span className="flex items-center gap-2">
               {group.title}
               {group.active.length > 0 && (
-                <span className="rounded-md bg-orange-500 px-1.5 py-0.5 text-xs text-black">
+                <span className="rounded-md bg-accent-soft px-1.5 py-0.5 text-xs text-black">
                   {group.active.length}
                 </span>
               )}
@@ -230,7 +233,7 @@ export default function FilterPanel({
   onToggle,
   onClear,
 }: FilterPanelProps) {
-  const [desktopPanelOpen, setDesktopPanelOpen] = useState(false);
+  const [desktopPanelOpen, setDesktopPanelOpen] = useState(true);
   const [mobileDialogOpen, setMobileDialogOpen] = useState(false);
   const mobileDialogRef = useRef<HTMLDialogElement>(null);
   const mobileCloseTimerRef = useRef<number | null>(null);
@@ -245,30 +248,74 @@ export default function FilterPanel({
 
     if (section === "coaching") {
       return [
-        { key: "topics", title: "Topic", choices: options.topics, active: query.topics },
-        { key: "sources", title: "Source", choices: options.sources, active: query.sources },
-        { key: "creators", title: "Creator", choices: creators, active: query.creators, wide: true },
+        {
+          key: "topics",
+          title: "Topic",
+          choices: options.topics,
+          active: query.topics,
+        },
+        {
+          key: "sources",
+          title: "Source",
+          choices: options.sources,
+          active: query.sources,
+        },
+        {
+          key: "creators",
+          title: "Creator",
+          choices: creators,
+          active: query.creators,
+          wide: true,
+        },
       ];
     }
 
     return [
-      { key: "categories", title: "Category", choices: options.categories, active: query.categories },
-      { key: "muscles", title: "Muscle", choices: options.muscles, active: query.muscles },
-      { key: "equipment", title: "Equipment", choices: options.equipment, active: query.equipment },
-      { key: "sources", title: "Source", choices: options.sources, active: query.sources },
-      { key: "creators", title: "Creator", choices: creators, active: query.creators, wide: true },
+      {
+        key: "categories",
+        title: "Category",
+        choices: options.categories,
+        active: query.categories,
+      },
+      {
+        key: "muscles",
+        title: "Muscle",
+        choices: options.muscles,
+        active: query.muscles,
+      },
+      {
+        key: "equipment",
+        title: "Equipment",
+        choices: options.equipment,
+        active: query.equipment,
+      },
+      {
+        key: "sources",
+        title: "Source",
+        choices: options.sources,
+        active: query.sources,
+      },
+      {
+        key: "creators",
+        title: "Creator",
+        choices: creators,
+        active: query.creators,
+        wide: true,
+      },
     ];
   }, [options, query, section]);
 
   const activeFilters = groups.flatMap<ActiveFilter>((group) =>
     group.active.map((value) => {
-      const choice = group.choices.find((candidate) => candidate.value === value);
+      const choice = group.choices.find(
+        (candidate) => candidate.value === value,
+      );
       return {
         key: `${group.key}-${value}`,
         label: `${group.title}: ${choice?.label ?? value}`,
         onRemove: () => onToggle(group.key, value),
       };
-    })
+    }),
   );
   const activeFilterCount = activeFilters.length;
   const hasFilters = activeFilterCount > 0;
@@ -287,20 +334,23 @@ export default function FilterPanel({
     const dialog = mobileDialogRef.current;
     if (!dialog?.open || mobileCloseTimerRef.current !== null) return;
     setMobileDialogOpen(false);
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
     mobileCloseTimerRef.current = window.setTimeout(
       () => {
         dialog.close();
         mobileCloseTimerRef.current = null;
       },
-      reducedMotion ? 0 : 200
+      reducedMotion ? 0 : 200,
     );
   };
   const restoreFilterTriggerFocus = () => {
     const mobileTrigger = mobileTriggerRef.current;
     const desktopTrigger = desktopTriggerRef.current;
     const mobileVisible =
-      mobileTrigger && window.getComputedStyle(mobileTrigger).display !== "none";
+      mobileTrigger &&
+      window.getComputedStyle(mobileTrigger).display !== "none";
     (mobileVisible ? mobileTrigger : desktopTrigger)?.focus();
   };
 
@@ -324,7 +374,7 @@ export default function FilterPanel({
         window.clearTimeout(mobileCloseTimerRef.current);
       }
     },
-    []
+    [],
   );
 
   return (
@@ -333,7 +383,7 @@ export default function FilterPanel({
       className={
         "t-acc w-fit max-w-full max-sm:bg-transparent " +
         (desktopPanelOpen
-          ? "sm:w-full sm:max-w-5xl sm:rounded-lg sm:border sm:border-white/10 sm:bg-[#101111]/90 sm:shadow-xl sm:shadow-black/20"
+          ? "sm:w-full sm:max-w-5xl sm:rounded-lg sm:border sm:border-line sm:bg-white"
           : "sm:w-fit")
       }
     >
@@ -353,12 +403,12 @@ export default function FilterPanel({
             aria-haspopup="dialog"
             aria-expanded={mobileDialogOpen}
             aria-controls="mobile-exercise-filters"
-            className="inline-flex min-h-12 items-center gap-2 rounded-md border border-white/15 bg-[#181919] px-4 py-2 text-sm font-semibold text-stone-100 transition hover:border-orange-500/50 hover:text-orange-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 sm:hidden"
+            className="inline-flex min-h-12 items-center gap-2 rounded-md border border-line bg-white px-4 py-2 text-sm font-semibold text-ink transition hover:border-orange-500/50 hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 sm:hidden"
           >
             <FilterIcon />
             <span>Filters</span>
             {activeFilterCount > 0 && (
-              <span className="rounded-md bg-orange-500 px-1.5 py-0.5 text-xs font-bold text-black">
+              <span className="rounded-md bg-accent-soft px-1.5 py-0.5 text-xs font-bold text-black">
                 {activeFilterCount}
               </span>
             )}
@@ -370,12 +420,12 @@ export default function FilterPanel({
             onClick={() => setDesktopPanelOpen((open) => !open)}
             aria-expanded={desktopPanelOpen}
             aria-controls="desktop-exercise-filters"
-            className="hidden min-h-12 items-center gap-2 rounded-md border border-white/15 bg-[#181919] px-4 py-2 text-sm font-semibold text-stone-100 transition hover:border-orange-500/50 hover:text-orange-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 sm:inline-flex"
+            className="hidden min-h-12 items-center gap-2 rounded-md border border-line bg-white px-4 py-2 text-sm font-semibold text-ink transition hover:border-orange-500/50 hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 sm:inline-flex"
           >
             <FilterIcon />
             <span>Filters</span>
             {activeFilterCount > 0 && (
-              <span className="rounded-md bg-orange-500 px-1.5 py-0.5 text-xs font-bold text-black">
+              <span className="rounded-md bg-accent-soft px-1.5 py-0.5 text-xs font-bold text-black">
                 {activeFilterCount}
               </span>
             )}
@@ -388,7 +438,7 @@ export default function FilterPanel({
             <button
               type="button"
               onClick={onClear}
-              className="rounded-md px-2 py-1 text-sm font-semibold text-orange-300 transition hover:bg-orange-500/10 hover:text-orange-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400"
+              className="rounded-md px-2 py-1 text-sm font-semibold text-accent transition hover:bg-accent-soft hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400"
             >
               Clear all
             </button>
@@ -398,7 +448,7 @@ export default function FilterPanel({
         {hasFilters && (
           <div
             aria-label="Active filters"
-            className="flex min-w-0 flex-1 flex-wrap gap-2 sm:border-t sm:border-white/10 sm:pt-3"
+            className="flex min-w-0 flex-1 flex-wrap gap-2 sm:border-t sm:border-line sm:pt-3"
           >
             {activeFilters.map((filter) => (
               <ActiveFilterChip key={filter.key} filter={filter} />
@@ -414,8 +464,8 @@ export default function FilterPanel({
           aria-hidden={!desktopPanelOpen}
           inert={!desktopPanelOpen}
         >
-          <div className="t-acc-panel-inner border-t border-white/10">
-            <div className="p-4">
+          <div className="t-acc-panel-inner border-t border-line">
+            <div className="rail-groups-inner">
               <DesktopFilterGroups groups={groups} onToggle={onToggle} />
             </div>
           </div>
@@ -438,12 +488,17 @@ export default function FilterPanel({
         onClick={(event) => {
           if (event.target === event.currentTarget) closeMobileDialog();
         }}
-        className="t-panel-slide mobile-filter-dialog fixed inset-x-0 bottom-0 top-auto m-0 max-h-[88dvh] w-full max-w-none flex-col overflow-hidden rounded-t-2xl border border-white/15 bg-[#0b0c0c] p-0 text-stone-100 shadow-2xl shadow-black open:flex backdrop:bg-black/80 backdrop:backdrop-blur-sm sm:hidden"
+        className="t-panel-slide mobile-filter-dialog fixed inset-x-0 bottom-0 top-auto m-0 max-h-[88dvh] w-full max-w-none flex-col overflow-hidden rounded-t-2xl border border-line bg-white p-0 text-ink shadow-black open:flex backdrop:bg-black/80 backdrop:backdrop-blur-sm sm:hidden"
       >
-        <div className="flex shrink-0 items-center justify-between gap-4 border-b border-white/10 bg-[#101111] px-4 py-3">
+        <div className="flex shrink-0 items-center justify-between gap-4 border-b border-line bg-white px-4 py-3">
           <div>
-            <p className="text-xs font-bold uppercase text-orange-400">Refine directory</p>
-            <h2 id="mobile-filter-heading" className="font-display display-tight mt-0.5 text-2xl font-semibold text-stone-50">
+            <p className="text-xs font-bold uppercase text-accent">
+              Refine directory
+            </p>
+            <h2
+              id="mobile-filter-heading"
+              className="font-display display-tight mt-0.5 text-2xl font-semibold text-ink"
+            >
               Filters
             </h2>
           </div>
@@ -451,7 +506,7 @@ export default function FilterPanel({
             type="button"
             onClick={closeMobileDialog}
             aria-label="Close filters"
-            className="flex min-h-12 min-w-12 items-center justify-center rounded-md border border-white/10 bg-[#181919] text-stone-300 transition hover:border-orange-500/50 hover:text-orange-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400"
+            className="flex min-h-12 min-w-12 items-center justify-center rounded-md border border-line bg-white text-muted transition hover:border-orange-500/50 hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400"
           >
             <CloseIcon />
           </button>
@@ -461,21 +516,22 @@ export default function FilterPanel({
           <MobileFilterGroups groups={groups} onToggle={onToggle} />
         </div>
 
-        <div className="grid shrink-0 grid-cols-[0.8fr_1.2fr] gap-3 border-t border-white/10 bg-[#101111] p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+        <div className="grid shrink-0 grid-cols-[0.8fr_1.2fr] gap-3 border-t border-line bg-white p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
           <button
             type="button"
             onClick={onClear}
             disabled={!hasFilters}
-            className="min-h-12 rounded-md border border-white/15 px-4 text-sm font-bold text-stone-200 transition hover:border-orange-500/50 hover:text-orange-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 disabled:cursor-not-allowed disabled:opacity-40"
+            className="min-h-12 rounded-md border border-line px-4 text-sm font-bold text-ink transition hover:border-orange-500/50 hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 disabled:cursor-not-allowed disabled:opacity-40"
           >
             Clear
           </button>
           <button
             type="button"
             onClick={closeMobileDialog}
-            className="min-h-12 rounded-md bg-orange-500 px-4 text-sm font-bold text-black transition hover:bg-orange-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300"
+            className="min-h-12 rounded-md bg-accent px-4 text-sm font-bold text-white transition hover:bg-orange-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300"
           >
-            Show {resultCount.toLocaleString()} result{resultCount === 1 ? "" : "s"}
+            Show {resultCount.toLocaleString()} result
+            {resultCount === 1 ? "" : "s"}
           </button>
         </div>
       </dialog>

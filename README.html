@@ -6,7 +6,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: https:; style-src 'unsafe-inline'">
   <meta name="generator" content="otf-docs-parity/v1">
   <meta name="doc-source" content="README.md">
-  <meta name="doc-source-sha256" content="e907f91b6ad01c406425d54b9614242dc5a0ff64e8af7d8da68233e0445ff977">
+  <meta name="doc-source-sha256" content="fa9b4170fef8474f995b6861757adacf27af99e1a3d9e46685eda7393ea7cbfe">
   <title>Unofficial OTF Exercise Directory</title>
   <style>
     :root {
@@ -104,6 +104,13 @@ affiliated with, endorsed by, or operated by Orangetheory Fitness.
 Orangetheory, OTF, and related logos are trademarks of their owners. Video
 content belongs to its original creators and source platforms.</p>
 </blockquote>
+<h2 id="interface">Interface</h2>
+<p>The white and cool-gray interface prioritizes search and movement identity.
+Desktop filters appear beside results; mobile uses a filter dialog and readable
+image-and-text rows. Each detail page shows one selected demonstration, with a
+selector for alternate videos and per-video creator attribution. Original-source
+links remain available without JavaScript.</p>
+<p>See <a href="DESIGN.html">the design system</a> and <a href="docs/redesign-implementation.html">the implementation plan</a>.</p>
 <h2 id="tech-stack">Tech Stack</h2>
 <ul>
 <li><strong>Framework:</strong> Next.js 16 (App Router)</li>
@@ -195,8 +202,9 @@ check. The same check runs automatically before every production build.</p>
 │   ├── components/
 │   │   ├── SearchBar.tsx       # Debounced URL-backed search
 │   │   ├── FilterPanel.tsx     # Category/muscle/equipment/creator filters
-│   │   ├── ExerciseCard.tsx    # Exercise card with tags
-│   │   ├── ExerciseGrid.tsx    # Responsive card grid
+│   │   ├── ExerciseCard.tsx    # Named result with imagery and attribution
+│   │   ├── ExerciseGrid.tsx    # URL-backed directory and responsive results
+│   │   ├── VideoGallery.tsx    # Single selected demo and alternate sources
 │   │   ├── TikTokEmbed.tsx     # Tap-to-play TikTok player
 │   │   └── InstagramEmbed.tsx  # Explicit outbound Instagram preview
 │   ├── data/

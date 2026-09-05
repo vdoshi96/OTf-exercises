@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: https:; style-src 'unsafe-inline'">
+  <meta name="generator" content="otf-docs-parity/v1">
+  <meta name="doc-source" content="DESIGN.md">
+  <meta name="doc-source-sha256" content="8a4a636e476a2a9d3fb18fc00101ada244a4376aca923bbb82891f3dcdf27616">
+  <title>Design system: OTF exercise directory</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      --background: #ffffff;
+      --foreground: #172033;
+      --muted: #5d6678;
+      --surface: #f5f7fa;
+      --border: #d8dee9;
+      --accent: #b84f10;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #111827;
+        --foreground: #e5e7eb;
+        --muted: #aeb7c6;
+        --surface: #1f2937;
+        --border: #445064;
+        --accent: #ff9b5e;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--background);
+      color: var(--foreground);
+    }
+    main {
+      width: min(100% - 2rem, 72rem);
+      margin: 0 auto;
+      padding: 2.5rem 0 5rem;
+      overflow-x: auto;
+      overflow-wrap: anywhere;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      line-height: 1.25;
+      margin-block: 2rem 0.75rem;
+    }
+    h1 { margin-top: 0; }
+    a { color: var(--accent); text-underline-offset: 0.15em; }
+    a:focus-visible { outline: 0.2rem solid currentColor; outline-offset: 0.2rem; }
+    blockquote {
+      margin-inline: 0;
+      padding: 0.2rem 1rem;
+      color: var(--muted);
+      border-inline-start: 0.25rem solid var(--border);
+    }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    code {
+      padding: 0.1rem 0.3rem;
+      background: var(--surface);
+      border-radius: 0.25rem;
+    }
+    pre {
+      padding: 1rem;
+      overflow-x: auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+    }
+    pre code { padding: 0; background: transparent; }
+    table {
+      width: 100%;
+      margin-block: 1rem;
+      border-collapse: collapse;
+    }
+    th, td { padding: 0.5rem 0.75rem; border: 1px solid var(--border); text-align: start; }
+    th { background: var(--surface); }
+    img { max-width: 100%; height: auto; }
+    hr { border: 0; border-top: 1px solid var(--border); }
+    .plain-text { white-space: pre-wrap; }
+    .task-list-item { list-style: none; }
+    input[type="checkbox"] { margin-inline: -1.25rem 0.5rem; }
+  </style>
+</head>
+<body>
+  <main>
+<hr>
+<p>name: OTF exercise directory
+description: A compact equipment reference with attributed demonstrations.
+colors:
+  background: &quot;#fff&quot;
+  ink: &quot;#242e32&quot;
+  muted: &quot;#59656b&quot;
+  accent: &quot;#b74113&quot;
+  accent-strong: &quot;#94330f&quot;
+  accent-soft: &quot;#fff1e9&quot;
+  line: &quot;#dce2e3&quot;
+  soft: &quot;#f2f5f5&quot;
+typography:
+  body:
+    fontFamily: &#39;-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif&#39;
+    fontSize: &quot;16px&quot;
+    lineHeight: 1.65
+  headline:
+    fontSize: &quot;38px&quot;
+    fontWeight: 720
+    lineHeight: 1.13
+    letterSpacing: &quot;-0.03em&quot;
+  title:
+    fontSize: &quot;17px&quot;
+    fontWeight: 700
+    lineHeight: 1.25
+    letterSpacing: &quot;-0.02em&quot;
+rounded:
+  control: &quot;7px&quot;
+  thumbnail: &quot;10px&quot;
+  media: &quot;12px&quot;
+spacing:
+  compact: &quot;12px&quot;
+  standard: &quot;16px&quot;
+  section: &quot;24px&quot;
+components:
+  search-submit:
+    backgroundColor: &quot;{colors.ink}&quot;
+    textColor: &quot;{colors.background}&quot;
+    padding: &quot;12px 20px&quot;
+  media-action:
+    backgroundColor: &quot;{colors.background}&quot;
+    textColor: &quot;{colors.ink}&quot;
+    rounded: &quot;{rounded.control}&quot;
+    padding: &quot;12px 18px&quot;
+  demo-option-selected:
+    backgroundColor: &quot;{colors.accent-soft}&quot;
+    textColor: &quot;{colors.ink}&quot;
+    rounded: &quot;9px&quot;
+padding: &quot;11px 13px&quot;
+</p>
+<hr>
+<h1 id="design-system-otf-exercise-directory">Design system: OTF exercise directory</h1>
+<h2 id="overview">Overview</h2>
+<p><strong>Creative North Star: &quot;Compact equipment reference&quot;</strong></p>
+<p>Movement names and search lead; reviewed imagery supports recognition. The interface uses white, cool gray, charcoal, and restrained orange. The existing logo and unofficial fan identity remain visible.</p>
+<p><strong>Key Characteristics:</strong></p>
+<ul>
+<li>Compact, readable catalog entries with visible creator attribution.</li>
+<li>Flat sections separated by fine rules and tonal backgrounds.</li>
+<li>One selected demonstration with explicit platform actions.</li>
+</ul>
+<h2 id="colors">Colors</h2>
+<p>The frontmatter records shared primitives from <code>src/app/globals.css</code>. Accent orange identifies links, selected filters, and source actions. The stronger accent supports source-link hover; the pale accent marks selected surfaces. The active navigation underline uses bright orange (<code>#eb5b23</code>).</p>
+<p>White is the page and control surface. Charcoal carries headings, main text, and search submission. Muted slate carries metadata. Cool gray groups directory introductions and search; fine gray separators divide entries and reading sections.</p>
+<p><strong>The restrained accent rule.</strong> Reserve orange for identity and interactive state; keep reading surfaces neutral.</p>
+<h2 id="typography">Typography</h2>
+<p>Use the system sans-serif stack for headings and body text, as approved for this operational reference. Directory and detail headings use the headline token; phone headings reduce to 30px. Catalog titles use the title token, reducing to 16px with 1.35 line height on phones. Coaching titles and reading section headings use 20px.</p>
+<p>Supporting text ranges from 12px to 14px; phone result credits use 11px. Reading paragraphs use 1.85 line height. Detail introductions stay within 75 characters of measure. Allow long movement names and creator handles to wrap.</p>
+<h2 id="layout">Layout</h2>
+<p>The shared container has a 1280px maximum width and 40px gutters. At 1000px and narrower, gutters reduce to 28px; at 650px and narrower, they reduce to 20px. At 1500px and wider, the maximum grows to 1360px.</p>
+<p>Desktop directories pair a 202px filter rail with three result columns and a 36px gap. Intermediate widths use a 180px rail and two columns. Coaching uses image-and-text rows for longer titles. At 650px and narrower, both directories use a single list with a 102px thumbnail column and a 16px text gap. Filters move into a bottom modal with expandable groups and full multi-select controls.</p>
+<p>Details pair media and context in a 1.1:1 grid, then stack on phones. The media stage is 450px tall, 410px at intermediate widths, 370px on phones, and 490px on wide screens. Reading and recovery use narrow single columns with separators. Navigation wraps to its own row on phones.</p>
+<h2 id="elevation-depth">Elevation &amp; Depth</h2>
+<p>Sections and catalog entries remain flat. Tonal backgrounds, white space, and thin separators establish hierarchy. The white action over media uses a restrained shadow (<code>0 4px 20px #0002</code>) for legibility. The mobile filter modal uses a dark translucent, blurred backdrop. Do not generalize either treatment to ordinary cards.</p>
+<h2 id="shapes">Shapes</h2>
+<p>Use gently rounded controls and clipped media. Search and desktop thumbnails use the thumbnail radius; phone thumbnails use the control radius. The media stage uses the media radius. Demonstration choices use 9px corners, and the bottom modal rounds its upper corners. Reading sections and navigation remain square and unboxed.</p>
+<h2 id="components">Components</h2>
+<h3 id="search-and-buttons">Search and buttons</h3>
+<p>Search combines a white bordered field and charcoal submit action in one rounded control. It is at least 58px tall on desktop and 52px on phones. Focus within the search control uses an orange outline. The submit action darkens on hover. Recovery forms stack on phones.</p>
+<h3 id="filters-and-chips">Filters and chips</h3>
+<p>Desktop filter choices use compact rows with a square selection marker. Phone choices use bordered controls in expandable groups. Selected choices combine orange, a visible mark, and <code>aria-pressed</code>; active-filter chips provide individual removal. The native modal contains keyboard focus and restores focus when closed. Its action area stays separate from the scrolling choices.</p>
+<h3 id="catalog-entries">Catalog entries</h3>
+<p>Desktop exercise entries place name and equipment before imagery, followed by creator and platform metadata. Phone entries place imagery beside that text. Separators define each entry; there is no enclosing card border or shadow. Titles turn orange on hover. Preserve reviewed thumbnails and their source content.</p>
+<h3 id="navigation">Navigation</h3>
+<p>The logo, directory identity, and unofficial status share the header. Exercises and Coaching use text links. Active navigation combines orange text, an underline, and <code>aria-current</code>. Phone navigation has 44px minimum height.</p>
+<h3 id="demonstrations">Demonstrations</h3>
+<p>Show one media stage with an explicit platform action and adjacent creator credit. TikTok requires activation and retains a separate original-source link; Instagram opens the source post. Multiple demonstrations use numbered creator choices with a selected outline, pale orange fill, and SVG check. Each selection retains its platform, attribution, and caption. No-JavaScript source links keep every demonstration reachable.</p>
+<p><strong>The attribution rule.</strong> Keep source and creator context with each demonstration, including alternate selections and fallback states.</p>
+<h3 id="interaction-states">Interaction states</h3>
+<p>Use visible keyboard outlines and textual or marked selection states. Phone filter controls and modal actions provide generous touch targets; desktop filter rows remain compact. Accordion and modal movement is brief. Reduced-motion preferences disable animations, transitions, and smooth scrolling.</p>
+<h2 id="dos-and-donts">Do&#39;s and Don&#39;ts</h2>
+<ul>
+<li><strong>Do</strong> preserve reviewed imagery, creator credit, and source links.</li>
+<li><strong>Do</strong> let long names wrap without hiding equipment or attribution.</li>
+<li><strong>Do</strong> pair selected color with a visible indicator and accessible state.</li>
+<li><strong>Do</strong> preserve the system sans-serif typography approved for this reference.</li>
+<li><strong>Don&#39;t</strong> wrap every section in a card or add decorative surface gradients.</li>
+<li><strong>Don&#39;t</strong> replace source demonstrations with invented assets or advice.</li>
+<li><strong>Don&#39;t</strong> simplify the full filter set or change query behavior to match a visual prototype.</li>
+</ul>
+  </main>
+</body>
+</html>

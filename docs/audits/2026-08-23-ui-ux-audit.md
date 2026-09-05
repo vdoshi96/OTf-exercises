@@ -257,12 +257,14 @@ defect. It did require four reporting corrections that this document follows:
 
 ## Final visual evidence
 
-- [Desktop before](../qa/latest/before-desktop-directory-1440x900.png)
-- [Desktop after](../qa/latest/after-desktop-directory-1440x900.png)
-- [Mobile before](../qa/latest/before-mobile-directory-390x844.png)
-- [Mobile after](../qa/latest/after-mobile-directory-390x844.png)
-- [Desktop filters after](../qa/latest/after-desktop-filters-1440x900.png)
-- [Desktop empty-state recovery after](../qa/latest/after-desktop-empty-state-1440x900.png)
-- [Desktop detail contrast after](../qa/latest/after-desktop-detail-contrast-1440x900.png)
-- [Mobile filters after](../qa/latest/after-mobile-filters-390x844.png)
-- [Offline recovery after](../qa/latest/after-mobile-offline-390x844.png)
+These links retain the August 23 evidence in repository history. The `docs/qa/latest` directory holds the newest completed run.
+
+- [Desktop before](https://github.com/vdoshi96/OTf-exercises/blob/145283bc1f1e55af6b1894665f2d46ffb1f24420/docs/qa/latest/before-desktop-directory-1440x900.png)
+- [Desktop after](https://github.com/vdoshi96/OTf-exercises/blob/145283bc1f1e55af6b1894665f2d46ffb1f24420/docs/qa/latest/after-desktop-directory-1440x900.png)
+- [Mobile before](https://github.com/vdoshi96/OTf-exercises/blob/145283bc1f1e55af6b1894665f2d46ffb1f24420/docs/qa/latest/before-mobile-directory-390x844.png)
+- [Mobile after](https://github.com/vdoshi96/OTf-exercises/blob/145283bc1f1e55af6b1894665f2d46ffb1f24420/docs/qa/latest/after-mobile-directory-390x844.png)
+- [Desktop filters after](https://github.com/vdoshi96/OTf-exercises/blob/145283bc1f1e55af6b1894665f2d46ffb1f24420/docs/qa/latest/after-desktop-filters-1440x900.png)
+- [Desktop empty-state recovery after](https://github.com/vdoshi96/OTf-exercises/blob/145283bc1f1e55af6b1894665f2d46ffb1f24420/docs/qa/latest/after-desktop-empty-state-1440x900.png)
+- [Desktop detail contrast after](https://github.com/vdoshi96/OTf-exercises/blob/145283bc1f1e55af6b1894665f2d46ffb1f24420/docs/qa/latest/after-desktop-detail-contrast-1440x900.png)
+- [Mobile filters after](https://github.com/vdoshi96/OTf-exercises/blob/145283bc1f1e55af6b1894665f2d46ffb1f24420/docs/qa/latest/after-mobile-filters-390x844.png)
+- [Offline recovery after](https://github.com/vdoshi96/OTf-exercises/blob/145283bc1f1e55af6b1894665f2d46ffb1f24420/docs/qa/latest/after-mobile-offline-390x844.png)
