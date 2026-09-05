@@ -115,6 +115,11 @@ try {
       0,
       "selection must not consent to third-party media",
     );
+    await page.waitForFunction(() =>
+      [...document.querySelectorAll(".video-article img")].every(
+        (image) => image.complete && image.naturalWidth > 0,
+      ),
+    );
     if (width === 390) await checkAccessibility(page, "multiple-demos");
     await page.screenshot({
       path: `${output}/${width}-multiple-demos.png`,
