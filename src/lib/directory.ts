@@ -4,6 +4,7 @@ import coachingJson from "@/data/coaching.json";
 import exercisesJson from "@/data/exercises.json";
 import {
   CATEGORY_LABELS,
+  facetLabel,
   type CoachingResource,
   type DirectoryCreatorSummary,
   type DirectoryFilterOption,
@@ -50,7 +51,7 @@ function humanize(value: string): string {
 }
 
 function option(value: string, label?: string): DirectoryFilterOption {
-  return { value, label: label ?? humanize(value) };
+  return { value, label: label ?? facetLabel(value) };
 }
 
 function sortedOptions(

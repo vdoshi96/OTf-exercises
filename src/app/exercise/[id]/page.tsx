@@ -12,7 +12,7 @@ import type {
   LegacyExerciseRouteLedger,
   LegacyExerciseRouteTarget,
 } from "@/lib/types";
-import { CATEGORY_LABELS } from "@/lib/types";
+import { CATEGORY_LABELS, facetLabel } from "@/lib/types";
 import { getExerciseCreators } from "@/lib/search";
 import { getDirectoryResponse } from "@/lib/directory";
 import {
@@ -251,7 +251,7 @@ export default async function ExerciseDetailPage({
           <span className="heading-context">{categoryLabel}</span>
           <p>
             {exercise.equipment.length
-              ? exercise.equipment.join(" · ")
+              ? exercise.equipment.map(facetLabel).join(" · ")
               : "Equipment not specified"}
           </p>
         </div>
@@ -287,7 +287,7 @@ export default async function ExerciseDetailPage({
                     key={mg}
                     className="rounded-md border border-line bg-white px-2.5 py-1.5 text-xs font-medium text-muted"
                   >
-                    {mg}
+                    {facetLabel(mg)}
                   </span>
                 ))}
               </dd>
@@ -304,7 +304,7 @@ export default async function ExerciseDetailPage({
                       key={eq}
                       className="rounded-md border border-line bg-white px-2.5 py-1.5 text-xs font-medium text-muted"
                     >
-                      {eq}
+                      {facetLabel(eq)}
                     </span>
                   ))
                 ) : (

@@ -1,165 +1,141 @@
-# Unofficial OTF Exercise Directory
+# OTF Exercise Directory (unofficial)
 
-A searchable, unofficial fan directory of Orangetheory Fitness exercise demos
-and reviewed coaching resources from multiple creators and source platforms.
+**Live:** [o-tf-exercises.vercel.app](https://o-tf-exercises.vercel.app)
 
-Browse 1,405 demonstrations across 778 grouped exercises, or explore 655
-videos across 515 separately classified coaching resources. Exercise results
-can be searched or filtered by category, muscle group, equipment, platform, and
-creator; coaching results use reviewed topics instead of pretending to have
-exercise metadata.
+In an Orangetheory class the coach calls out a move like "Y-Bell cross catch to
+shoulder press" and you have about ten seconds to work out what it means. This
+site is a searchable directory built for that moment. It pulls the short demo
+videos that OTF coaches post on Instagram and TikTok and organizes them into
+**778 exercises with 1,405 demo videos** that you can search and filter. It also
+has a separate library of **515 coaching resources (655 videos)** on technique,
+class delivery, and programming. It works on a phone mid-class and needs no
+sign-in.
 
-All 1,309 exercise slugs published by the reviewed `7d059a7` baseline remain
-resolvable: 714 are still canonical, 546 permanently redirect to one reviewed
-destination, 18 open a reviewed split-destination chooser, and 31 open a
-reviewed-removal recovery page. Unknown slugs remain true 404 responses.
+> **Disclaimer:** Unofficial fan directory — not affiliated with Orangetheory
+> Fitness. Videos belong to their creators. Orangetheory, OTF, and related
+> logos are trademarks of their respective owners.
 
-> **Disclaimer:** This is an unofficial fan-made directory. It is not
-> affiliated with, endorsed by, or operated by Orangetheory Fitness.
-> Orangetheory, OTF, and related logos are trademarks of their owners. Video
-> content belongs to its original creators and source platforms.
+A native SwiftUI companion app with the same catalog and offline search is in
+[vdoshi96/OTf-exercises-ios](https://github.com/vdoshi96/OTf-exercises-ios).
 
-## Interface
+| Directory (desktop) | Exercise detail | Mobile |
+| --- | --- | --- |
+| ![Exercise directory with filters and thumbnail grid](docs/screenshots/directory.png) | ![Exercise detail with demo selector and details](docs/screenshots/detail.png) | ![Mobile directory at 390px](docs/screenshots/mobile.png) |
 
-The white and cool-gray interface prioritizes search and movement identity.
-Desktop filters appear beside results; mobile uses a filter dialog and readable
-image-and-text rows. Each detail page shows one selected demonstration, with a
-selector for alternate videos and per-video creator attribution. Original-source
-links remain available without JavaScript.
+## Features
 
-See [the design system](DESIGN.md) and [the implementation plan](docs/redesign-implementation.md).
+- **Fuzzy search** across exercise names, muscles, equipment, creators, cues,
+  and video captions (Fuse.js, weighted fields). Results show which field
+  matched ("Matched: Equipment").
+- **Faceted filters** for category, muscle group, equipment, platform, and
+  creator. The URL stores every filter, so any filtered view can be shared
+  or bookmarked.
+- **One page per exercise.** Pick between alternate demos, each credited to its
+  creator. TikTok embeds and Instagram previews only load after you tap them,
+  and the link to the original post works without JavaScript.
+- **Durable thumbnails.** All 2,060 preview images are saved in the repo,
+  because Instagram and TikTok CDN links expire.
+- **Old links still work.** All 1,309 exercise URLs from an earlier version of
+  the catalog still resolve. Each one opens the current page, redirects,
+  offers a choice between split pages, or explains why the entry was removed.
+- **Accessible and responsive.** Axe WCAG 2.1 AA checks and Chromium/WebKit
+  browser tests run at 320, 390, and 1280 px widths.
 
-## Tech Stack
+## How the catalog is built
 
-- **Framework:** Next.js 16 (App Router)
-- **Styling:** Tailwind CSS 4
-- **Search:** Fuse.js in a server-only directory module with URL-backed filters
-- **Video Playback:** Tap-to-play TikTok players and linked Instagram previews
-- **Data:** Static reviewed exercise and coaching JSON, exposed to the client as
-  compact 24-item summaries
-- **Privacy and hardening:** Click-gated third-party media, a public privacy
-  explanation, route-aware CSP, anti-framing, MIME, referrer, and permissions
-  headers
+```
+creator feeds ──► ingestion ──► keyword enrichment ──► reviewed curation ──► static JSON
+ (IG, TikTok)     yt-dlp /       scripts/enrich_local.py   data/catalog-curation.json   src/data/*.json
+                  instaloader
+```
 
-## Getting Started
+1. **Ingestion.** `yt-dlp` scans TikTok and `instaloader` plus a browser capture
+   scan Instagram. Both collect post metadata (IDs, captions, timestamps) for
+   the tracked creators. `scripts/refresh_incremental.py` is incremental and
+   fails closed: if a scan is rate-limited or incomplete, it changes nothing.
+2. **Enrichment.** `scripts/enrich_local.py` reads each caption and applies
+   keyword and pattern rules to extract a name, category, muscles, equipment,
+   and movement type. Re-running it over the 1,055 enrichment records that
+   have no curation override reproduces every one exactly, so this rule-based
+   pass generated the published metadata. `scripts/enrich_metadata.py` is a
+   second version of this step that sends captions to Claude Haiku 4.5. It is
+   in the repo but was not used to build the current catalog.
+3. **Curation.** Every published exercise has pinned metadata in
+   `data/catalog-curation.json`: 778 exercise records and 2,104 video-level
+   decisions (exercise, coaching, or excluded, each with a reason).
+   Unresolved candidates wait in `data/catalog-review-queue.json` until
+   someone makes a decision. Integrity checks confirm that the catalog, the
+   ledger, and the thumbnails agree before every build.
+
+The app was built iteratively with AI coding agents (Cursor and Codex). Specs,
+plans, audits, and QA evidence for each change are in `docs/`.
+
+## Tech stack
+
+- **Next.js 16** (App Router, server components, static generation for about
+  1,900 pages) and **React 19**
+- **TypeScript**, **Tailwind CSS 4**
+- **Fuse.js**, run on the server. The client receives compact 24-item pages
+  from `/api/directory`.
+- **Python 3** data pipeline: yt-dlp, instaloader, and a Sharp-based
+  thumbnail worker in Node
+- **Playwright** and **axe-core** for browser and accessibility QA
+- Hosted on **Vercel** (auto-deploys from `main`) with Vercel Web Analytics.
+  Route-aware CSP, anti-framing, and privacy headers.
+
+## Run locally
 
 ```bash
 npm install
-npm run dev
+npm run dev            # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Requires Node 22.18 or newer.
 
-## Safe Data Refresh
-
-The refresh workflow scans Coach Rudy's tracked Instagram and TikTok feeds plus
-TrainingTall's Instagram feed. It is incremental and fail-closed: incomplete or
-rate-limited scans do not alter the catalogue or advance source state.
+## Tests
 
 ```bash
-# Check source completeness and candidate totals first; this writes nothing.
-npm run refresh
+npm test               # data, docs, directory, security, thumbnail, catalog suites
+npm run lint
+npm run typecheck
+npm run build          # also runs docs parity + catalog integrity first
 
-# After item-level review is recorded, apply the reviewed delta, backfill
-# thumbnails across both public catalogs, and run strict integrity checks.
-npm run refresh:apply
+# Browser QA against a running production build
+npx next start -p 3013 &
+BASE_URL=http://127.0.0.1:3013 npm run test:redesign   # 24 screen/viewport checks + axe
+BASE_URL=http://127.0.0.1:3013 npm run test:e2e        # Chromium + WebKit smoke
 ```
 
-Per-source checkpoints live in `data/refresh-state.json`. Durable video-ID
-classifications, reviewed destination metadata, equipment-review exceptions,
-and controlled exclusion reasons live in `data/catalog-curation.json`.
-Unresolved source candidates persist in `data/catalog-review-queue.json` until
-a human records a decision; the legacy override maps are retired and must stay
-empty. The complete apply workflow holds one repository lock across catalog,
-thumbnail, and integrity work, and uses `data/refresh-transaction.json` for
-crash-safe multi-file recovery.
+## Refreshing the data
 
-`data/refresh-report.json` records the September 5, 2026 UTC source refresh in
-queue-aware schema v2: 22 reviewed exercise videos accepted and one personal
-recap excluded. TrainingTall and TikTok have no newer videos. The targeted
-Instagram browser capture is in `data/refresh-browser-scan.json`; it retains
-public post fields and concise source summaries, without private account data.
+```bash
+npm run refresh        # dry run: checks source completeness and candidate totals, writes nothing
+npm run refresh:apply  # applies the reviewed changes, backfills thumbnails, runs integrity checks
+```
 
-### Durable thumbnails
+`refresh:apply` holds a single repository lock for the whole run. It records
+progress in `data/refresh-transaction.json` so it can recover if it crashes
+partway through writing several files. For thumbnail recovery details, see
+[the thumbnail pipeline](docs/thumbnail-pipeline.md). For release steps, see
+the [hosting guide](hosting-guide.md).
 
-Instagram and TikTok CDN URLs expire, so release data never references them
-directly. `scripts/ensure-thumbnails.mjs` covers both public catalogs, recovers
-each platform's current preview, validates and normalizes it with Sharp, then
-stores it under `public/thumbs/`. Unavailable posts receive a durable local
-fallback visibly labelled `UNOFFICIAL FAN DIRECTORY` and an explicit failure
-entry in `docs/qa/latest/thumbnail-report.json`. See
-[the thumbnail pipeline](docs/thumbnail-pipeline.md) for recovery order,
-validation, and troubleshooting commands.
+## Project layout
+
+```
+scripts/     ingestion, enrichment, refresh workflow, thumbnails, integrity checks
+data/        curation ledger, review queue, refresh state and provenance
+src/app/     directory, exercise + coaching detail, privacy, API route
+src/lib/     directory filtering, URL query contract, Fuse.js search
+src/data/    exercises.json (778), coaching.json (515), legacy route ledger
+tests/       node:test + unittest suites, Playwright browser QA
+docs/        design system, plans, audits, QA evidence, screenshots
+```
+
+See [DESIGN.md](DESIGN.md) for the design system and
+[PRODUCT.md](PRODUCT.md) for product intent.
 
 ## Documentation parity
 
-Project-owned prose documentation is maintained in source form and generated as
-same-directory HTML counterparts. Stage a newly created source document first so
-tracked-file discovery includes it without touching private untracked notes. Then
-run the canonical regeneration command after editing or adding documentation:
-
-```bash
-npm run docs:generate
-```
-
-Use `npm run docs:check` for a mutation-free completeness and content-parity
-check. The same check runs automatically before every production build.
-
-## Project Structure
-
-```
-├── scripts/
-│   ├── parse_metadata.py       # Parse yt-dlp .info.json files
-│   ├── enrich_local.py         # Local pattern-based enrichment
-│   ├── refresh_incremental.py  # Fail-closed creator source importer
-│   ├── run_refresh_workflow.py # Whole-workflow lock + validation owner
-│   ├── generate-legacy-exercise-routes.mjs # Historical URL ledger
-│   ├── ensure-thumbnails.mjs   # Exercise + coaching thumbnail worker
-│   └── refresh.sh              # Dry-run/apply orchestration
-├── data/
-│   ├── catalog-curation.json   # Auditable video-level decisions
-│   ├── catalog-baseline-exercise-routes.json # Immutable old URL scope
-│   ├── catalog-review-queue.json # Durable unresolved-source queue
-│   ├── refresh-state.json      # Last successful source checkpoints
-│   ├── refresh-overrides.json  # Retired legacy maps; required empty
-│   ├── refresh-transaction.json # Crash-recovery journal; required idle
-│   ├── refresh.lock            # Stable whole-workflow process lock
-│   └── refresh-report.json     # Last applied source-scan provenance
-├── src/
-│   ├── app/
-│   │   ├── page.tsx            # Server-rendered exercise directory
-│   │   ├── api/directory/      # Compact paged directory API
-│   │   ├── coaching/           # Coaching index and detail routes
-│   │   ├── privacy/            # Media and analytics transparency
-│   │   ├── exercise/[id]/
-│   │   │   └── page.tsx        # Exercise detail page + video embeds
-│   │   ├── robots.ts           # Crawl policy and sitemap pointer
-│   │   ├── not-found.tsx       # Branded recovery route
-│   │   ├── layout.tsx          # Unofficial identity, nav, and footer
-│   │   └── globals.css
-│   ├── components/
-│   │   ├── SearchBar.tsx       # Debounced URL-backed search
-│   │   ├── FilterPanel.tsx     # Category/muscle/equipment/creator filters
-│   │   ├── ExerciseCard.tsx    # Named result with imagery and attribution
-│   │   ├── ExerciseGrid.tsx    # URL-backed directory and responsive results
-│   │   ├── VideoGallery.tsx    # Single selected demo and alternate sources
-│   │   ├── TikTokEmbed.tsx     # Tap-to-play TikTok player
-│   │   └── InstagramEmbed.tsx  # Explicit outbound Instagram preview
-│   ├── data/
-│   │   ├── exercises.json      # 778 reviewed grouped exercises
-│   │   ├── coaching.json       # 515 reviewed coaching resources
-│   │   └── legacy-exercise-routes.json # Redirect/recovery outcomes
-│   └── lib/
-│       ├── directory.ts        # Server-only filtering and summaries
-│       ├── query.ts            # Normalized public URL contract
-│       ├── search.ts           # Multi-field Fuse.js search logic
-│       └── types.ts            # TypeScript types + constants
-├── tests/                      # Import, thumbnail, and browser checks
-└── package.json
-```
-
-## Deployment
-
-See [hosting-guide.md](hosting-guide.md) for the release and Vercel verification
-workflow. The independent claim assessment and implemented remediation are in
-[the 2026-08-14 audit response](docs/audits/2026-08-14-web-audit-response.md).
+Every project Markdown file has a generated HTML copy next to it. After you
+edit any docs, run `npm run docs:generate`. `npm run docs:check` runs before
+every build and fails if an HTML copy is missing or out of date.

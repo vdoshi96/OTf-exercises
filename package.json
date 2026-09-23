@@ -19,6 +19,7 @@
     "refresh": "./scripts/refresh.sh",
     "refresh:apply": "./scripts/refresh.sh --apply",
     "thumbnails": "node scripts/ensure-thumbnails.mjs",
+    "test": "npm run test:data && npm run test:docs && npm run test:directory && npm run test:security && npm run test:thumbnails && npm run test:catalog",
     "test:data": "python3 -m unittest tests/test_refresh_incremental.py",
     "test:docs": "node --test tests/docs-parity.test.mjs",
     "test:directory": "node --test tests/directory-query.test.mjs",

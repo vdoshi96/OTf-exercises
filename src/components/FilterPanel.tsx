@@ -96,13 +96,6 @@ function CloseIcon() {
   );
 }
 
-function choiceLabel(group: DirectoryFilterKey, choice: DirectoryFilterOption) {
-  if (choice.value.toLocaleLowerCase("en-US") !== "core") return choice.label;
-  if (group === "categories") return "Category: Core";
-  if (group === "muscles") return "Muscle: Core";
-  return choice.label;
-}
-
 function Chip({
   label,
   active,
@@ -168,11 +161,17 @@ function DesktopFilterGroups({
                 : undefined
             }
           >
-            <div className="filter-choices">
+            {/* The group name namespaces shared values such as "Core", which is
+                both a category and a muscle; active chips repeat it inline. */}
+            <div
+              role="group"
+              aria-label={group.title}
+              className="filter-choices"
+            >
               {group.choices.map((choice) => (
                 <Chip
                   key={choice.value}
-                  label={choiceLabel(group.key, choice)}
+                  label={choice.label}
                   active={group.active.includes(choice.value)}
                   onClick={() => onToggle(group.key, choice.value)}
                 />
@@ -209,11 +208,15 @@ function MobileFilterGroups({
               <ChevronIcon />
             </span>
           </summary>
-          <div className="flex flex-wrap gap-2 pb-4 pt-2">
+          <div
+            role="group"
+            aria-label={group.title}
+            className="flex flex-wrap gap-2 pb-4 pt-2"
+          >
             {group.choices.map((choice) => (
               <Chip
                 key={choice.value}
-                label={choiceLabel(group.key, choice)}
+                label={choice.label}
                 active={group.active.includes(choice.value)}
                 onClick={() => onToggle(group.key, choice.value)}
               />
