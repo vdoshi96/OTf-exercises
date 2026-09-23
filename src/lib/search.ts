@@ -78,6 +78,44 @@ function normalizeAlias(value: string): string {
   return value.toLocaleLowerCase("en-US").replace(/[^a-z0-9]+/g, "");
 }
 
+const titleCollator = new Intl.Collator("en-US", {
+  numeric: true,
+  sensitivity: "base",
+});
+
+/**
+ * Browse-order key for directory titles. Leading punctuation such as "(Hang
+ * Power) Clean" is ignored so titles file under their first word, and
+ * digit-led titles ("1/2 Kneeling…", "10 Stroke Power Row") are grouped after
+ * the alphabetical run instead of crowding the top of the directory.
+ */
+export function directoryTitleSortKey(title: string): {
+  numeric: boolean;
+  key: string;
+} {
+  const key = title
+    .normalize("NFKD")
+    .replace(/^[^\p{L}\p{N}]+/u, "")
+    .replace(/[()[\]{}"'‘’“”]/g, "")
+    .trim();
+  return { numeric: /^\p{N}/u.test(key), key };
+}
+
+export function compareDirectoryTitles(a: string, b: string): number {
+  const left = directoryTitleSortKey(a);
+  const right = directoryTitleSortKey(b);
+  if (left.numeric !== right.numeric) return left.numeric ? 1 : -1;
+  return (
+    titleCollator.compare(left.key, right.key) ||
+    titleCollator.compare(a, b) ||
+    (a < b ? -1 : a > b ? 1 : 0)
+  );
+}
+
+function sortedByTitle<T>(items: T[], title: (item: T) => string): T[] {
+  return [...items].sort((a, b) => compareDirectoryTitles(title(a), title(b)));
+}
+
 function matchLabels<T>(result: FuseResult<T>): string[] {
   const labels = new Set<string>();
 
@@ -112,7 +150,9 @@ export function searchExercisesWithMatches(
   query: string
 ): SearchResult<GroupedExercise>[] {
   if (!query.trim()) {
-    return exercises.map((item) => ({ item, matchedBy: [] }));
+    return sortedByTitle(exercises, (item) => item.exercise_name).map(
+      (item) => ({ item, matchedBy: [] }),
+    );
   }
 
   const fuseResults = fuse.search(query);
@@ -167,7 +207,10 @@ export function searchCoachingWithMatches(
   query: string
 ): SearchResult<CoachingResource>[] {
   if (!query.trim()) {
-    return resources.map((item) => ({ item, matchedBy: [] }));
+    return sortedByTitle(resources, (item) => item.title).map((item) => ({
+      item,
+      matchedBy: [],
+    }));
   }
 
   const fuseResults = fuse.search(query);

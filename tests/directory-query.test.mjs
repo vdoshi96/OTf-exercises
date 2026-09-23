@@ -11,6 +11,7 @@ import {
   serializeDirectoryQuery,
 } from "../src/lib/query.ts";
 import {
+  compareDirectoryTitles,
   createCoachingSearchIndex,
   createSearchIndex,
   searchCoachingWithMatches,
@@ -195,4 +196,35 @@ test("non-title search matches explain the matching field", () => {
   );
 
   assert.ok(result, "expected at least one BOSU equipment match with a label");
+});
+
+test("default browse order files titles alphabetically with digit-led names last", () => {
+  const titles = searchExercisesWithMatches(
+    createSearchIndex(exercises),
+    exercises,
+    "",
+  ).map(({ item }) => item.exercise_name);
+
+  assert.equal(titles.length, exercises.length);
+  assert.match(titles[0], /^[A-Za-z]/, "first title should start with a letter");
+  const firstNumeric = titles.findIndex((title) => /^\d/.test(title));
+  assert.ok(firstNumeric > 0, "digit-led titles follow the alphabetical run");
+  assert.ok(
+    titles.slice(firstNumeric).every((title) => /^\d/.test(title)),
+    "digit-led titles stay grouped at the end",
+  );
+  const hangClean = titles.findIndex((title) => title.startsWith("(Hang Power)"));
+  assert.ok(hangClean > 0 && /^H/i.test(titles[hangClean - 1] ?? "H"));
+
+  assert.ok(compareDirectoryTitles("(Hang Power) Clean", "Hammer Curl") > 0);
+  assert.ok(compareDirectoryTitles("10 Stroke Power Row", "Zercher Squat") > 0);
+  assert.ok(compareDirectoryTitles("2 Point Row", "10 Stroke Power Row") < 0);
+  assert.equal(compareDirectoryTitles("Squat", "Squat"), 0);
+
+  const coachingTitles = searchCoachingWithMatches(
+    createCoachingSearchIndex(coaching),
+    coaching,
+    "",
+  ).map(({ item }) => item.title);
+  assert.match(coachingTitles[0], /^[A-Za-z]/);
 });

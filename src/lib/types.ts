@@ -163,6 +163,23 @@ export const CATEGORY_LABELS: Record<string, string> = {
   other: "Other",
 };
 
+const FACET_LABEL_OVERRIDES: Record<string, string> = {
+  bosu: "BOSU",
+  "trx straps": "TRX Straps",
+  "y-bell": "Y-Bell",
+};
+
+/** Display label for a stored muscle-group or equipment value. */
+export function facetLabel(value: string): string {
+  const override = FACET_LABEL_OVERRIDES[value.toLocaleLowerCase("en-US")];
+  if (override) return override;
+  return value
+    .replace(/_/g, " ")
+    .replace(/(^|[\s-])(\p{Ll})/gu, (_, boundary: string, letter: string) =>
+      `${boundary}${letter.toLocaleUpperCase("en-US")}`,
+    );
+}
+
 export const CATEGORY_COLORS: Record<string, string> = {
   upper_body: "bg-orange-500/20 text-orange-100 border-orange-500/35",
   lower_body: "bg-amber-500/20 text-amber-100 border-amber-500/35",

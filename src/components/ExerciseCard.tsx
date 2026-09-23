@@ -3,10 +3,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import type {
-  DirectoryItemSummary,
-  DirectoryQuery,
-  GroupedExercise,
+import {
+  facetLabel,
+  type DirectoryItemSummary,
+  type DirectoryQuery,
+  type GroupedExercise,
 } from "@/lib/types";
 import { directoryDetailHref } from "@/lib/query";
 import ExercisePlaceholder from "./ExercisePlaceholder";
@@ -20,7 +21,7 @@ export default function ExerciseCard({
 }) {
   const [thumbnailError, setThumbnailError] = useState(false);
   const equipment = item.equipment.length
-    ? item.equipment.join(", ")
+    ? item.equipment.map(facetLabel).join(", ")
     : "Equipment not specified";
   return (
     <Link
